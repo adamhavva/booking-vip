@@ -47,3 +47,7 @@ src/graphify-out/cache
 *.png
 .playwright-mcp/*.log
 .playwright-mcp/*.yml
+node_modules/
+dist/
+.env
+.vscode

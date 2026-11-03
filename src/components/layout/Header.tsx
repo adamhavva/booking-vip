@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Container from "@/components/ui/Container";
 import { ChevronDown, SearchIcon } from "@/components/icons";
-import { navLinks, searchPlaceholders, utilityLinks } from "@/data/home";
+import { searchPlaceholders, utilityLinks } from "@/data/home";
 import Logo from "./Logo";
 
 export default function Header() {
@@ -52,18 +52,6 @@ export default function Header() {
             className="h-11 w-full rounded-full border border-white/0 bg-white pl-11 pr-4 text-sm text-ink shadow-sm outline-none placeholder:text-muted"
           />
         </div>
-
-        <nav className="hidden items-center gap-5 text-sm font-semibold text-white lg:flex">
-          {navLinks.map((n) => (
-            <a
-              key={n.label}
-              href={n.href}
-              className="whitespace-nowrap hover:text-white/80"
-            >
-              {n.label}
-            </a>
-          ))}
-        </nav>
 
         <div className="flex flex-1 items-center gap-2 lg:hidden">
           <div className="relative flex-1">

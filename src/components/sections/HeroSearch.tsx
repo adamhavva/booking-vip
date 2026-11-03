@@ -103,6 +103,9 @@ export default function HeroSearch() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-hero-from via-hero-via to-hero-to pb-10 pt-24 md:pt-28">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/20 to-transparent" />
+        <br />
+        <br />
+        <br />
 
       <Container className="relative">
         {/* Heading */}
@@ -115,6 +118,10 @@ export default function HeroSearch() {
             Booking VIP - Airport VIP, transport, tours & eVOA in one place.
           </p>
         </div>
+        <br />
+        <br />
+        <br />
+
 
         {/* Search card with a centered tab rail straddling its top edge */}
         <div className="relative mx-auto max-w-[1120px]">

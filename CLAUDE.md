@@ -11,7 +11,18 @@ npm run dev     # next dev (Turbopack)
 npm run build   # next build — also type-checks
 npm run start   # next start
 npx tsc --noEmit  # faster standalone type-check
+
+# Prisma 8 (Supabase Postgres) — see "Database" section below
+npx prisma contract emit    # recompile schema → src/prisma/contract.{json,d.ts} (alias: npm run contract:emit)
+npx prisma migration check  # offline contract/migration validation
+npx prisma contract print   # show the compiled contract as PSL
 ```
+
+## Database — Prisma ORM 8 + Supabase
+
+Connection strings live in `.env` (gitignored): `DATABASE_URL` = Supabase transaction-mode pooler (port 6543, `?pgbouncer=true`) for the runtime client; `DIRECT_URL` = session-mode pooler (port 5432) for CLI-side operations, wired through `prisma.config.ts`. The password is still the `[YOUR-PASSWORD]` placeholder — replace it before running anything that contacts the database.
+
+Prisma 8 rearchitected the CLI: there is no `prisma validate` / `prisma generate`. The contract source is the Prisma-7-style `prisma/schema.prisma`, consumed via `prisma7Schema()` in `prisma.config.ts`; `npx prisma contract emit` compiles it to `src/prisma/contract.json` + `contract.d.ts`. The runtime client is `src/prisma/db.ts` — import `db` from there, do not instantiate your own client. No models, migrations, or seeds exist yet (initial setup was deliberately scoped to configuration only); Supabase agent skills are installed under `.claude/skills/` and pinned in `skills-lock.json`. First contact with the real database is `npx prisma db sign` (records that the DB matches the contract; migrations themselves stay on the Prisma 7 side via `prisma7 migrate dev`) — see `prisma-8.md` for the transition loop.
 
 ## This is Next.js 16 — not the version in your training data
 

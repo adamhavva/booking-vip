@@ -21,12 +21,6 @@ export const utilityLinks: LinkItem[] = [
   { label: "Help Center", href: "#" },
 ];
 
-export const navLinks: LinkItem[] = [
-  { label: "Airport VIP Service", href: "#" },
-  { label: "Transport", href: "#" },
-  { label: "Tour Package", href: "#" },
-  { label: "eVOA", href: "#" },
-];
 
 export const searchPlaceholders = [
   "VIP service at Soekarno-Hatta",
