@@ -19,7 +19,6 @@ export const utilityLinks: LinkItem[] = [
   { label: "About Us", href: "#" },
   { label: "How It Works", href: "#" },
   { label: "Help Center", href: "#" },
-  { label: "Your Orders", href: "#" },
 ];
 
 export const navLinks: LinkItem[] = [

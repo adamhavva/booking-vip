@@ -65,16 +65,6 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-3 lg:flex">
-          <button className="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-ink shadow-sm hover:bg-white/90">
-            Login
-          </button>
-          <button className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark">
-            Register
-          </button>
-        </div>
-
-        {/* Mobile search + actions */}
         <div className="flex flex-1 items-center gap-2 lg:hidden">
           <div className="relative flex-1">
             <SearchIcon

@@ -37,16 +37,6 @@ export default function Home() {
       <Header />
       <HeroSearch />
 
-      {/* Hero promo banner */}
-      <div className="pt-8 md:pt-10">
-        <BannerStrip
-          title="Welcome to Booking VIP"
-          subtitle="Airport VIP, private transport, curated tours & eVOA — all in one place."
-          cta="Get started"
-          tone="from-blue-700 via-indigo-700 to-blue-900"
-        />
-      </div>
-
       {/* Special deals */}
       <SectionBand title="Special deals" emoji="🎉">
         <Carousel>
