@@ -44,3 +44,6 @@ src/graphify-out/cache
 .playwright-mcp
 .claude
 .agents
+*.png
+.playwright-mcp/*.log
+.playwright-mcp/*.yml
