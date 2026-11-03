@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+graphify-out
+src/graphify-out/cache
+.playwright-mcp
+.claude
+.agents

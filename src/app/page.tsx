@@ -6,7 +6,7 @@ import BannerStrip from "@/components/BannerStrip";
 import SeoContent from "@/components/SeoContent";
 import SeoLinkGrid from "@/components/SeoLinkGrid";
 import Footer from "@/components/Footer";
-import StickyAppBanner from "@/components/StickyAppBanner";
+// import StickyAppBanner from "@/components/StickyAppBanner";
 import BottomTabBar from "@/components/BottomTabBar";
 import {
   VipServiceCard,
@@ -185,7 +185,7 @@ export default function Home() {
 
       <Footer />
       <BottomTabBar />
-      <StickyAppBanner />
+      {/* <StickyAppBanner /> */}
     </div>
   );
 }

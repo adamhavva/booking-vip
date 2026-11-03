@@ -5,9 +5,9 @@ export default function Logo({ dark = false }: { dark?: boolean }) {
         dark ? "text-ink" : "text-white"
       }`}
     >
-      <span>tiket</span>
+      <span>Our</span>
       <span className="mx-0.5 inline-block h-4 w-4 rounded-full bg-accent" />
-      <span>com</span>
+      <span>Vacation</span>
     </span>
   );
 }
