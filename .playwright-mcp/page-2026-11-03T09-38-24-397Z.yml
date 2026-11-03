@@ -1,0 +1,763 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - banner [ref=f5e3]:
+      - generic [ref=f5e5]:
+        - link "About Us" [ref=f5e6] [cursor=pointer]:
+          - /url: "#"
+        - link "How It Works" [ref=f5e7] [cursor=pointer]:
+          - /url: "#"
+        - link "Help Center" [ref=f5e8] [cursor=pointer]:
+          - /url: "#"
+        - link "Your Orders" [ref=f5e9] [cursor=pointer]:
+          - /url: "#"
+        - button "EN | IDR" [ref=f5e10]
+      - generic [ref=f5e13]:
+        - link "tiket.com home" [ref=f5e14] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=f5e15]:
+            - generic [ref=f5e16]: tiket
+            - generic [ref=f5e18]: com
+        - textbox "VIP service at Soekarno-Hatta" [ref=f5e20]
+        - navigation [ref=f5e21]:
+          - link "Airport VIP Service" [ref=f5e22] [cursor=pointer]:
+            - /url: "#"
+          - link "Transport" [ref=f5e23] [cursor=pointer]:
+            - /url: "#"
+          - link "Tour Package" [ref=f5e24] [cursor=pointer]:
+            - /url: "#"
+          - link "eVOA" [ref=f5e25] [cursor=pointer]:
+            - /url: "#"
+        - generic [ref=f5e26]:
+          - button "Login" [ref=f5e27]
+          - button "Register" [ref=f5e28]
+    - generic [ref=f5e30]:
+      - generic [ref=f5e31]:
+        - heading "Hey there, travelling in style?" [level=1] [ref=f5e32]
+        - paragraph [ref=f5e33]: Booking VIP - Airport VIP, transport, tours & eVOA in one place.
+      - generic [ref=f5e34]:
+        - generic [ref=f5e35]:
+          - button "VIP Airport VIP Service" [ref=f5e36]:
+            - generic [ref=f5e37]: VIP
+            - generic [ref=f5e39]: Airport VIP Service
+          - button "Car Transport" [ref=f5e41]:
+            - generic [ref=f5e42]: Car
+            - generic [ref=f5e44]: Transport
+          - button "Tour Tour Package" [ref=f5e46]:
+            - generic [ref=f5e47]: Tour
+            - generic [ref=f5e49]: Tour Package
+          - button "Visa e-Visa eVOA" [ref=f5e51]:
+            - generic [ref=f5e52]:
+              - generic [ref=f5e53]: Visa
+              - generic [ref=f5e54]: e-Visa
+            - generic [ref=f5e55]: eVOA
+        - generic [ref=f5e57]:
+          - generic [ref=f5e58]:
+            - generic [ref=f5e63]:
+              - generic [ref=f5e64]: Airport
+              - generic [ref=f5e65]: Soekarno-Hatta (CGK)
+            - generic [ref=f5e70]:
+              - generic [ref=f5e71]: Service Type
+              - generic [ref=f5e72]: Arrival Meet & Greet
+            - generic [ref=f5e78]:
+              - generic [ref=f5e79]: Date
+              - generic [ref=f5e80]: Tue, 3 Nov 26
+            - generic [ref=f5e87]:
+              - generic [ref=f5e88]: Passengers
+              - generic [ref=f5e89]: 2 Adults
+          - button "Search" [ref=f5e90]
+        - generic [ref=f5e91]:
+          - generic [ref=f5e92]: 🏷️
+          - text: Check the promos you can use to make your trip more rewarding.
+          - link "See promos now!" [ref=f5e93] [cursor=pointer]:
+            - /url: "#"
+    - generic [ref=f5e96]:
+      - generic [ref=f5e97]:
+        - heading "Welcome to Booking VIP" [level=3] [ref=f5e98]
+        - paragraph [ref=f5e99]: Airport VIP, private transport, curated tours & eVOA — all in one place.
+      - button "Get started" [ref=f5e100]
+    - generic [ref=f5e101]:
+      - generic [ref=f5e102]:
+        - heading "Special deals 🎉" [level=2] [ref=f5e104]
+        - link "See all" [ref=f5e105] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f5e106]:
+        - generic [ref=f5e107]:
+          - generic [ref=f5e108]:
+            - heading "VIP Welcome Offer" [level=3] [ref=f5e109]
+            - paragraph [ref=f5e110]: 20% off your first Meet & Greet
+          - generic [ref=f5e111]:
+            - heading "Transfer Bundle" [level=3] [ref=f5e112]
+            - paragraph [ref=f5e113]: Save when you add a private transfer
+          - generic [ref=f5e114]:
+            - heading "Tour Early Bird" [level=3] [ref=f5e115]
+            - paragraph [ref=f5e116]: Book 30 days ahead and save more
+          - generic [ref=f5e117]:
+            - heading "eVOA Express Deal" [level=3] [ref=f5e118]
+            - paragraph [ref=f5e119]: Priority processing at a special rate
+          - generic [ref=f5e120]:
+            - heading "Family VIP Cashback" [level=3] [ref=f5e121]
+            - paragraph [ref=f5e122]: Extra cashback for family packages
+        - button "Previous" [ref=f5e123]
+        - button "Next" [ref=f5e126]
+    - generic [ref=f5e129]:
+      - generic [ref=f5e130]:
+        - generic [ref=f5e131]:
+          - paragraph [ref=f5e132]: Airport VIP Service ✈️
+          - heading "Breeze through the airport" [level=2] [ref=f5e133]
+        - link "See all" [ref=f5e134] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f5e135]:
+        - button "All" [ref=f5e136]
+        - button "Meet & Greet" [ref=f5e137]
+        - button "Fast Track" [ref=f5e138]
+        - button "Lounge" [ref=f5e139]
+        - button "Porter" [ref=f5e140]
+      - generic [ref=f5e141]:
+        - generic [ref=f5e142]:
+          - generic [ref=f5e143]:
+            - generic [ref=f5e144]: Best seller
+            - generic [ref=f5e147]:
+              - heading "Meet & Greet" [level=3] [ref=f5e148]
+              - paragraph [ref=f5e149]: Soekarno-Hatta (CGK)
+              - paragraph [ref=f5e153]: A personal greeter escorts you from curbside to the gate.
+              - generic [ref=f5e154]:
+                - text: Starting from
+                - generic [ref=f5e155]:
+                  - generic [ref=f5e156]: IDR 1.200.000
+                  - generic [ref=f5e157]:
+                    - text: IDR 850.000
+                    - generic [ref=f5e158]: /pax
+          - generic [ref=f5e162]:
+            - heading "Fast Track Immigration" [level=3] [ref=f5e163]
+            - paragraph [ref=f5e164]: Ngurah Rai, Bali (DPS)
+            - paragraph [ref=f5e168]: Skip the queues at immigration and customs.
+            - generic [ref=f5e169]:
+              - text: Starting from
+              - generic [ref=f5e170]:
+                - generic [ref=f5e171]: IDR 900.000
+                - generic [ref=f5e172]:
+                  - text: IDR 650.000
+                  - generic [ref=f5e173]: /pax
+          - generic [ref=f5e177]:
+            - heading "Premium Lounge Access" [level=3] [ref=f5e178]
+            - paragraph [ref=f5e179]: Soekarno-Hatta (CGK)
+            - paragraph [ref=f5e183]: Relax in a private lounge before departure.
+            - generic [ref=f5e184]:
+              - text: Starting from
+              - generic [ref=f5e186]:
+                - text: IDR 450.000
+                - generic [ref=f5e187]: /pax
+          - generic [ref=f5e191]:
+            - heading "Baggage & Porter Assistance" [level=3] [ref=f5e192]
+            - paragraph [ref=f5e193]: Juanda, Surabaya (SUB)
+            - paragraph [ref=f5e197]: Travel hands-free with dedicated porter help.
+            - generic [ref=f5e198]:
+              - text: Starting from
+              - generic [ref=f5e200]:
+                - text: IDR 300.000
+                - generic [ref=f5e201]: /pax
+          - generic [ref=f5e202]:
+            - generic [ref=f5e203]: New
+            - generic [ref=f5e206]:
+              - heading "VIP Terminal & Buggy" [level=3] [ref=f5e207]
+              - paragraph [ref=f5e208]: Kualanamu, Medan (KNO)
+              - paragraph [ref=f5e212]: Private buggy transfer across the terminal.
+              - generic [ref=f5e213]:
+                - text: Starting from
+                - generic [ref=f5e214]:
+                  - generic [ref=f5e215]: IDR 750.000
+                  - generic [ref=f5e216]:
+                    - text: IDR 500.000
+                    - generic [ref=f5e217]: /pax
+          - generic [ref=f5e221]:
+            - heading "Family VIP Package" [level=3] [ref=f5e222]
+            - paragraph [ref=f5e223]: Soekarno-Hatta (CGK)
+            - paragraph [ref=f5e227]: Meet & greet plus lounge for the whole family.
+            - generic [ref=f5e228]:
+              - text: Starting from
+              - generic [ref=f5e229]:
+                - generic [ref=f5e230]: IDR 2.400.000
+                - generic [ref=f5e231]:
+                  - text: IDR 1.750.000
+                  - generic [ref=f5e232]: /pax
+        - button "Previous" [ref=f5e233]
+        - button "Next" [ref=f5e236]
+    - generic [ref=f5e240]:
+      - generic [ref=f5e241]:
+        - heading "Skip the queues with Fast Track Immigration" [level=3] [ref=f5e242]
+        - paragraph [ref=f5e243]: A dedicated greeter and priority lanes, from arrival to departure
+      - button "Book VIP" [ref=f5e244]
+    - generic [ref=f5e245]:
+      - generic [ref=f5e246]:
+        - generic [ref=f5e247]:
+          - paragraph [ref=f5e248]: Transport 🚘
+          - heading "Private transfers & chauffeur service" [level=2] [ref=f5e249]
+        - link "See all" [ref=f5e250] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f5e251]:
+        - button "All" [ref=f5e252]
+        - button "Sedan" [ref=f5e253]
+        - button "SUV" [ref=f5e254]
+        - button "Van" [ref=f5e255]
+        - button "Limousine" [ref=f5e256]
+      - generic [ref=f5e257]:
+        - generic [ref=f5e258]:
+          - generic [ref=f5e259]:
+            - generic [ref=f5e260]: Popular
+            - generic [ref=f5e263]:
+              - generic [ref=f5e264]: Private Transfer
+              - heading "Executive Sedan" [level=3] [ref=f5e265]
+              - generic [ref=f5e266]:
+                - generic [ref=f5e267]: "3"
+                - generic [ref=f5e272]: 2 bags
+              - generic [ref=f5e273]:
+                - text: Starting from
+                - generic [ref=f5e274]:
+                  - generic [ref=f5e275]: IDR 650.000
+                  - generic [ref=f5e276]: IDR 450.000
+          - generic [ref=f5e280]:
+            - generic [ref=f5e281]: Private Transfer
+            - heading "Premium SUV" [level=3] [ref=f5e282]
+            - generic [ref=f5e283]:
+              - generic [ref=f5e284]: "5"
+              - generic [ref=f5e289]: 4 bags
+            - generic [ref=f5e290]:
+              - text: Starting from
+              - generic [ref=f5e291]:
+                - generic [ref=f5e292]: IDR 850.000
+                - generic [ref=f5e293]: IDR 620.000
+          - generic [ref=f5e297]:
+            - generic [ref=f5e298]: Group Transfer
+            - heading "Luxury Van" [level=3] [ref=f5e299]
+            - generic [ref=f5e300]:
+              - generic [ref=f5e301]: "9"
+              - generic [ref=f5e306]: 8 bags
+            - generic [ref=f5e307]:
+              - text: Starting from
+              - generic [ref=f5e308]:
+                - generic [ref=f5e309]: IDR 1.100.000
+                - generic [ref=f5e310]: IDR 820.000
+          - generic [ref=f5e311]:
+            - generic [ref=f5e312]: VIP
+            - generic [ref=f5e315]:
+              - generic [ref=f5e316]: Chauffeur Service
+              - heading "First-Class Limousine" [level=3] [ref=f5e317]
+              - generic [ref=f5e318]:
+                - generic [ref=f5e319]: "3"
+                - generic [ref=f5e324]: 3 bags
+              - generic [ref=f5e325]:
+                - text: Starting from
+                - generic [ref=f5e326]:
+                  - generic [ref=f5e327]: IDR 1.900.000
+                  - generic [ref=f5e328]: IDR 1.450.000
+          - generic [ref=f5e332]:
+            - generic [ref=f5e333]: By the Hour
+            - heading "City Hourly Hire" [level=3] [ref=f5e334]
+            - generic [ref=f5e335]:
+              - generic [ref=f5e336]: "4"
+              - generic [ref=f5e341]: 2 bags
+            - generic [ref=f5e342]:
+              - text: Starting from
+              - generic [ref=f5e343]: IDR 350.000
+        - button "Previous" [ref=f5e345]
+        - button "Next" [ref=f5e348]
+    - generic [ref=f5e351]:
+      - generic [ref=f5e352]:
+        - generic [ref=f5e353]:
+          - paragraph [ref=f5e354]: Tour Package 🗺️
+          - heading "Curated tours across Indonesia" [level=2] [ref=f5e355]
+        - link "See all" [ref=f5e356] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f5e357]:
+        - button "All" [ref=f5e358]
+        - button "Bali" [ref=f5e359]
+        - button "Labuan Bajo" [ref=f5e360]
+        - button "Yogyakarta" [ref=f5e361]
+        - button "Lombok" [ref=f5e362]
+        - button "Papua" [ref=f5e363]
+      - generic [ref=f5e364]:
+        - generic [ref=f5e365]:
+          - generic [ref=f5e366]:
+            - generic [ref=f5e367]:
+              - generic [ref=f5e369]: 3D2N
+              - generic [ref=f5e370]: Best seller
+            - generic [ref=f5e371]:
+              - heading "Bali Highlights" [level=3] [ref=f5e372]
+              - paragraph [ref=f5e373]: Bali
+              - generic [ref=f5e377]:
+                - generic [ref=f5e380]: "4.8"
+                - generic [ref=f5e381]: /5 (1,240)
+              - generic [ref=f5e382]:
+                - text: Per person from
+                - generic [ref=f5e383]:
+                  - generic [ref=f5e384]: IDR 3.500.000
+                  - generic [ref=f5e385]: IDR 2.650.000
+          - generic [ref=f5e386]:
+            - generic [ref=f5e387]: 4D3N
+            - generic [ref=f5e390]:
+              - heading "Komodo Island Sailing" [level=3] [ref=f5e391]
+              - paragraph [ref=f5e392]: Labuan Bajo
+              - generic [ref=f5e396]:
+                - generic [ref=f5e399]: "4.9"
+                - generic [ref=f5e400]: /5 (860)
+              - generic [ref=f5e401]:
+                - text: Per person from
+                - generic [ref=f5e402]:
+                  - generic [ref=f5e403]: IDR 6.200.000
+                  - generic [ref=f5e404]: IDR 4.900.000
+          - generic [ref=f5e405]:
+            - generic [ref=f5e406]: 3D2N
+            - generic [ref=f5e409]:
+              - heading "Yogyakarta Heritage" [level=3] [ref=f5e410]
+              - paragraph [ref=f5e411]: Yogyakarta
+              - generic [ref=f5e415]:
+                - generic [ref=f5e418]: "4.7"
+                - generic [ref=f5e419]: /5 (640)
+              - generic [ref=f5e420]:
+                - text: Per person from
+                - generic [ref=f5e421]:
+                  - generic [ref=f5e422]: IDR 2.800.000
+                  - generic [ref=f5e423]: IDR 2.100.000
+          - generic [ref=f5e424]:
+            - generic [ref=f5e425]: 4D3N
+            - generic [ref=f5e428]:
+              - heading "Lombok & Gili Escape" [level=3] [ref=f5e429]
+              - paragraph [ref=f5e430]: Lombok
+              - generic [ref=f5e434]:
+                - generic [ref=f5e437]: "4.6"
+                - generic [ref=f5e438]: /5 (520)
+              - generic [ref=f5e439]:
+                - text: Per person from
+                - generic [ref=f5e440]:
+                  - generic [ref=f5e441]: IDR 4.100.000
+                  - generic [ref=f5e442]: IDR 3.200.000
+          - generic [ref=f5e443]:
+            - generic [ref=f5e444]:
+              - generic [ref=f5e446]: 2D1N
+              - generic [ref=f5e447]: Popular
+            - generic [ref=f5e448]:
+              - heading "Bromo Sunrise Tour" [level=3] [ref=f5e449]
+              - paragraph [ref=f5e450]: East Java
+              - generic [ref=f5e454]:
+                - generic [ref=f5e457]: "4.8"
+                - generic [ref=f5e458]: /5 (980)
+              - generic [ref=f5e459]:
+                - text: Per person from
+                - generic [ref=f5e460]:
+                  - generic [ref=f5e461]: IDR 1.900.000
+                  - generic [ref=f5e462]: IDR 1.450.000
+          - generic [ref=f5e463]:
+            - generic [ref=f5e464]: 5D4N
+            - generic [ref=f5e467]:
+              - heading "Raja Ampat Explorer" [level=3] [ref=f5e468]
+              - paragraph [ref=f5e469]: West Papua
+              - generic [ref=f5e473]:
+                - generic [ref=f5e476]: "4.9"
+                - generic [ref=f5e477]: /5 (410)
+              - generic [ref=f5e478]:
+                - text: Per person from
+                - generic [ref=f5e479]:
+                  - generic [ref=f5e480]: IDR 11.500.000
+                  - generic [ref=f5e481]: IDR 9.200.000
+        - button "Previous" [ref=f5e482]
+        - button "Next" [ref=f5e485]
+    - generic [ref=f5e488]:
+      - generic [ref=f5e489]:
+        - heading "Popular destinations 📌" [level=2] [ref=f5e491]
+        - link "See all!" [ref=f5e492] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f5e493]:
+        - generic [ref=f5e494]:
+          - generic [ref=f5e498]:
+            - paragraph [ref=f5e499]: Indonesia
+            - heading "Bali" [level=3] [ref=f5e500]
+          - generic [ref=f5e504]:
+            - paragraph [ref=f5e505]: Indonesia
+            - heading "Labuan Bajo" [level=3] [ref=f5e506]
+          - generic [ref=f5e510]:
+            - paragraph [ref=f5e511]: Indonesia
+            - heading "Yogyakarta" [level=3] [ref=f5e512]
+          - generic [ref=f5e516]:
+            - paragraph [ref=f5e517]: Indonesia
+            - heading "Lombok" [level=3] [ref=f5e518]
+          - generic [ref=f5e522]:
+            - paragraph [ref=f5e523]: Indonesia
+            - heading "Raja Ampat" [level=3] [ref=f5e524]
+          - generic [ref=f5e528]:
+            - paragraph [ref=f5e529]: Indonesia
+            - heading "Bromo" [level=3] [ref=f5e530]
+          - generic [ref=f5e534]:
+            - paragraph [ref=f5e535]: Indonesia
+            - heading "Jakarta" [level=3] [ref=f5e536]
+          - generic [ref=f5e540]:
+            - paragraph [ref=f5e541]: Indonesia
+            - heading "Bandung" [level=3] [ref=f5e542]
+        - button "Previous" [ref=f5e543]
+        - button "Next" [ref=f5e546]
+    - generic [ref=f5e549]:
+      - generic [ref=f5e550]:
+        - generic [ref=f5e551]:
+          - paragraph [ref=f5e552]: eVOA 🛂
+          - heading "Electronic Visa on Arrival, made easy" [level=2] [ref=f5e553]
+        - link "Check eligibility" [ref=f5e554] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f5e555]:
+        - button "All" [ref=f5e556]
+        - button "Tourist" [ref=f5e557]
+        - button "Business" [ref=f5e558]
+        - button "Express" [ref=f5e559]
+        - button "Transit" [ref=f5e560]
+      - generic [ref=f5e561]:
+        - generic [ref=f5e562]:
+          - generic [ref=f5e563]:
+            - generic [ref=f5e564]:
+              - heading "Tourist eVOA" [level=3] [ref=f5e565]
+              - generic [ref=f5e566]: Most popular
+            - paragraph [ref=f5e567]: Indonesia
+            - list [ref=f5e571]:
+              - listitem [ref=f5e572]: Stay up to 30 days
+              - listitem [ref=f5e575]: Processing in 24 hours
+            - generic [ref=f5e579]:
+              - text: From
+              - generic [ref=f5e581]:
+                - text: IDR 500.000
+                - generic [ref=f5e582]: /person
+          - generic [ref=f5e583]:
+            - heading "Extendable eVOA" [level=3] [ref=f5e585]
+            - paragraph [ref=f5e586]: Indonesia
+            - list [ref=f5e590]:
+              - listitem [ref=f5e591]: Stay up to 30 + 30 days
+              - listitem [ref=f5e594]: Processing in 24 hours
+            - generic [ref=f5e598]:
+              - text: From
+              - generic [ref=f5e600]:
+                - text: IDR 750.000
+                - generic [ref=f5e601]: /person
+          - generic [ref=f5e602]:
+            - heading "Business eVOA" [level=3] [ref=f5e604]
+            - paragraph [ref=f5e605]: Indonesia
+            - list [ref=f5e609]:
+              - listitem [ref=f5e610]: Stay up to 60 days
+              - listitem [ref=f5e613]: Processing in 48 hours
+            - generic [ref=f5e617]:
+              - text: From
+              - generic [ref=f5e619]:
+                - text: IDR 1.200.000
+                - generic [ref=f5e620]: /person
+          - generic [ref=f5e621]:
+            - generic [ref=f5e622]:
+              - heading "Express eVOA" [level=3] [ref=f5e623]
+              - generic [ref=f5e624]: Fastest
+            - paragraph [ref=f5e625]: Indonesia
+            - list [ref=f5e629]:
+              - listitem [ref=f5e630]: Stay up to 30 days
+              - listitem [ref=f5e633]: Processing in 4 hours
+            - generic [ref=f5e637]:
+              - text: From
+              - generic [ref=f5e639]:
+                - text: IDR 900.000
+                - generic [ref=f5e640]: /person
+          - generic [ref=f5e641]:
+            - heading "Transit eVOA" [level=3] [ref=f5e643]
+            - paragraph [ref=f5e644]: Indonesia
+            - list [ref=f5e648]:
+              - listitem [ref=f5e649]: Stay up to 7 days
+              - listitem [ref=f5e652]: Processing in 24 hours
+            - generic [ref=f5e656]:
+              - text: From
+              - generic [ref=f5e658]:
+                - text: IDR 350.000
+                - generic [ref=f5e659]: /person
+        - button "Previous" [ref=f5e660]
+        - button "Next" [ref=f5e663]
+    - generic [ref=f5e667]:
+      - generic [ref=f5e668]:
+        - heading "Apply for your eVOA online in minutes" [level=3] [ref=f5e669]
+        - paragraph [ref=f5e670]: No embassy visit — get approved and receive it by email
+      - button "Apply now" [ref=f5e671]
+    - generic [ref=f5e672]:
+      - generic [ref=f5e673]:
+        - heading "Check out the promos before you go 🤩" [level=2] [ref=f5e675]
+        - link "See all promos" [ref=f5e676] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f5e677]:
+        - button "All" [ref=f5e678]
+        - button "Airport VIP" [ref=f5e679]
+        - button "Transport" [ref=f5e680]
+        - button "Tour Package" [ref=f5e681]
+        - button "eVOA" [ref=f5e682]
+      - generic [ref=f5e683]:
+        - generic [ref=f5e684]:
+          - generic [ref=f5e685]:
+            - heading "VIP Welcome Offer" [level=3] [ref=f5e686]
+            - paragraph [ref=f5e687]: 20% off your first Meet & Greet
+          - generic [ref=f5e688]:
+            - heading "Transfer Bundle" [level=3] [ref=f5e689]
+            - paragraph [ref=f5e690]: Save when you add a private transfer
+          - generic [ref=f5e691]:
+            - heading "Tour Early Bird" [level=3] [ref=f5e692]
+            - paragraph [ref=f5e693]: Book 30 days ahead and save more
+          - generic [ref=f5e694]:
+            - heading "eVOA Express Deal" [level=3] [ref=f5e695]
+            - paragraph [ref=f5e696]: Priority processing at a special rate
+          - generic [ref=f5e697]:
+            - heading "Family VIP Cashback" [level=3] [ref=f5e698]
+            - paragraph [ref=f5e699]: Extra cashback for family packages
+        - button "Previous" [ref=f5e700]
+        - button "Next" [ref=f5e703]
+    - generic [ref=f5e707]:
+      - generic [ref=f5e708]:
+        - heading "Booking VIP for Corporate" [level=3] [ref=f5e709]
+        - paragraph [ref=f5e710]: VIP travel management for your executives and guests
+      - button "Learn more" [ref=f5e711]
+    - generic [ref=f5e712]:
+      - generic [ref=f5e713]:
+        - heading "Travel guides & tips 📖" [level=2] [ref=f5e715]
+        - link "See all" [ref=f5e716] [cursor=pointer]:
+          - /url: "#"
+      - generic [ref=f5e717]:
+        - generic [ref=f5e718]:
+          - generic [ref=f5e721]:
+            - paragraph [ref=f5e722]: VIP Travel
+            - heading "What to Expect from an Airport Meet & Greet" [level=3] [ref=f5e723]
+          - generic [ref=f5e726]:
+            - paragraph [ref=f5e727]: Visa & Entry
+            - heading "A Guide to Indonesia's eVOA for First-Timers" [level=3] [ref=f5e728]
+          - generic [ref=f5e731]:
+            - paragraph [ref=f5e732]: Transport
+            - heading "Choosing the Right Private Transfer" [level=3] [ref=f5e733]
+          - generic [ref=f5e736]:
+            - paragraph [ref=f5e737]: Tour Package
+            - heading "Five Tours Worth Taking This Year" [level=3] [ref=f5e738]
+          - generic [ref=f5e741]:
+            - paragraph [ref=f5e742]: VIP Travel
+            - heading "Fast Track vs. Standard Immigration" [level=3] [ref=f5e743]
+        - button "Previous" [ref=f5e744]
+        - button "Next" [ref=f5e747]
+    - generic [ref=f5e751]:
+      - generic [ref=f5e752]:
+        - heading "Travel Like a VIP, From Arrival to Departure" [level=2] [ref=f5e753]
+        - generic [ref=f5e754]:
+          - generic [ref=f5e755]:
+            - heading "Seamless Airport Experience" [level=3] [ref=f5e756]
+            - paragraph [ref=f5e757]: Let our team handle the queues, paperwork and luggage so you can glide through the airport with ease.
+          - generic [ref=f5e758]:
+            - heading "Private, On-Time Transport" [level=3] [ref=f5e759]
+            - paragraph [ref=f5e760]: Professional chauffeurs and well-maintained vehicles get you where you need to be, comfortably and on schedule.
+          - generic [ref=f5e761]:
+            - heading "Curated Tour Packages" [level=3] [ref=f5e762]
+            - paragraph [ref=f5e763]: Explore Indonesia's best destinations with itineraries designed for comfort, discovery and great value.
+      - generic [ref=f5e764]:
+        - heading "Simple eVOA, Stress-Free Entry" [level=2] [ref=f5e765]
+        - generic [ref=f5e766]:
+          - generic [ref=f5e767]:
+            - heading "Apply Online in Minutes" [level=3] [ref=f5e768]
+            - paragraph [ref=f5e769]: Submit your details and documents from anywhere — no embassy visit required.
+          - generic [ref=f5e770]:
+            - heading "Fast Processing" [level=3] [ref=f5e771]
+            - paragraph [ref=f5e772]: Choose standard or express processing and receive your eVOA by email, ready to show on arrival.
+          - generic [ref=f5e773]:
+            - heading "24/7 Support" [level=3] [ref=f5e774]
+            - paragraph [ref=f5e775]: Our concierge team is available around the clock to help with every step of your trip.
+      - generic [ref=f5e776]:
+        - heading "Book Cheap Flight Tickets to Your Favorite Destinations" [level=2] [ref=f5e777]
+        - paragraph [ref=f5e778]: Planning your next getaway has never been easier. Compare fares across airlines, pick the schedule that fits your plans, and lock in the best price for domestic and international routes. Whether you are travelling for business or leisure, you will find flexible options, transparent pricing, and secure payment — all in one place.
+      - generic [ref=f5e779]:
+        - generic [ref=f5e780]:
+          - heading "Easy and Simple Installment" [level=2] [ref=f5e781]
+          - paragraph [ref=f5e782]:
+            - text: Split your booking into affordable monthly payments and travel now, pay later.
+            - link "More" [ref=f5e783] [cursor=pointer]:
+              - /url: "#"
+        - generic [ref=f5e784]:
+          - heading "Our Partners" [level=2] [ref=f5e785]
+          - paragraph [ref=f5e786]:
+            - text: We work with trusted airlines, hotels and travel providers to bring you reliable service everywhere you go.
+            - link "More" [ref=f5e787] [cursor=pointer]:
+              - /url: "#"
+    - generic [ref=f5e788]:
+      - heading "Our Recommendations" [level=2] [ref=f5e789]
+      - generic [ref=f5e790]:
+        - button "Airport VIP" [ref=f5e791]
+        - button "Transport" [ref=f5e792]
+        - button "Tour Package" [ref=f5e793]
+        - button "eVOA" [ref=f5e794]
+        - button "Bali" [ref=f5e795]
+        - button "Jakarta" [ref=f5e796]
+      - generic [ref=f5e797]:
+        - link "Meet & Greet at Soekarno-Hatta" [ref=f5e798] [cursor=pointer]:
+          - /url: "#"
+        - link "Fast Track at Ngurah Rai Bali" [ref=f5e799] [cursor=pointer]:
+          - /url: "#"
+        - link "Premium Lounge Jakarta" [ref=f5e800] [cursor=pointer]:
+          - /url: "#"
+        - link "Family VIP Package" [ref=f5e801] [cursor=pointer]:
+          - /url: "#"
+        - link "Private Transfer in Bali" [ref=f5e802] [cursor=pointer]:
+          - /url: "#"
+        - link "Airport Transfer Jakarta" [ref=f5e803] [cursor=pointer]:
+          - /url: "#"
+        - link "Chauffeur Service Surabaya" [ref=f5e804] [cursor=pointer]:
+          - /url: "#"
+        - link "Hourly Car Hire" [ref=f5e805] [cursor=pointer]:
+          - /url: "#"
+        - link "Bali Highlights Tour" [ref=f5e806] [cursor=pointer]:
+          - /url: "#"
+        - link "Komodo Sailing Trip" [ref=f5e807] [cursor=pointer]:
+          - /url: "#"
+        - link "Yogyakarta Heritage Tour" [ref=f5e808] [cursor=pointer]:
+          - /url: "#"
+        - link "Tourist eVOA Indonesia" [ref=f5e809] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=f5e810]:
+      - heading "Explore Our Services" [level=2] [ref=f5e811]
+      - generic [ref=f5e812]:
+        - button "Airport VIP" [ref=f5e813]
+        - button "Transport" [ref=f5e814]
+        - button "Tour Package" [ref=f5e815]
+        - button "eVOA" [ref=f5e816]
+      - generic [ref=f5e817]:
+        - link "Airport VIP Service Jakarta" [ref=f5e818] [cursor=pointer]:
+          - /url: "#"
+        - link "Airport VIP Service Bali" [ref=f5e819] [cursor=pointer]:
+          - /url: "#"
+        - link "Airport VIP Service Surabaya" [ref=f5e820] [cursor=pointer]:
+          - /url: "#"
+        - link "Airport VIP Service Medan" [ref=f5e821] [cursor=pointer]:
+          - /url: "#"
+        - link "Private Transport Bali" [ref=f5e822] [cursor=pointer]:
+          - /url: "#"
+        - link "Private Transport Jakarta" [ref=f5e823] [cursor=pointer]:
+          - /url: "#"
+        - link "Group Van Transfer" [ref=f5e824] [cursor=pointer]:
+          - /url: "#"
+        - link "Luxury Limousine Service" [ref=f5e825] [cursor=pointer]:
+          - /url: "#"
+        - link "Tour Package Bali" [ref=f5e826] [cursor=pointer]:
+          - /url: "#"
+        - link "Tour Package Lombok" [ref=f5e827] [cursor=pointer]:
+          - /url: "#"
+        - link "Tour Package Labuan Bajo" [ref=f5e828] [cursor=pointer]:
+          - /url: "#"
+        - link "Tour Package Yogyakarta" [ref=f5e829] [cursor=pointer]:
+          - /url: "#"
+        - link "eVOA Indonesia 30 Days" [ref=f5e830] [cursor=pointer]:
+          - /url: "#"
+        - link "Business eVOA" [ref=f5e831] [cursor=pointer]:
+          - /url: "#"
+        - link "Express eVOA" [ref=f5e832] [cursor=pointer]:
+          - /url: "#"
+        - link "Transit eVOA" [ref=f5e833] [cursor=pointer]:
+          - /url: "#"
+    - contentinfo [ref=f5e834]:
+      - generic [ref=f5e835]:
+        - generic [ref=f5e836]:
+          - generic [ref=f5e837]:
+            - generic [ref=f5e838]:
+              - generic [ref=f5e839]: tiket
+              - generic [ref=f5e841]: com
+            - generic [ref=f5e842]:
+              - paragraph [ref=f5e843]: "Chat: Chat with us"
+              - paragraph [ref=f5e844]: "Email: cs@example.com"
+              - paragraph [ref=f5e845]: Call Center:+62 000 0000 000
+          - generic [ref=f5e846]:
+            - heading "Services" [level=3] [ref=f5e847]
+            - list [ref=f5e848]:
+              - listitem [ref=f5e849]:
+                - link "Airport VIP Service" [ref=f5e850] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e851]:
+                - link "Transport" [ref=f5e852] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e853]:
+                - link "Tour Package" [ref=f5e854] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e855]:
+                - link "eVOA" [ref=f5e856] [cursor=pointer]:
+                  - /url: "#"
+          - generic [ref=f5e857]:
+            - heading "Company" [level=3] [ref=f5e858]
+            - list [ref=f5e859]:
+              - listitem [ref=f5e860]:
+                - link "About Us" [ref=f5e861] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e862]:
+                - link "How It Works" [ref=f5e863] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e864]:
+                - link "Careers" [ref=f5e865] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e866]:
+                - link "Partners" [ref=f5e867] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e868]:
+                - link "Contact" [ref=f5e869] [cursor=pointer]:
+                  - /url: "#"
+          - generic [ref=f5e870]:
+            - heading "Support" [level=3] [ref=f5e871]
+            - list [ref=f5e872]:
+              - listitem [ref=f5e873]:
+                - link "Help Center" [ref=f5e874] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e875]:
+                - link "FAQ" [ref=f5e876] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e877]:
+                - link "Privacy Policy" [ref=f5e878] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e879]:
+                - link "Terms & Conditions" [ref=f5e880] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f5e881]:
+                - link "Refund Policy" [ref=f5e882] [cursor=pointer]:
+                  - /url: "#"
+          - generic [ref=f5e883]:
+            - heading "Cheaper on the app" [level=3] [ref=f5e884]
+            - generic [ref=f5e885]:
+              - generic [ref=f5e886]: Download onApp Store
+              - generic [ref=f5e889]: Download onGoogle Play
+        - generic [ref=f5e892]:
+          - generic [ref=f5e893]:
+            - heading "Partner" [level=3] [ref=f5e894]
+            - paragraph [ref=f5e897]: Official travel marketplace partner
+          - generic [ref=f5e898]:
+            - heading "Secure your transaction" [level=3] [ref=f5e899]
+            - generic [ref=f5e900]:
+              - generic [ref=f5e901]: Visa
+              - generic [ref=f5e902]: Mastercard
+              - generic [ref=f5e903]: JCB
+              - generic [ref=f5e904]: Amex
+          - generic [ref=f5e905]:
+            - heading "Awards" [level=3] [ref=f5e906]
+            - generic [ref=f5e907]:
+              - generic [ref=f5e908]: IATA
+              - generic [ref=f5e909]: Top Brand
+              - generic [ref=f5e910]: Superbrands
+          - generic [ref=f5e911]:
+            - heading "Follow us" [level=3] [ref=f5e912]
+            - generic [ref=f5e913]:
+              - link "Facebook" [ref=f5e914] [cursor=pointer]:
+                - /url: "#"
+                - text: F
+              - link "Twitter" [ref=f5e915] [cursor=pointer]:
+                - /url: "#"
+                - text: T
+              - link "LinkedIn" [ref=f5e916] [cursor=pointer]:
+                - /url: "#"
+                - text: L
+              - link "YouTube" [ref=f5e917] [cursor=pointer]:
+                - /url: "#"
+                - text: "Y"
+              - link "Instagram" [ref=f5e918] [cursor=pointer]:
+                - /url: "#"
+                - text: I
+              - link "TikTok" [ref=f5e919] [cursor=pointer]:
+                - /url: "#"
+                - text: T
+        - paragraph [ref=f5e920]: © 2011-2026 Booking VIP Demo. This is an educational UI clone — not affiliated with tiket.com.
+    - generic [ref=f5e922]:
+      - button "Close" [ref=f5e923]
+      - paragraph [ref=f5e927]: Get 20% off your first VIP service with “VIPWELCOME”!
+      - button "Claim" [ref=f5e928]
+  - button "Open Next.js Dev Tools" [ref=f5e934] [cursor=pointer]
+  - alert [ref=f5e938]

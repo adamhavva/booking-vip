@@ -1,0 +1,1145 @@
+- generic [ref=f3e2]:
+  - banner [ref=f3e3]:
+    - generic [ref=f3e5]:
+      - link "Promo" [ref=f3e6] [cursor=pointer]:
+        - /url: "#"
+      - link "Be a Partner" [ref=f3e7] [cursor=pointer]:
+        - /url: "#"
+      - link "Tiket Rewards" [ref=f3e8] [cursor=pointer]:
+        - /url: "#"
+      - link "Your Orders" [ref=f3e9] [cursor=pointer]:
+        - /url: "#"
+      - button "EN | IDR" [ref=f3e10]
+    - generic [ref=f3e13]:
+      - link "tiket.com home" [ref=f3e14] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=f3e15]:
+          - generic [ref=f3e16]: tiket
+          - generic [ref=f3e18]: com
+      - textbox "Staycation in Bandung" [ref=f3e20]
+      - navigation [ref=f3e21]:
+        - link "Flights" [ref=f3e22] [cursor=pointer]:
+          - /url: "#"
+        - link "Hotels" [ref=f3e23] [cursor=pointer]:
+          - /url: "#"
+        - link "Villas & Apt." [ref=f3e24] [cursor=pointer]:
+          - /url: "#"
+        - link "To Dos" [ref=f3e25] [cursor=pointer]:
+          - /url: "#"
+        - link "Trains" [ref=f3e26] [cursor=pointer]:
+          - /url: "#"
+        - button "More" [ref=f3e27]
+      - generic [ref=f3e30]:
+        - button "Login" [ref=f3e31]
+        - button "Register" [ref=f3e32]
+  - generic [ref=f3e34]:
+    - generic [ref=f3e35]:
+      - heading "Hey there, going anywhere?" [level=1] [ref=f3e36]
+      - paragraph [ref=f3e37]: tiket.com - One app for your holiday needs.
+    - generic [ref=f3e39]:
+      - generic [ref=f3e40]:
+        - button "F -50% Flights" [ref=f3e41]:
+          - generic [ref=f3e42]:
+            - generic [ref=f3e43]: F
+            - generic [ref=f3e45]: "-50%"
+          - generic [ref=f3e46]: Flights
+        - button "E Events" [ref=f3e47]:
+          - generic [ref=f3e48]: E
+          - generic [ref=f3e51]: Events
+        - button "H -60% Hotels" [ref=f3e52]:
+          - generic [ref=f3e53]:
+            - generic [ref=f3e54]: H
+            - generic [ref=f3e56]: "-60%"
+          - generic [ref=f3e57]: Hotels
+        - button "T -65% To Dos" [ref=f3e58]:
+          - generic [ref=f3e59]:
+            - generic [ref=f3e60]: T
+            - generic [ref=f3e62]: "-65%"
+          - generic [ref=f3e63]: To Dos
+        - button "A -50% Airport Pickup" [ref=f3e64]:
+          - generic [ref=f3e65]:
+            - generic [ref=f3e66]: A
+            - generic [ref=f3e68]: "-50%"
+          - generic [ref=f3e69]: Airport Pickup
+        - button "T -50% Trains" [ref=f3e70]:
+          - generic [ref=f3e71]:
+            - generic [ref=f3e72]: T
+            - generic [ref=f3e74]: "-50%"
+          - generic [ref=f3e75]: Trains
+        - button "V -60% Villas & Apt." [ref=f3e76]:
+          - generic [ref=f3e77]:
+            - generic [ref=f3e78]: V
+            - generic [ref=f3e80]: "-60%"
+          - generic [ref=f3e81]: Villas & Apt.
+        - button "B -50% Bus & Shuttle" [ref=f3e82]:
+          - generic [ref=f3e83]:
+            - generic [ref=f3e84]: B
+            - generic [ref=f3e86]: "-50%"
+          - generic [ref=f3e87]: Bus & Shuttle
+        - button "W -50% Whoosh" [ref=f3e88]:
+          - generic [ref=f3e89]:
+            - generic [ref=f3e90]: W
+            - generic [ref=f3e92]: "-50%"
+          - generic [ref=f3e93]: Whoosh
+        - button "C -75% Car Rentals" [ref=f3e94]:
+          - generic [ref=f3e95]:
+            - generic [ref=f3e96]: C
+            - generic [ref=f3e98]: "-75%"
+          - generic [ref=f3e99]: Car Rentals
+        - button "T Travel Guides" [ref=f3e100]:
+          - generic [ref=f3e101]: T
+          - generic [ref=f3e104]: Travel Guides
+        - button "V New Visa Protect" [ref=f3e105]:
+          - generic [ref=f3e106]:
+            - generic [ref=f3e107]: V
+            - generic [ref=f3e109]: New
+          - generic [ref=f3e110]: Visa Protect
+        - button "G Gift Card" [ref=f3e111]:
+          - generic [ref=f3e112]: G
+          - generic [ref=f3e115]: Gift Card
+        - button "A Affiliate" [ref=f3e116]:
+          - generic [ref=f3e117]: A
+          - generic [ref=f3e120]: Affiliate
+      - button "Scroll categories" [ref=f3e121]
+    - generic [ref=f3e124]:
+      - generic [ref=f3e125]:
+        - button "One way" [ref=f3e126]
+        - button "Round-trip" [ref=f3e128]
+      - generic [ref=f3e131]:
+        - generic [ref=f3e133]:
+          - generic [ref=f3e139]:
+            - generic [ref=f3e140]: From
+            - generic [ref=f3e141]: Jakarta (JKTC)
+          - button [ref=f3e142]
+          - generic [ref=f3e151]:
+            - generic [ref=f3e152]: To
+            - generic [ref=f3e153]: Going Anywhere?
+        - generic [ref=f3e154]:
+          - generic [ref=f3e155]:
+            - generic [ref=f3e161]:
+              - generic [ref=f3e162]: Departure
+              - generic [ref=f3e163]: Tue, 3 Nov 26
+            - generic [ref=f3e169]:
+              - generic [ref=f3e170]: Return - Better deals!
+              - generic [ref=f3e171]: Wed, 4 Nov 26
+          - generic [ref=f3e179]:
+            - generic [ref=f3e180]: Passenger, Class
+            - generic [ref=f3e181]: 1, Economy
+        - button "Let's Search" [ref=f3e182]
+      - generic [ref=f3e183]:
+        - generic [ref=f3e184]: 🏷️
+        - text: Check the promos you can use to make your flight booking cheaper.
+        - link "See promos now!" [ref=f3e185] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=f3e188]:
+    - generic [ref=f3e189]:
+      - heading "Online Travel Week" [level=3] [ref=f3e190]
+      - paragraph [ref=f3e191]: Super mega cashback — only on the app!
+    - button "Download" [ref=f3e192]
+  - generic [ref=f3e193]:
+    - generic [ref=f3e194]:
+      - heading "Special deals 🎉" [level=2] [ref=f3e196]
+      - link "See all" [ref=f3e197] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e198]:
+      - generic [ref=f3e199]:
+        - generic [ref=f3e200]:
+          - heading "Online Travel Week" [level=3] [ref=f3e201]
+          - paragraph [ref=f3e202]: Discounts up to 60% + cashback
+        - generic [ref=f3e203]:
+          - heading "Weekend Flash Sale" [level=3] [ref=f3e204]
+          - paragraph [ref=f3e205]: Flights from selected cities
+        - generic [ref=f3e206]:
+          - heading "Hotel Super Deals" [level=3] [ref=f3e207]
+          - paragraph [ref=f3e208]: Extra 15% off with partner banks
+        - generic [ref=f3e209]:
+          - heading "Train Saver" [level=3] [ref=f3e210]
+          - paragraph [ref=f3e211]: Book early and save more
+        - generic [ref=f3e212]:
+          - heading "Cashback Bonanza" [level=3] [ref=f3e213]
+          - paragraph [ref=f3e214]: Up to IDR 1,000,000 cashback
+      - button "Previous" [ref=f3e215]
+      - button "Next" [ref=f3e218]
+  - generic [ref=f3e221]:
+    - generic [ref=f3e222]:
+      - heading "Check what's popular 🏆" [level=2] [ref=f3e224]
+      - link "See all" [ref=f3e225] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e226]:
+      - button "Attraction" [ref=f3e227]
+      - button "Hotels" [ref=f3e228]
+      - button "Villas & Apt." [ref=f3e229]
+      - button "Playgrounds" [ref=f3e230]
+      - button "Tours" [ref=f3e231]
+      - button "Spa & Beauty" [ref=f3e232]
+    - generic [ref=f3e233]:
+      - generic [ref=f3e234]:
+        - generic [ref=f3e235]:
+          - generic [ref=f3e236]: Disc. 50%
+          - generic [ref=f3e239]:
+            - heading "City Aquarium & Oceanarium" [level=3] [ref=f3e240]
+            - paragraph [ref=f3e241]: North Jakarta
+            - generic [ref=f3e245]:
+              - generic [ref=f3e248]: "4.7"
+              - generic [ref=f3e249]: /5 (1,240)
+            - generic [ref=f3e251]:
+              - generic [ref=f3e252]: IDR 250.000
+              - generic [ref=f3e253]: IDR 125.000
+        - generic [ref=f3e254]:
+          - generic [ref=f3e255]: Instant Pass
+          - generic [ref=f3e258]:
+            - heading "Skyline Cable Car Park" [level=3] [ref=f3e259]
+            - paragraph [ref=f3e260]: Central Jakarta
+            - generic [ref=f3e264]:
+              - generic [ref=f3e267]: "4.6"
+              - generic [ref=f3e268]: /5 (980)
+            - generic [ref=f3e270]:
+              - generic [ref=f3e271]: IDR 180.000
+              - generic [ref=f3e272]: IDR 99.000
+        - generic [ref=f3e276]:
+          - heading "3D Trick Art Museum" [level=3] [ref=f3e277]
+          - paragraph [ref=f3e278]: West Jakarta
+          - generic [ref=f3e282]:
+            - generic [ref=f3e285]: "4.5"
+            - generic [ref=f3e286]: /5 (640)
+          - generic [ref=f3e288]:
+            - generic [ref=f3e289]: IDR 150.000
+            - generic [ref=f3e290]: IDR 89.000
+        - generic [ref=f3e291]:
+          - generic [ref=f3e292]: Disc. 30%
+          - generic [ref=f3e295]:
+            - heading "Ice Skating Arena Mall" [level=3] [ref=f3e296]
+            - paragraph [ref=f3e297]: South Jakarta
+            - generic [ref=f3e301]:
+              - generic [ref=f3e304]: "4.8"
+              - generic [ref=f3e305]: /5 (2,110)
+            - generic [ref=f3e307]:
+              - generic [ref=f3e308]: IDR 200.000
+              - generic [ref=f3e309]: IDR 140.000
+        - generic [ref=f3e313]:
+          - heading "Interactive Space Studio" [level=3] [ref=f3e314]
+          - paragraph [ref=f3e315]: PIK, Jakarta
+          - generic [ref=f3e319]:
+            - generic [ref=f3e322]: "4.4"
+            - generic [ref=f3e323]: /5 (410)
+          - generic [ref=f3e325]:
+            - generic [ref=f3e326]: IDR 220.000
+            - generic [ref=f3e327]: IDR 150.000
+        - generic [ref=f3e331]:
+          - heading "Bird Park & Garden" [level=3] [ref=f3e332]
+          - paragraph [ref=f3e333]: Ancol, Jakarta
+          - generic [ref=f3e337]:
+            - generic [ref=f3e340]: "4.6"
+            - generic [ref=f3e341]: /5 (770)
+          - generic [ref=f3e343]:
+            - generic [ref=f3e344]: IDR 160.000
+            - generic [ref=f3e345]: IDR 95.000
+      - button "Previous" [ref=f3e346]
+      - button "Next" [ref=f3e349]
+  - generic [ref=f3e352]:
+    - generic [ref=f3e353]:
+      - heading "Don't miss these events 🎤" [level=2] [ref=f3e355]
+      - link "See all" [ref=f3e356] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e357]:
+      - generic [ref=f3e358]:
+        - generic [ref=f3e359]:
+          - heading "Cashback Bonanza" [level=3] [ref=f3e360]
+          - paragraph [ref=f3e361]: Up to IDR 1,000,000 cashback
+        - generic [ref=f3e362]:
+          - heading "Train Saver" [level=3] [ref=f3e363]
+          - paragraph [ref=f3e364]: Book early and save more
+        - generic [ref=f3e365]:
+          - heading "Hotel Super Deals" [level=3] [ref=f3e366]
+          - paragraph [ref=f3e367]: Extra 15% off with partner banks
+        - generic [ref=f3e368]:
+          - heading "Weekend Flash Sale" [level=3] [ref=f3e369]
+          - paragraph [ref=f3e370]: Flights from selected cities
+        - generic [ref=f3e371]:
+          - heading "Online Travel Week" [level=3] [ref=f3e372]
+          - paragraph [ref=f3e373]: Discounts up to 60% + cashback
+      - button "Previous" [ref=f3e374]
+      - button "Next" [ref=f3e377]
+  - generic [ref=f3e381]:
+    - generic [ref=f3e382]:
+      - heading "Pilgrimage trips, made possible for everyone" [level=3] [ref=f3e383]
+      - paragraph [ref=f3e384]: Flights and stays starting from great value
+    - button "Find out more" [ref=f3e385]
+  - generic [ref=f3e386]:
+    - generic [ref=f3e387]:
+      - generic [ref=f3e388]:
+        - paragraph [ref=f3e389]: Round-trip flights ✈️
+        - heading "Flights for your long trip" [level=2] [ref=f3e390]
+      - link "See all" [ref=f3e391] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e392]:
+      - generic [ref=f3e393]:
+        - generic [ref=f3e394]:
+          - generic [ref=f3e395]:
+            - generic [ref=f3e396]: SurabayaJeddah
+            - generic [ref=f3e399]: Round trip
+          - paragraph [ref=f3e400]: 12 Dec - 26 Dec 26
+          - generic [ref=f3e401]:
+            - text: Start from
+            - generic [ref=f3e402]:
+              - generic [ref=f3e403]: IDR 18.500.000
+              - generic [ref=f3e404]: IDR 14.200.000
+          - generic [ref=f3e405]: Sample Air • Economy
+        - generic [ref=f3e407]:
+          - generic [ref=f3e408]:
+            - generic [ref=f3e409]: JakartaDammam
+            - generic [ref=f3e412]: Round trip
+          - paragraph [ref=f3e413]: 08 Dec - 20 Dec 26
+          - generic [ref=f3e414]:
+            - text: Start from
+            - generic [ref=f3e415]:
+              - generic [ref=f3e416]: IDR 16.200.000
+              - generic [ref=f3e417]: IDR 12.900.000
+          - generic [ref=f3e418]: Demo Airways • Economy
+        - generic [ref=f3e420]:
+          - generic [ref=f3e421]:
+            - generic [ref=f3e422]: MakassarJeddah
+            - generic [ref=f3e425]: Round trip
+          - paragraph [ref=f3e426]: 15 Dec - 29 Dec 26
+          - generic [ref=f3e427]:
+            - text: Start from
+            - generic [ref=f3e428]:
+              - generic [ref=f3e429]: IDR 19.100.000
+              - generic [ref=f3e430]: IDR 15.300.000
+          - generic [ref=f3e431]: Placeholder Air • Economy
+        - generic [ref=f3e433]:
+          - generic [ref=f3e434]:
+            - generic [ref=f3e435]: YogyakartaJeddah
+            - generic [ref=f3e438]: Round trip
+          - paragraph [ref=f3e439]: 10 Dec - 24 Dec 26
+          - generic [ref=f3e440]:
+            - text: Start from
+            - generic [ref=f3e441]:
+              - generic [ref=f3e442]: IDR 17.800.000
+              - generic [ref=f3e443]: IDR 13.600.000
+          - generic [ref=f3e444]: Sample Air • Economy
+        - generic [ref=f3e446]:
+          - generic [ref=f3e447]:
+            - generic [ref=f3e448]: DenpasarRiyadh
+            - generic [ref=f3e451]: Round trip
+          - paragraph [ref=f3e452]: 05 Dec - 18 Dec 26
+          - generic [ref=f3e453]:
+            - text: Start from
+            - generic [ref=f3e454]:
+              - generic [ref=f3e455]: IDR 20.400.000
+              - generic [ref=f3e456]: IDR 16.100.000
+          - generic [ref=f3e457]: Demo Airways • Economy
+      - button "Previous" [ref=f3e459]
+      - button "Next" [ref=f3e462]
+  - generic [ref=f3e465]:
+    - generic [ref=f3e466]:
+      - generic [ref=f3e467]:
+        - paragraph [ref=f3e468]: One-way flights ✈️
+        - heading "Outbound and back" [level=2] [ref=f3e469]
+      - link "See all" [ref=f3e470] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e471]:
+      - button "Departures" [ref=f3e472]
+      - button "Returns" [ref=f3e473]
+    - generic [ref=f3e474]:
+      - generic [ref=f3e475]:
+        - generic [ref=f3e476]:
+          - generic [ref=f3e477]:
+            - generic [ref=f3e478]: DenpasarRiyadh
+            - generic [ref=f3e481]: One way
+          - paragraph [ref=f3e482]: 05 Dec - 18 Dec 26
+          - generic [ref=f3e483]:
+            - text: Start from
+            - generic [ref=f3e484]:
+              - generic [ref=f3e485]: IDR 20.400.000
+              - generic [ref=f3e486]: IDR 16.100.000
+          - generic [ref=f3e487]: Demo Airways • Economy
+        - generic [ref=f3e489]:
+          - generic [ref=f3e490]:
+            - generic [ref=f3e491]: YogyakartaJeddah
+            - generic [ref=f3e494]: One way
+          - paragraph [ref=f3e495]: 10 Dec - 24 Dec 26
+          - generic [ref=f3e496]:
+            - text: Start from
+            - generic [ref=f3e497]:
+              - generic [ref=f3e498]: IDR 17.800.000
+              - generic [ref=f3e499]: IDR 13.600.000
+          - generic [ref=f3e500]: Sample Air • Economy
+        - generic [ref=f3e502]:
+          - generic [ref=f3e503]:
+            - generic [ref=f3e504]: MakassarJeddah
+            - generic [ref=f3e507]: One way
+          - paragraph [ref=f3e508]: 15 Dec - 29 Dec 26
+          - generic [ref=f3e509]:
+            - text: Start from
+            - generic [ref=f3e510]:
+              - generic [ref=f3e511]: IDR 19.100.000
+              - generic [ref=f3e512]: IDR 15.300.000
+          - generic [ref=f3e513]: Placeholder Air • Economy
+        - generic [ref=f3e515]:
+          - generic [ref=f3e516]:
+            - generic [ref=f3e517]: JakartaDammam
+            - generic [ref=f3e520]: One way
+          - paragraph [ref=f3e521]: 08 Dec - 20 Dec 26
+          - generic [ref=f3e522]:
+            - text: Start from
+            - generic [ref=f3e523]:
+              - generic [ref=f3e524]: IDR 16.200.000
+              - generic [ref=f3e525]: IDR 12.900.000
+          - generic [ref=f3e526]: Demo Airways • Economy
+        - generic [ref=f3e528]:
+          - generic [ref=f3e529]:
+            - generic [ref=f3e530]: SurabayaJeddah
+            - generic [ref=f3e533]: One way
+          - paragraph [ref=f3e534]: 12 Dec - 26 Dec 26
+          - generic [ref=f3e535]:
+            - text: Start from
+            - generic [ref=f3e536]:
+              - generic [ref=f3e537]: IDR 18.500.000
+              - generic [ref=f3e538]: IDR 14.200.000
+          - generic [ref=f3e539]: Sample Air • Economy
+      - button "Previous" [ref=f3e541]
+      - button "Next" [ref=f3e544]
+  - generic [ref=f3e547]:
+    - generic [ref=f3e548]:
+      - heading "Up to 60% off + cashback on hotels" [level=2] [ref=f3e550]
+      - link "See all" [ref=f3e551] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e552]:
+      - button "Garut" [ref=f3e553]
+      - button "Bandung" [ref=f3e554]
+      - button "Bogor" [ref=f3e555]
+      - button "Bali" [ref=f3e556]
+      - button "Surabaya" [ref=f3e557]
+      - button "Family Friendly" [ref=f3e558]
+    - generic [ref=f3e559]:
+      - generic [ref=f3e560]:
+        - generic [ref=f3e561]:
+          - generic [ref=f3e562]:
+            - generic [ref=f3e564]: Price drop!
+            - generic [ref=f3e565]: Top Hotel 1
+          - generic [ref=f3e566]:
+            - heading "Lakeside Resort & Spa" [level=3] [ref=f3e567]
+            - paragraph [ref=f3e568]: Garut, West Java
+            - generic [ref=f3e572]:
+              - generic [ref=f3e575]: "4.7"
+              - generic [ref=f3e576]: /5 (860)
+            - generic [ref=f3e577]:
+              - generic [ref=f3e578]:
+                - generic [ref=f3e579]: IDR 1.200.000
+                - generic [ref=f3e580]: IDR 640.000
+              - text: /night
+        - generic [ref=f3e581]:
+          - generic [ref=f3e582]: Price drop!
+          - generic [ref=f3e585]:
+            - heading "Grand Hillview Hotel" [level=3] [ref=f3e586]
+            - paragraph [ref=f3e587]: Bandung, West Java
+            - generic [ref=f3e591]:
+              - generic [ref=f3e594]: "4.6"
+              - generic [ref=f3e595]: /5 (1,230)
+            - generic [ref=f3e596]:
+              - generic [ref=f3e597]:
+                - generic [ref=f3e598]: IDR 980.000
+                - generic [ref=f3e599]: IDR 520.000
+              - text: /night
+        - generic [ref=f3e603]:
+          - heading "Garden Terrace Suites" [level=3] [ref=f3e604]
+          - paragraph [ref=f3e605]: Bogor, West Java
+          - generic [ref=f3e609]:
+            - generic [ref=f3e612]: "4.5"
+            - generic [ref=f3e613]: /5 (540)
+          - generic [ref=f3e614]:
+            - generic [ref=f3e615]:
+              - generic [ref=f3e616]: IDR 760.000
+              - generic [ref=f3e617]: IDR 410.000
+            - text: /night
+        - generic [ref=f3e618]:
+          - generic [ref=f3e619]:
+            - generic [ref=f3e621]: Price drop!
+            - generic [ref=f3e622]: Top Hotel 2
+          - generic [ref=f3e623]:
+            - heading "Riverside Premiere Hotel" [level=3] [ref=f3e624]
+            - paragraph [ref=f3e625]: Sukabumi, West Java
+            - generic [ref=f3e629]:
+              - generic [ref=f3e632]: "4.8"
+              - generic [ref=f3e633]: /5 (1,980)
+            - generic [ref=f3e634]:
+              - generic [ref=f3e635]:
+                - generic [ref=f3e636]: IDR 1.500.000
+                - generic [ref=f3e637]: IDR 820.000
+              - text: /night
+        - generic [ref=f3e641]:
+          - heading "Highland Boutique Inn" [level=3] [ref=f3e642]
+          - paragraph [ref=f3e643]: Lembang, Bandung
+          - generic [ref=f3e647]:
+            - generic [ref=f3e650]: "4.4"
+            - generic [ref=f3e651]: /5 (320)
+          - generic [ref=f3e652]:
+            - generic [ref=f3e653]:
+              - generic [ref=f3e654]: IDR 640.000
+              - generic [ref=f3e655]: IDR 350.000
+            - text: /night
+      - button "Previous" [ref=f3e656]
+      - button "Next" [ref=f3e659]
+  - generic [ref=f3e662]:
+    - generic [ref=f3e663]:
+      - heading "Up to 60% off on hotels abroad" [level=2] [ref=f3e665]
+      - link "See all" [ref=f3e666] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e667]:
+      - button "Singapore" [ref=f3e668]
+      - button "Kuala Lumpur" [ref=f3e669]
+      - button "Bangkok" [ref=f3e670]
+      - button "Ho Chi Minh" [ref=f3e671]
+      - button "Hong Kong" [ref=f3e672]
+      - button "Tokyo" [ref=f3e673]
+    - generic [ref=f3e674]:
+      - generic [ref=f3e675]:
+        - generic [ref=f3e676]:
+          - generic [ref=f3e677]: Price drop!
+          - generic [ref=f3e680]:
+            - heading "Harbour View Residences" [level=3] [ref=f3e681]
+            - paragraph [ref=f3e682]: Singapore
+            - generic [ref=f3e686]:
+              - generic [ref=f3e689]: "4.7"
+              - generic [ref=f3e690]: /5 (2,100)
+            - generic [ref=f3e691]:
+              - generic [ref=f3e692]:
+                - generic [ref=f3e693]: IDR 2.400.000
+                - generic [ref=f3e694]: IDR 1.450.000
+              - text: /night
+        - generic [ref=f3e698]:
+          - heading "Central Capsule Stay" [level=3] [ref=f3e699]
+          - paragraph [ref=f3e700]: Chinatown, Singapore
+          - generic [ref=f3e704]:
+            - generic [ref=f3e707]: "4.3"
+            - generic [ref=f3e708]: /5 (760)
+          - generic [ref=f3e709]:
+            - generic [ref=f3e710]:
+              - generic [ref=f3e711]: IDR 900.000
+              - generic [ref=f3e712]: IDR 520.000
+            - text: /night
+        - generic [ref=f3e713]:
+          - generic [ref=f3e714]: Price drop!
+          - generic [ref=f3e717]:
+            - heading "Riverside Grand Hotel" [level=3] [ref=f3e718]
+            - paragraph [ref=f3e719]: Bangkok, Thailand
+            - generic [ref=f3e723]:
+              - generic [ref=f3e726]: "4.6"
+              - generic [ref=f3e727]: /5 (1,540)
+            - generic [ref=f3e728]:
+              - generic [ref=f3e729]:
+                - generic [ref=f3e730]: IDR 1.800.000
+                - generic [ref=f3e731]: IDR 1.100.000
+              - text: /night
+        - generic [ref=f3e735]:
+          - heading "Metro Comfort Suites" [level=3] [ref=f3e736]
+          - paragraph [ref=f3e737]: Kuala Lumpur, Malaysia
+          - generic [ref=f3e741]:
+            - generic [ref=f3e744]: "4.5"
+            - generic [ref=f3e745]: /5 (980)
+          - generic [ref=f3e746]:
+            - generic [ref=f3e747]:
+              - generic [ref=f3e748]: IDR 1.200.000
+              - generic [ref=f3e749]: IDR 740.000
+            - text: /night
+        - generic [ref=f3e753]:
+          - heading "Bayfront Signature Hotel" [level=3] [ref=f3e754]
+          - paragraph [ref=f3e755]: Hong Kong
+          - generic [ref=f3e759]:
+            - generic [ref=f3e762]: "4.8"
+            - generic [ref=f3e763]: /5 (2,660)
+          - generic [ref=f3e764]:
+            - generic [ref=f3e765]:
+              - generic [ref=f3e766]: IDR 3.200.000
+              - generic [ref=f3e767]: IDR 2.050.000
+            - text: /night
+      - button "Previous" [ref=f3e768]
+      - button "Next" [ref=f3e771]
+  - generic [ref=f3e774]:
+    - generic [ref=f3e775]:
+      - heading "Up to 60% off on Villas & Apt." [level=2] [ref=f3e777]
+      - link "See all" [ref=f3e778] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e779]:
+      - generic [ref=f3e780]:
+        - generic [ref=f3e781]:
+          - generic [ref=f3e782]:
+            - generic [ref=f3e784]: Cabin
+            - generic [ref=f3e785]: Top Stay 1
+          - generic [ref=f3e786]:
+            - heading "Pinewood Cabin Retreat" [level=3] [ref=f3e787]
+            - paragraph [ref=f3e788]: Malang
+            - generic [ref=f3e792]:
+              - generic [ref=f3e795]: "4.8"
+              - generic [ref=f3e796]: /5 (540)
+            - generic [ref=f3e797]:
+              - generic [ref=f3e798]:
+                - generic [ref=f3e799]: IDR 900.000
+                - generic [ref=f3e800]: IDR 540.000
+              - text: /night
+        - generic [ref=f3e801]:
+          - generic [ref=f3e802]: Glamping
+          - generic [ref=f3e805]:
+            - heading "Lakeside Glamping Camp" [level=3] [ref=f3e806]
+            - paragraph [ref=f3e807]: Kintamani, Bali
+            - generic [ref=f3e811]:
+              - generic [ref=f3e814]: "4.7"
+              - generic [ref=f3e815]: /5 (420)
+            - generic [ref=f3e816]:
+              - generic [ref=f3e817]:
+                - generic [ref=f3e818]: IDR 750.000
+                - generic [ref=f3e819]: IDR 460.000
+              - text: /night
+        - generic [ref=f3e820]:
+          - generic [ref=f3e821]:
+            - generic [ref=f3e823]: Villa
+            - generic [ref=f3e824]: Top Stay 2
+          - generic [ref=f3e825]:
+            - heading "Hilltop Private Villa" [level=3] [ref=f3e826]
+            - paragraph [ref=f3e827]: Puncak, Bogor
+            - generic [ref=f3e831]:
+              - generic [ref=f3e834]: "4.9"
+              - generic [ref=f3e835]: /5 (880)
+            - generic [ref=f3e836]:
+              - generic [ref=f3e837]:
+                - generic [ref=f3e838]: IDR 2.200.000
+                - generic [ref=f3e839]: IDR 1.350.000
+              - text: /night
+        - generic [ref=f3e840]:
+          - generic [ref=f3e841]: Cottage
+          - generic [ref=f3e844]:
+            - heading "Riverside Cottage" [level=3] [ref=f3e845]
+            - paragraph [ref=f3e846]: Ubud, Bali
+            - generic [ref=f3e850]:
+              - generic [ref=f3e853]: "4.6"
+              - generic [ref=f3e854]: /5 (360)
+            - generic [ref=f3e855]:
+              - generic [ref=f3e856]:
+                - generic [ref=f3e857]: IDR 1.100.000
+                - generic [ref=f3e858]: IDR 680.000
+              - text: /night
+        - generic [ref=f3e859]:
+          - generic [ref=f3e860]: Apartment
+          - generic [ref=f3e863]:
+            - heading "City Garden Apartment" [level=3] [ref=f3e864]
+            - paragraph [ref=f3e865]: Bandung
+            - generic [ref=f3e869]:
+              - generic [ref=f3e872]: "4.5"
+              - generic [ref=f3e873]: /5 (290)
+            - generic [ref=f3e874]:
+              - generic [ref=f3e875]:
+                - generic [ref=f3e876]: IDR 600.000
+                - generic [ref=f3e877]: IDR 380.000
+              - text: /night
+      - button "Previous" [ref=f3e878]
+      - button "Next" [ref=f3e881]
+  - generic [ref=f3e884]:
+    - generic [ref=f3e885]:
+      - heading "Explore more events!" [level=2] [ref=f3e887]
+      - link "See all" [ref=f3e888] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e889]:
+      - generic [ref=f3e890]:
+        - generic [ref=f3e891]:
+          - heading "Online Travel Week" [level=3] [ref=f3e892]
+          - paragraph [ref=f3e893]: Discounts up to 60% + cashback
+        - generic [ref=f3e894]:
+          - heading "Weekend Flash Sale" [level=3] [ref=f3e895]
+          - paragraph [ref=f3e896]: Flights from selected cities
+        - generic [ref=f3e897]:
+          - heading "Hotel Super Deals" [level=3] [ref=f3e898]
+          - paragraph [ref=f3e899]: Extra 15% off with partner banks
+        - generic [ref=f3e900]:
+          - heading "Train Saver" [level=3] [ref=f3e901]
+          - paragraph [ref=f3e902]: Book early and save more
+        - generic [ref=f3e903]:
+          - heading "Cashback Bonanza" [level=3] [ref=f3e904]
+          - paragraph [ref=f3e905]: Up to IDR 1,000,000 cashback
+      - button "Previous" [ref=f3e906]
+      - button "Next" [ref=f3e909]
+  - generic [ref=f3e912]:
+    - generic [ref=f3e913]:
+      - heading "Budget road trips by bus and shuttle" [level=2] [ref=f3e915]
+      - link "Check More Routes" [ref=f3e916] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e917]:
+      - button "Regular Bus" [ref=f3e918]
+      - button "Sleeper Bus" [ref=f3e919]
+      - button "Shuttle" [ref=f3e920]
+    - generic [ref=f3e921]:
+      - generic [ref=f3e922]:
+        - generic [ref=f3e923]:
+          - generic [ref=f3e924]: Disc. 50%
+          - generic [ref=f3e925]:
+            - text: Jakarta
+            - generic [ref=f3e926]: →
+            - text: Malang
+          - paragraph [ref=f3e927]: Sample Trans
+          - generic [ref=f3e928]: "4.5"
+          - generic [ref=f3e932]:
+            - generic [ref=f3e933]: IDR 320.000
+            - generic [ref=f3e934]: IDR 220.000
+        - generic [ref=f3e935]:
+          - generic [ref=f3e936]:
+            - text: Jakarta
+            - generic [ref=f3e937]: →
+            - text: Surabaya
+          - paragraph [ref=f3e938]: Demo Lines
+          - generic [ref=f3e939]: "4.4"
+          - generic [ref=f3e943]:
+            - generic [ref=f3e944]: IDR 300.000
+            - generic [ref=f3e945]: IDR 210.000
+        - generic [ref=f3e946]:
+          - generic [ref=f3e947]: 10.10 Promo
+          - generic [ref=f3e948]:
+            - text: Jakarta
+            - generic [ref=f3e949]: →
+            - text: Yogyakarta
+          - paragraph [ref=f3e950]: Placeholder Bus
+          - generic [ref=f3e951]: "4.6"
+          - generic [ref=f3e955]:
+            - generic [ref=f3e956]: IDR 250.000
+            - generic [ref=f3e957]: IDR 175.000
+        - generic [ref=f3e958]:
+          - generic [ref=f3e959]:
+            - text: Malang
+            - generic [ref=f3e960]: →
+            - text: Denpasar
+          - paragraph [ref=f3e961]: Sample Trans
+          - generic [ref=f3e962]: "4.3"
+          - generic [ref=f3e966]:
+            - generic [ref=f3e967]: IDR 400.000
+            - generic [ref=f3e968]: IDR 280.000
+      - button "Previous" [ref=f3e969]
+      - button "Next" [ref=f3e972]
+  - generic [ref=f3e975]:
+    - generic [ref=f3e976]:
+      - heading "Top Destinations, Best Car Rental Deals" [level=2] [ref=f3e978]
+      - link "See all" [ref=f3e979] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e980]:
+      - button "Bandung" [ref=f3e981]
+      - button "Jakarta" [ref=f3e982]
+      - button "Bali" [ref=f3e983]
+      - button "Surabaya" [ref=f3e984]
+      - button "Medan" [ref=f3e985]
+      - button "Yogyakarta" [ref=f3e986]
+    - generic [ref=f3e987]:
+      - generic [ref=f3e988]:
+        - generic [ref=f3e991]:
+          - generic [ref=f3e992]: Self Drive
+          - heading "Compact MPV" [level=3] [ref=f3e993]
+          - generic [ref=f3e994]:
+            - generic [ref=f3e995]: 5 seats
+            - generic [ref=f3e996]: 2 bags
+            - generic [ref=f3e997]: Manual
+          - generic [ref=f3e998]:
+            - text: Starting from
+            - generic [ref=f3e999]: IDR 299.000
+        - generic [ref=f3e1002]:
+          - generic [ref=f3e1003]: With Driver
+          - heading "Family SUV" [level=3] [ref=f3e1004]
+          - generic [ref=f3e1005]:
+            - generic [ref=f3e1006]: 7 seats
+            - generic [ref=f3e1007]: 3 bags
+            - generic [ref=f3e1008]: Automatic
+          - generic [ref=f3e1009]:
+            - text: Starting from
+            - generic [ref=f3e1010]: IDR 549.000
+        - generic [ref=f3e1013]:
+          - generic [ref=f3e1014]: Self Drive
+          - heading "City Hatchback" [level=3] [ref=f3e1015]
+          - generic [ref=f3e1016]:
+            - generic [ref=f3e1017]: 4 seats
+            - generic [ref=f3e1018]: 1 bags
+            - generic [ref=f3e1019]: Automatic
+          - generic [ref=f3e1020]:
+            - text: Starting from
+            - generic [ref=f3e1021]: IDR 259.000
+        - generic [ref=f3e1024]:
+          - generic [ref=f3e1025]: With Driver
+          - heading "Premium Sedan" [level=3] [ref=f3e1026]
+          - generic [ref=f3e1027]:
+            - generic [ref=f3e1028]: 4 seats
+            - generic [ref=f3e1029]: 2 bags
+            - generic [ref=f3e1030]: Automatic
+          - generic [ref=f3e1031]:
+            - text: Starting from
+            - generic [ref=f3e1032]: IDR 799.000
+      - button "Previous" [ref=f3e1033]
+      - button "Next" [ref=f3e1036]
+  - generic [ref=f3e1039]:
+    - generic [ref=f3e1040]:
+      - heading "Check out the promos before you go 🤩" [level=2] [ref=f3e1042]
+      - link "See all promos" [ref=f3e1043] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e1044]:
+      - button "All" [ref=f3e1045]
+      - button "Flights" [ref=f3e1046]
+      - button "Hotels" [ref=f3e1047]
+      - button "Villa & Apt" [ref=f3e1048]
+      - button "To Dos" [ref=f3e1049]
+      - button "Trains" [ref=f3e1050]
+      - button "Bus & Shuttle" [ref=f3e1051]
+      - button "Car Rentals" [ref=f3e1052]
+      - button "Rewards" [ref=f3e1053]
+    - generic [ref=f3e1054]:
+      - generic [ref=f3e1055]:
+        - generic [ref=f3e1056]:
+          - heading "Online Travel Week" [level=3] [ref=f3e1057]
+          - paragraph [ref=f3e1058]: Discounts up to 60% + cashback
+        - generic [ref=f3e1059]:
+          - heading "Weekend Flash Sale" [level=3] [ref=f3e1060]
+          - paragraph [ref=f3e1061]: Flights from selected cities
+        - generic [ref=f3e1062]:
+          - heading "Hotel Super Deals" [level=3] [ref=f3e1063]
+          - paragraph [ref=f3e1064]: Extra 15% off with partner banks
+        - generic [ref=f3e1065]:
+          - heading "Train Saver" [level=3] [ref=f3e1066]
+          - paragraph [ref=f3e1067]: Book early and save more
+        - generic [ref=f3e1068]:
+          - heading "Cashback Bonanza" [level=3] [ref=f3e1069]
+          - paragraph [ref=f3e1070]: Up to IDR 1,000,000 cashback
+      - button "Previous" [ref=f3e1071]
+      - button "Next" [ref=f3e1074]
+  - generic [ref=f3e1078]:
+    - generic [ref=f3e1079]:
+      - heading "Booking VIP for Corporate" [level=3] [ref=f3e1080]
+      - paragraph [ref=f3e1081]: Smarter travel management for your business
+    - button "Learn more" [ref=f3e1082]
+  - generic [ref=f3e1083]:
+    - generic [ref=f3e1084]:
+      - heading "Noteworthy vacation ideas! 🗺️" [level=2] [ref=f3e1086]
+      - link "See all!" [ref=f3e1087] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e1088]:
+      - button "International" [ref=f3e1089]
+      - button "Indonesia" [ref=f3e1090]
+      - button "Travel Type" [ref=f3e1091]
+    - generic [ref=f3e1092]:
+      - generic [ref=f3e1093]:
+        - generic [ref=f3e1097]:
+          - paragraph [ref=f3e1098]: Singapore
+          - heading "Singapore" [level=3] [ref=f3e1099]
+        - generic [ref=f3e1103]:
+          - paragraph [ref=f3e1104]: Malaysia
+          - heading "Kuala Lumpur" [level=3] [ref=f3e1105]
+        - generic [ref=f3e1109]:
+          - paragraph [ref=f3e1110]: Australia
+          - heading "Sydney" [level=3] [ref=f3e1111]
+        - generic [ref=f3e1115]:
+          - paragraph [ref=f3e1116]: Vietnam
+          - heading "Ho Chi Minh" [level=3] [ref=f3e1117]
+        - generic [ref=f3e1121]:
+          - paragraph [ref=f3e1122]: New Zealand
+          - heading "Auckland" [level=3] [ref=f3e1123]
+        - generic [ref=f3e1127]:
+          - paragraph [ref=f3e1128]: Philippines
+          - heading "Manila" [level=3] [ref=f3e1129]
+        - generic [ref=f3e1133]:
+          - paragraph [ref=f3e1134]: Japan
+          - heading "Tokyo" [level=3] [ref=f3e1135]
+        - generic [ref=f3e1139]:
+          - paragraph [ref=f3e1140]: South Korea
+          - heading "Seoul" [level=3] [ref=f3e1141]
+      - button "Previous" [ref=f3e1142]
+      - button "Next" [ref=f3e1145]
+  - generic [ref=f3e1148]:
+    - generic [ref=f3e1149]:
+      - heading "Travel guides & tips 📌" [level=2] [ref=f3e1151]
+      - link "See all" [ref=f3e1152] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f3e1153]:
+      - generic [ref=f3e1154]:
+        - generic [ref=f3e1157]:
+          - paragraph [ref=f3e1158]: Travel Tips
+          - heading "A Simple Guide to Planning Your First Trip Abroad" [level=3] [ref=f3e1159]
+        - generic [ref=f3e1162]:
+          - paragraph [ref=f3e1163]: Destinations
+          - heading "Ten Hidden Beaches Worth the Detour" [level=3] [ref=f3e1164]
+        - generic [ref=f3e1167]:
+          - paragraph [ref=f3e1168]: Travel Tips
+          - heading "How to Pack Light for a Two-Week Holiday" [level=3] [ref=f3e1169]
+        - generic [ref=f3e1172]:
+          - paragraph [ref=f3e1173]: Food & Culture
+          - heading "Best Local Food to Try on Your Next Trip" [level=3] [ref=f3e1174]
+        - generic [ref=f3e1177]:
+          - paragraph [ref=f3e1178]: Destinations
+          - heading "Weekend Getaways Near the Big City" [level=3] [ref=f3e1179]
+      - button "Previous" [ref=f3e1180]
+      - button "Next" [ref=f3e1183]
+  - generic [ref=f3e1188]:
+    - heading "Plan your 2026 holidays and leave dates" [level=3] [ref=f3e1189]
+    - paragraph [ref=f3e1190]: Make the most of long weekends
+  - generic [ref=f3e1192]:
+    - generic [ref=f3e1193]:
+      - heading "Book Tickets and Plan Your Holiday with Ease" [level=2] [ref=f3e1194]
+      - generic [ref=f3e1195]:
+        - generic [ref=f3e1196]:
+          - heading "Easy to Buy Tickets and Hotels" [level=3] [ref=f3e1197]
+          - paragraph [ref=f3e1198]: Find and book flights, hotels, villas, trains and activities in just a few taps — all in one place, anytime you need.
+        - generic [ref=f3e1199]:
+          - heading "Various Top Products" [level=3] [ref=f3e1200]
+          - paragraph [ref=f3e1201]: From domestic getaways to international trips, choose from a wide range of products curated for every kind of traveller.
+        - generic [ref=f3e1202]:
+          - heading "Multiple Payment Methods" [level=3] [ref=f3e1203]
+          - paragraph [ref=f3e1204]: Pay your way with cards, bank transfer, e-wallets and flexible installments at checkout.
+    - generic [ref=f3e1205]:
+      - heading "Plenty of Promos and Benefits, Save Even More!" [level=2] [ref=f3e1206]
+      - generic [ref=f3e1207]:
+        - generic [ref=f3e1208]:
+          - heading "Get Special Promos & Discounts" [level=3] [ref=f3e1209]
+          - paragraph [ref=f3e1210]: Unlock member-only deals and seasonal sales to make every trip more affordable.
+        - generic [ref=f3e1211]:
+          - heading "Rewards Benefits" [level=3] [ref=f3e1212]
+          - paragraph [ref=f3e1213]: Earn points on every booking and redeem them for discounts on your next adventure.
+        - generic [ref=f3e1214]:
+          - heading "24/7 Customer Care" [level=3] [ref=f3e1215]
+          - paragraph [ref=f3e1216]: Our support team is ready to help you before, during and after your journey — any time of day.
+    - generic [ref=f3e1217]:
+      - heading "Book Cheap Flight Tickets to Your Favorite Destinations" [level=2] [ref=f3e1218]
+      - paragraph [ref=f3e1219]: Planning your next getaway has never been easier. Compare fares across airlines, pick the schedule that fits your plans, and lock in the best price for domestic and international routes. Whether you are travelling for business or leisure, you will find flexible options, transparent pricing, and secure payment — all in one place.
+    - generic [ref=f3e1220]:
+      - generic [ref=f3e1221]:
+        - heading "Easy and Simple Installment" [level=2] [ref=f3e1222]
+        - paragraph [ref=f3e1223]:
+          - text: Split your booking into affordable monthly payments and travel now, pay later.
+          - link "More" [ref=f3e1224] [cursor=pointer]:
+            - /url: "#"
+      - generic [ref=f3e1225]:
+        - heading "Our Partners" [level=2] [ref=f3e1226]
+        - paragraph [ref=f3e1227]:
+          - text: We work with trusted airlines, hotels and travel providers to bring you reliable service everywhere you go.
+          - link "More" [ref=f3e1228] [cursor=pointer]:
+            - /url: "#"
+  - generic [ref=f3e1229]:
+    - heading "Our Recommendations" [level=2] [ref=f3e1230]
+    - generic [ref=f3e1231]:
+      - button "To Do" [ref=f3e1232]
+      - button "Flight Ticket" [ref=f3e1233]
+      - button "Bali" [ref=f3e1234]
+      - button "Bandung" [ref=f3e1235]
+      - button "Bogor" [ref=f3e1236]
+      - button "Jakarta" [ref=f3e1237]
+      - button "Yogyakarta" [ref=f3e1238]
+      - button "Japan" [ref=f3e1239]
+      - button "Singapore" [ref=f3e1240]
+      - button "Bus Route" [ref=f3e1241]
+    - generic [ref=f3e1242]:
+      - link "Theme Parks in Jakarta" [ref=f3e1243] [cursor=pointer]:
+        - /url: "#"
+      - link "Things To Do Near the City Center" [ref=f3e1244] [cursor=pointer]:
+        - /url: "#"
+      - link "Island Day Trips" [ref=f3e1245] [cursor=pointer]:
+        - /url: "#"
+      - link "Family Activities in Bali" [ref=f3e1246] [cursor=pointer]:
+        - /url: "#"
+      - link "Museums Worth Visiting" [ref=f3e1247] [cursor=pointer]:
+        - /url: "#"
+      - link "Outdoor Adventures in Bandung" [ref=f3e1248] [cursor=pointer]:
+        - /url: "#"
+      - link "Water Parks for Kids" [ref=f3e1249] [cursor=pointer]:
+        - /url: "#"
+      - link "Cultural Tours in Yogyakarta" [ref=f3e1250] [cursor=pointer]:
+        - /url: "#"
+      - link "Weekend Escapes Near Bogor" [ref=f3e1251] [cursor=pointer]:
+        - /url: "#"
+      - link "Popular Attractions in Singapore" [ref=f3e1252] [cursor=pointer]:
+        - /url: "#"
+      - link "Scenic Spots in Japan" [ref=f3e1253] [cursor=pointer]:
+        - /url: "#"
+      - link "Nature Walks and Trails" [ref=f3e1254] [cursor=pointer]:
+        - /url: "#"
+  - generic [ref=f3e1255]:
+    - heading "Find Hotels for Your Next Trip" [level=2] [ref=f3e1256]
+    - generic [ref=f3e1257]:
+      - button "Jakarta" [ref=f3e1258]
+      - button "Yogyakarta" [ref=f3e1259]
+      - button "Bandung" [ref=f3e1260]
+      - button "Bali" [ref=f3e1261]
+      - button "Surabaya" [ref=f3e1262]
+      - button "Medan" [ref=f3e1263]
+    - generic [ref=f3e1264]:
+      - link "Downtown Business Hotels" [ref=f3e1265] [cursor=pointer]:
+        - /url: "#"
+      - link "Budget Stays Near the Station" [ref=f3e1266] [cursor=pointer]:
+        - /url: "#"
+      - link "Boutique Hotels in the Old Town" [ref=f3e1267] [cursor=pointer]:
+        - /url: "#"
+      - link "Family Resorts by the Beach" [ref=f3e1268] [cursor=pointer]:
+        - /url: "#"
+      - link "Hotels Near the Airport" [ref=f3e1269] [cursor=pointer]:
+        - /url: "#"
+      - link "City-View Apartments" [ref=f3e1270] [cursor=pointer]:
+        - /url: "#"
+      - link "Pet-Friendly Hotels" [ref=f3e1271] [cursor=pointer]:
+        - /url: "#"
+      - link "Luxury Suites Downtown" [ref=f3e1272] [cursor=pointer]:
+        - /url: "#"
+      - link "Hotels with Rooftop Pools" [ref=f3e1273] [cursor=pointer]:
+        - /url: "#"
+      - link "Quiet Stays in the Suburbs" [ref=f3e1274] [cursor=pointer]:
+        - /url: "#"
+      - link "Hotels Near Shopping Districts" [ref=f3e1275] [cursor=pointer]:
+        - /url: "#"
+      - link "Serviced Apartments Monthly" [ref=f3e1276] [cursor=pointer]:
+        - /url: "#"
+  - generic [ref=f3e1277]:
+    - heading "Stay in the Best Villas and Apartments" [level=2] [ref=f3e1278]
+    - generic [ref=f3e1279]:
+      - button "Glamping" [ref=f3e1280]
+      - button "Popular Villas" [ref=f3e1281]
+      - button "Popular Apartments" [ref=f3e1282]
+      - button "Cabins" [ref=f3e1283]
+      - button "Cottages" [ref=f3e1284]
+    - generic [ref=f3e1285]:
+      - link "Nature Walks and Trails" [ref=f3e1286] [cursor=pointer]:
+        - /url: "#"
+      - link "Scenic Spots in Japan" [ref=f3e1287] [cursor=pointer]:
+        - /url: "#"
+      - link "Popular Attractions in Singapore" [ref=f3e1288] [cursor=pointer]:
+        - /url: "#"
+      - link "Weekend Escapes Near Bogor" [ref=f3e1289] [cursor=pointer]:
+        - /url: "#"
+      - link "Cultural Tours in Yogyakarta" [ref=f3e1290] [cursor=pointer]:
+        - /url: "#"
+      - link "Water Parks for Kids" [ref=f3e1291] [cursor=pointer]:
+        - /url: "#"
+      - link "Outdoor Adventures in Bandung" [ref=f3e1292] [cursor=pointer]:
+        - /url: "#"
+      - link "Museums Worth Visiting" [ref=f3e1293] [cursor=pointer]:
+        - /url: "#"
+      - link "Family Activities in Bali" [ref=f3e1294] [cursor=pointer]:
+        - /url: "#"
+      - link "Island Day Trips" [ref=f3e1295] [cursor=pointer]:
+        - /url: "#"
+      - link "Things To Do Near the City Center" [ref=f3e1296] [cursor=pointer]:
+        - /url: "#"
+      - link "Theme Parks in Jakarta" [ref=f3e1297] [cursor=pointer]:
+        - /url: "#"
+  - contentinfo [ref=f3e1298]:
+    - generic [ref=f3e1299]:
+      - generic [ref=f3e1300]:
+        - generic [ref=f3e1301]:
+          - generic [ref=f3e1302]:
+            - generic [ref=f3e1303]: tiket
+            - generic [ref=f3e1305]: com
+          - generic [ref=f3e1306]:
+            - paragraph [ref=f3e1307]: "Chat: Chat with us"
+            - paragraph [ref=f3e1308]: "Email: cs@example.com"
+            - paragraph [ref=f3e1309]: Call Center:+62 000 0000 000
+        - generic [ref=f3e1310]:
+          - heading "Company" [level=3] [ref=f3e1311]
+          - list [ref=f3e1312]:
+            - listitem [ref=f3e1313]:
+              - link "Blog" [ref=f3e1314] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1315]:
+              - link "Newsroom" [ref=f3e1316] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1317]:
+              - link "Careers" [ref=f3e1318] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1319]:
+              - link "Corporate" [ref=f3e1320] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1321]:
+              - link "Business Partner" [ref=f3e1322] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1323]:
+              - link "Rewards" [ref=f3e1324] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1325]:
+              - link "Protection" [ref=f3e1326] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=f3e1327]:
+          - heading "Products" [level=3] [ref=f3e1328]
+          - list [ref=f3e1329]:
+            - listitem [ref=f3e1330]:
+              - link "Flights" [ref=f3e1331] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1332]:
+              - link "Hotels" [ref=f3e1333] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1334]:
+              - link "Villas & Apt." [ref=f3e1335] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1336]:
+              - link "To Dos" [ref=f3e1337] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1338]:
+              - link "Trains" [ref=f3e1339] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1340]:
+              - link "Car Rentals" [ref=f3e1341] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=f3e1342]:
+          - heading "Support" [level=3] [ref=f3e1343]
+          - list [ref=f3e1344]:
+            - listitem [ref=f3e1345]:
+              - link "Help Center" [ref=f3e1346] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1347]:
+              - link "Group Booking" [ref=f3e1348] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1349]:
+              - link "Privacy Policy" [ref=f3e1350] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1351]:
+              - link "Terms & Conditions" [ref=f3e1352] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1353]:
+              - link "Register Your Hotel" [ref=f3e1354] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=f3e1355]:
+              - link "Register Your Activity" [ref=f3e1356] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=f3e1357]:
+          - heading "Cheaper on the app" [level=3] [ref=f3e1358]
+          - generic [ref=f3e1359]:
+            - generic [ref=f3e1360]: Download onApp Store
+            - generic [ref=f3e1363]: Download onGoogle Play
+      - generic [ref=f3e1366]:
+        - generic [ref=f3e1367]:
+          - heading "Partner" [level=3] [ref=f3e1368]
+          - paragraph [ref=f3e1371]: Official travel marketplace partner
+        - generic [ref=f3e1372]:
+          - heading "Secure your transaction" [level=3] [ref=f3e1373]
+          - generic [ref=f3e1374]:
+            - generic [ref=f3e1375]: Visa
+            - generic [ref=f3e1376]: Mastercard
+            - generic [ref=f3e1377]: JCB
+            - generic [ref=f3e1378]: Amex
+        - generic [ref=f3e1379]:
+          - heading "Awards" [level=3] [ref=f3e1380]
+          - generic [ref=f3e1381]:
+            - generic [ref=f3e1382]: IATA
+            - generic [ref=f3e1383]: Top Brand
+            - generic [ref=f3e1384]: Superbrands
+        - generic [ref=f3e1385]:
+          - heading "Follow us" [level=3] [ref=f3e1386]
+          - generic [ref=f3e1387]:
+            - link "Facebook" [ref=f3e1388] [cursor=pointer]:
+              - /url: "#"
+              - text: F
+            - link "Twitter" [ref=f3e1389] [cursor=pointer]:
+              - /url: "#"
+              - text: T
+            - link "LinkedIn" [ref=f3e1390] [cursor=pointer]:
+              - /url: "#"
+              - text: L
+            - link "YouTube" [ref=f3e1391] [cursor=pointer]:
+              - /url: "#"
+              - text: "Y"
+            - link "Instagram" [ref=f3e1392] [cursor=pointer]:
+              - /url: "#"
+              - text: I
+            - link "TikTok" [ref=f3e1393] [cursor=pointer]:
+              - /url: "#"
+              - text: T
+      - paragraph [ref=f3e1394]: © 2011-2026 Booking VIP Demo. This is an educational UI clone — not affiliated with tiket.com.
+  - generic [ref=f3e1396]:
+    - button "Close" [ref=f3e1397]
+    - paragraph [ref=f3e1401]: Extra cashback up to IDR 5mio with “DEMO1” on the app!
+    - button "Download" [ref=f3e1402]
