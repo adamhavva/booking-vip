@@ -18,7 +18,7 @@ const tabs = [
 
 export default function BottomTabBar() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] lg:hidden">
       <ul className="flex">
         {tabs.map(({ label, Icon, active }) => (
           <li key={label} className="flex-1">

@@ -116,10 +116,10 @@ export default function HeroSearch() {
           </p>
         </div>
 
-        {/* Search card with the tab rail straddling its top edge */}
+        {/* Search card with a centered tab rail straddling its top edge */}
         <div className="relative mx-auto max-w-[1120px]">
-          {/* Service selector tabs (pill rail overlapping the card) */}
-          <div className="no-scrollbar relative z-10 mx-3 -mb-5 flex items-center gap-1 overflow-x-auto rounded-full bg-white px-2 py-2 shadow-lg md:mx-6">
+          {/* Service selector tabs */}
+          <div className="no-scrollbar relative z-10 mx-auto -mb-5 flex w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full bg-white px-2 py-2 shadow-lg">
             {categories.map((c) => (
               <ServiceTab
                 key={c.label}

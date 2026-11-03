@@ -20,7 +20,7 @@ export default function Header() {
   return (
     <header className="absolute inset-x-0 top-0 z-30">
       {/* Utility bar */}
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         <Container className="flex items-center justify-end gap-6 py-2.5 text-[13px] font-medium text-white/90">
           {utilityLinks.map((u) => (
             <a key={u.label} href={u.href} className="hover:text-white">
@@ -40,7 +40,7 @@ export default function Header() {
         </a>
 
         {/* Desktop search box */}
-        <div className="relative hidden flex-1 md:block">
+        <div className="relative hidden flex-1 lg:block">
           <SearchIcon
             className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
             width={18}
@@ -53,7 +53,7 @@ export default function Header() {
           />
         </div>
 
-        <nav className="hidden items-center gap-5 text-sm font-semibold text-white md:flex">
+        <nav className="hidden items-center gap-5 text-sm font-semibold text-white lg:flex">
           {navLinks.map((n) => (
             <a
               key={n.label}
@@ -65,7 +65,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-3 md:flex">
+        <div className="ml-auto hidden items-center gap-3 lg:flex">
           <button className="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-ink shadow-sm hover:bg-white/90">
             Login
           </button>
@@ -75,7 +75,7 @@ export default function Header() {
         </div>
 
         {/* Mobile search + actions */}
-        <div className="flex flex-1 items-center gap-2 md:hidden">
+        <div className="flex flex-1 items-center gap-2 lg:hidden">
           <div className="relative flex-1">
             <SearchIcon
               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"

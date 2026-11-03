@@ -33,7 +33,7 @@ import {
 
 export default function Home() {
   return (
-    <div className="bg-white pb-20 md:pb-0">
+    <div className="bg-white pb-20 lg:pb-0">
       <Header />
       <HeroSearch />
 
