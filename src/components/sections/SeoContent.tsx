@@ -1,9 +1,10 @@
+import Container from "@/components/ui/Container";
 import { seoBlocks } from "@/data/home";
 
 export default function SeoContent() {
   return (
     <section className="bg-canvas">
-      <div className="mx-auto max-w-[1200px] space-y-10 px-6 py-12">
+      <Container className="space-y-10 py-12">
         {seoBlocks.map((block) => (
           <div key={block.title}>
             <h2 className="mb-5 text-xl font-extrabold text-ink md:text-2xl">
@@ -57,7 +58,7 @@ export default function SeoContent() {
             </p>
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

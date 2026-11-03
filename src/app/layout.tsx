@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
 import "./globals.css";
 
@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   title: "tiket.com - One App for Your Holiday Needs",
   description:
     "Book flights, hotels, villas, things to do, trains and more. One app for your holiday needs.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

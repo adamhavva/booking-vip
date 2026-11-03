@@ -1,4 +1,5 @@
-import Logo from "./Logo";
+import Container from "@/components/ui/Container";
+import Logo from "@/components/layout/Logo";
 import { footerColumns, socials } from "@/data/home";
 
 function AppBadge({ store }: { store: string }) {
@@ -17,7 +18,7 @@ function AppBadge({ store }: { store: string }) {
 export default function Footer() {
   return (
     <footer className="bg-[#0b1b2b] text-white/80">
-      <div className="mx-auto max-w-[1200px] px-6 py-12">
+      <Container className="py-12">
         {/* Top: logo + contact */}
         <div className="mb-10 grid gap-8 md:grid-cols-[1.2fr_1fr_1fr_1fr_1.3fr]">
           <div>
@@ -123,7 +124,7 @@ export default function Footer() {
           © 2011-2026 Booking VIP Demo. This is an educational UI clone — not
           affiliated with tiket.com.
         </p>
-      </div>
+      </Container>
     </footer>
   );
 }

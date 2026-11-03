@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { ChevronLeft, ChevronRight } from "./icons";
+import { ChevronLeft, ChevronRight } from "@/components/icons";
 
 export default function Carousel({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);

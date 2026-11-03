@@ -1,34 +1,34 @@
-import Header from "@/components/Header";
-import HeroSearch from "@/components/HeroSearch";
-import SectionBand from "@/components/SectionBand";
-import Carousel from "@/components/Carousel";
-import BannerStrip from "@/components/BannerStrip";
-import SeoContent from "@/components/SeoContent";
-import SeoLinkGrid from "@/components/SeoLinkGrid";
-import Footer from "@/components/Footer";
-// import StickyAppBanner from "@/components/StickyAppBanner";
-import BottomTabBar from "@/components/BottomTabBar";
 import {
-  VipServiceCard,
-  TransportCard,
-  TourCard,
-  EvoaCard,
-  DestinationCard,
   ArticleCard,
+  DestinationCard,
+  EvoaCard,
   PromoCard,
+  TourCard,
+  TransportCard,
+  VipServiceCard,
 } from "@/components/cards";
+import BottomTabBar from "@/components/sections/BottomTabBar";
+import BannerStrip from "@/components/sections/BannerStrip";
+import Footer from "@/components/sections/Footer";
+import HeroSearch from "@/components/sections/HeroSearch";
+import SectionBand from "@/components/sections/SectionBand";
+import SeoContent from "@/components/sections/SeoContent";
+import SeoLinkGrid from "@/components/sections/SeoLinkGrid";
+// import StickyAppBanner from "@/components/sections/StickyAppBanner";
+import Carousel from "@/components/ui/Carousel";
+import Header from "@/components/layout/Header";
 import {
-  vipServices,
-  transports,
-  tours,
-  evoaPlans,
-  destinations,
   articles,
+  destinations,
+  evoaPlans,
   promos,
   promoTabs,
-  recommendationTabs,
   recommendationLinks,
+  recommendationTabs,
   serviceSeoLinks,
+  tours,
+  transports,
+  vipServices,
 } from "@/data/home";
 
 export default function Home() {

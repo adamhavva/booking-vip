@@ -1,3 +1,5 @@
+import Container from "@/components/ui/Container";
+
 export default function BannerStrip({
   title,
   subtitle,
@@ -12,7 +14,7 @@ export default function BannerStrip({
   compact?: boolean;
 }) {
   return (
-    <div className="mx-auto max-w-[1200px] px-6 py-4">
+    <Container className="py-4">
       <div
         className={`flex items-center justify-between gap-4 overflow-hidden rounded-2xl bg-gradient-to-r ${tone} p-6 text-white ${
           compact ? "md:p-6" : "md:p-10"
@@ -30,6 +32,6 @@ export default function BannerStrip({
           </button>
         )}
       </div>
-    </div>
+    </Container>
   );
 }

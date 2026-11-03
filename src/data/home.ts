@@ -2,14 +2,27 @@
 // Only four services: Airport VIP Service, Transport, Tour Package, eVOA.
 // Prices/ratings are dummy values for layout demonstration only.
 
-export const utilityLinks = [
+import type {
+  Article,
+  Category,
+  Destination,
+  EvoaPlan,
+  FooterColumns,
+  LinkItem,
+  Promo,
+  Tour,
+  Transport,
+  VipService,
+} from "@/types";
+
+export const utilityLinks: LinkItem[] = [
   { label: "About Us", href: "#" },
   { label: "How It Works", href: "#" },
   { label: "Help Center", href: "#" },
   { label: "Your Orders", href: "#" },
 ];
 
-export const navLinks = [
+export const navLinks: LinkItem[] = [
   { label: "Airport VIP Service", href: "#" },
   { label: "Transport", href: "#" },
   { label: "Tour Package", href: "#" },
@@ -23,8 +36,6 @@ export const searchPlaceholders = [
   "eVOA for Indonesia",
 ];
 
-export type Category = { label: string; short: string; badge?: string; tone: string };
-
 export const categories: Category[] = [
   { label: "Airport VIP Service", short: "VIP", tone: "from-sky-400 to-blue-600" },
   { label: "Transport", short: "Car", tone: "from-emerald-400 to-teal-600" },
@@ -33,16 +44,6 @@ export const categories: Category[] = [
 ];
 
 /* ---- Airport VIP services ---- */
-export type VipService = {
-  title: string;
-  desc: string;
-  airport: string;
-  priceNet: number;
-  priceFrom?: number;
-  ribbon?: string;
-  tone: string;
-};
-
 export const vipServices: VipService[] = [
   { title: "Meet & Greet", desc: "A personal greeter escorts you from curbside to the gate.", airport: "Soekarno-Hatta (CGK)", priceFrom: 1200000, priceNet: 850000, ribbon: "Best seller", tone: "from-sky-400 to-blue-600" },
   { title: "Fast Track Immigration", desc: "Skip the queues at immigration and customs.", airport: "Ngurah Rai, Bali (DPS)", priceFrom: 900000, priceNet: 650000, tone: "from-indigo-400 to-indigo-700" },
@@ -53,17 +54,6 @@ export const vipServices: VipService[] = [
 ];
 
 /* ---- Transport (private transfers) ---- */
-export type Transport = {
-  model: string;
-  category: string;
-  seats: number;
-  bags: number;
-  priceNet: number;
-  priceFrom?: number;
-  ribbon?: string;
-  tone: string;
-};
-
 export const transports: Transport[] = [
   { model: "Executive Sedan", category: "Private Transfer", seats: 3, bags: 2, priceFrom: 650000, priceNet: 450000, ribbon: "Popular", tone: "from-slate-400 to-slate-700" },
   { model: "Premium SUV", category: "Private Transfer", seats: 5, bags: 4, priceFrom: 850000, priceNet: 620000, tone: "from-sky-400 to-blue-600" },
@@ -73,18 +63,6 @@ export const transports: Transport[] = [
 ];
 
 /* ---- Tour packages ---- */
-export type Tour = {
-  title: string;
-  location: string;
-  duration: string;
-  rating: number;
-  reviews: number;
-  priceNet: number;
-  priceFrom?: number;
-  ribbon?: string;
-  tone: string;
-};
-
 export const tours: Tour[] = [
   { title: "Bali Highlights", location: "Bali", duration: "3D2N", rating: 4.8, reviews: 1240, priceFrom: 3500000, priceNet: 2650000, ribbon: "Best seller", tone: "from-amber-300 to-orange-500" },
   { title: "Komodo Island Sailing", location: "Labuan Bajo", duration: "4D3N", rating: 4.9, reviews: 860, priceFrom: 6200000, priceNet: 4900000, tone: "from-cyan-400 to-blue-600" },
@@ -95,16 +73,6 @@ export const tours: Tour[] = [
 ];
 
 /* ---- eVOA plans ---- */
-export type EvoaPlan = {
-  name: string;
-  destination: string;
-  stay: string;
-  processing: string;
-  priceNet: number;
-  ribbon?: string;
-  tone: string;
-};
-
 export const evoaPlans: EvoaPlan[] = [
   { name: "Tourist eVOA", destination: "Indonesia", stay: "30 days", processing: "24 hours", priceNet: 500000, ribbon: "Most popular", tone: "from-violet-400 to-purple-600" },
   { name: "Extendable eVOA", destination: "Indonesia", stay: "30 + 30 days", processing: "24 hours", priceNet: 750000, tone: "from-sky-400 to-blue-600" },
@@ -114,8 +82,6 @@ export const evoaPlans: EvoaPlan[] = [
 ];
 
 /* ---- Destinations & promos (shared) ---- */
-export type Destination = { name: string; country: string; tone: string };
-
 export const destinations: Destination[] = [
   { name: "Bali", country: "Indonesia", tone: "from-rose-400 to-red-600" },
   { name: "Labuan Bajo", country: "Indonesia", tone: "from-sky-400 to-blue-600" },
@@ -127,8 +93,6 @@ export const destinations: Destination[] = [
   { name: "Bandung", country: "Indonesia", tone: "from-violet-400 to-indigo-600" },
 ];
 
-export type Article = { title: string; category: string; tone: string };
-
 export const articles: Article[] = [
   { title: "What to Expect from an Airport Meet & Greet", category: "VIP Travel", tone: "from-sky-400 to-blue-600" },
   { title: "A Guide to Indonesia's eVOA for First-Timers", category: "Visa & Entry", tone: "from-violet-400 to-purple-600" },
@@ -138,8 +102,6 @@ export const articles: Article[] = [
 ];
 
 export const promoTabs = ["All", "Airport VIP", "Transport", "Tour Package", "eVOA"];
-
-export type Promo = { title: string; subtitle: string; tone: string };
 
 export const promos: Promo[] = [
   { title: "VIP Welcome Offer", subtitle: "20% off your first Meet & Greet", tone: "from-blue-500 to-indigo-700" },
@@ -184,7 +146,7 @@ export const serviceSeoLinks = [
   "eVOA Indonesia 30 Days", "Business eVOA", "Express eVOA", "Transit eVOA",
 ];
 
-export const footerColumns = {
+export const footerColumns: FooterColumns = {
   Services: ["Airport VIP Service", "Transport", "Tour Package", "eVOA"],
   Company: ["About Us", "How It Works", "Careers", "Partners", "Contact"],
   Support: ["Help Center", "FAQ", "Privacy Policy", "Terms & Conditions", "Refund Policy"],

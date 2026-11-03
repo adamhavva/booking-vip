@@ -1,6 +1,12 @@
 "use client";
 
-import { HomeIcon, GiftIcon, ListIcon, BellIcon, UserIcon } from "./icons";
+import {
+  BellIcon,
+  GiftIcon,
+  HomeIcon,
+  ListIcon,
+  UserIcon,
+} from "@/components/icons";
 
 const tabs = [
   { label: "Home", Icon: HomeIcon, active: true },
@@ -12,7 +18,7 @@ const tabs = [
 
 export default function BottomTabBar() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
       <ul className="flex">
         {tabs.map(({ label, Icon, active }) => (
           <li key={label} className="flex-1">

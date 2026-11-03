@@ -1,9 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { categories } from "@/data/home";
-import { PinIcon, CalendarIcon, UsersIcon, StarIcon, PlaneIcon } from "./icons";
 import type { ReactNode } from "react";
+import Container from "@/components/ui/Container";
+import Badge from "@/components/ui/Badge";
+import {
+  CalendarIcon,
+  PinIcon,
+  PlaneIcon,
+  StarIcon,
+  UsersIcon,
+} from "@/components/icons";
+import { categories } from "@/data/home";
+import type { Category } from "@/types";
 
 type FieldDef = { label: string; value: string; icon: ReactNode };
 
@@ -46,9 +55,44 @@ function Field({ label, value, icon }: FieldDef) {
       <span className="text-muted">{icon}</span>
       <span className="min-w-0">
         <span className="block text-[11px] text-muted">{label}</span>
-        <span className="block truncate text-sm font-semibold text-ink">{value}</span>
+        <span className="block truncate text-sm font-semibold text-ink">
+          {value}
+        </span>
       </span>
     </div>
+  );
+}
+
+function ServiceTab({
+  category,
+  active,
+  onClick,
+}: {
+  category: Category;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 transition-colors ${
+        active ? "bg-brand-soft" : "hover:bg-canvas"
+      }`}
+    >
+      <span
+        className={`flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br ${category.tone} text-[11px] font-bold text-white shadow-sm`}
+      >
+        {category.short}
+      </span>
+      <span
+        className={`whitespace-nowrap text-sm font-bold ${
+          active ? "text-brand" : "text-ink"
+        }`}
+      >
+        {category.label}
+      </span>
+      {category.badge && <Badge variant="pill">{category.badge}</Badge>}
+    </button>
   );
 }
 
@@ -60,11 +104,12 @@ export default function HeroSearch() {
     <section className="relative overflow-hidden bg-gradient-to-b from-hero-from via-hero-via to-hero-to pb-10 pt-24 md:pt-28">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/20 to-transparent" />
 
-      <div className="relative mx-auto max-w-[1200px] px-6">
+      <Container className="relative">
         {/* Heading */}
         <div className="hidden py-6 text-center md:block">
           <h1 className="text-[34px] font-normal text-white">
-            Hey there, <span className="font-extrabold">travelling in style?</span>
+            Hey there,{" "}
+            <span className="font-extrabold">travelling in style?</span>
           </h1>
           <p className="mt-2 text-sm text-white/85">
             Booking VIP - Airport VIP, transport, tours & eVOA in one place.
@@ -75,36 +120,14 @@ export default function HeroSearch() {
         <div className="relative mx-auto max-w-[1120px]">
           {/* Service selector tabs (pill rail overlapping the card) */}
           <div className="no-scrollbar relative z-10 mx-3 -mb-5 flex items-center gap-1 overflow-x-auto rounded-full bg-white px-2 py-2 shadow-lg md:mx-6">
-            {categories.map((c) => {
-              const active = c.label === service;
-              return (
-                <button
-                  key={c.label}
-                  onClick={() => setService(c.label)}
-                  className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 transition-colors ${
-                    active ? "bg-brand-soft" : "hover:bg-canvas"
-                  }`}
-                >
-                  <span
-                    className={`flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br ${c.tone} text-[11px] font-bold text-white shadow-sm`}
-                  >
-                    {c.short}
-                  </span>
-                  <span
-                    className={`whitespace-nowrap text-sm font-bold ${
-                      active ? "text-brand" : "text-ink"
-                    }`}
-                  >
-                    {c.label}
-                  </span>
-                  {c.badge && (
-                    <span className="whitespace-nowrap rounded-full bg-danger px-1.5 py-0.5 text-[10px] font-bold text-white">
-                      {c.badge}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+            {categories.map((c) => (
+              <ServiceTab
+                key={c.label}
+                category={c}
+                active={c.label === service}
+                onClick={() => setService(c.label)}
+              />
+            ))}
           </div>
 
           {/* Search card */}
@@ -130,7 +153,7 @@ export default function HeroSearch() {
             </div>
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

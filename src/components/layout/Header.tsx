@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Container from "@/components/ui/Container";
+import { ChevronDown, SearchIcon } from "@/components/icons";
+import { navLinks, searchPlaceholders, utilityLinks } from "@/data/home";
 import Logo from "./Logo";
-import { SearchIcon, ChevronDown } from "./icons";
-import { navLinks, utilityLinks, searchPlaceholders } from "@/data/home";
 
 export default function Header() {
   const [idx, setIdx] = useState(0);
@@ -20,7 +21,7 @@ export default function Header() {
     <header className="absolute inset-x-0 top-0 z-30">
       {/* Utility bar */}
       <div className="hidden md:block">
-        <div className="mx-auto flex max-w-[1200px] items-center justify-end gap-6 px-6 py-2.5 text-[13px] font-medium text-white/90">
+        <Container className="flex items-center justify-end gap-6 py-2.5 text-[13px] font-medium text-white/90">
           {utilityLinks.map((u) => (
             <a key={u.label} href={u.href} className="hover:text-white">
               {u.label}
@@ -29,12 +30,12 @@ export default function Header() {
           <button className="flex items-center gap-1 hover:text-white">
             EN | IDR <ChevronDown width={14} height={14} />
           </button>
-        </div>
+        </Container>
       </div>
 
       {/* Main navbar */}
-      <div className="mx-auto flex max-w-[1200px] items-center gap-4 px-6 pb-3 md:gap-6">
-        <a href="#" aria-label="tiket.com home">
+      <Container className="flex items-center gap-4 pb-3 md:gap-6">
+        <a href="#" aria-label="Our Vacation home">
           <Logo />
         </a>
 
@@ -54,7 +55,11 @@ export default function Header() {
 
         <nav className="hidden items-center gap-5 text-sm font-semibold text-white md:flex">
           {navLinks.map((n) => (
-            <a key={n.label} href={n.href} className="whitespace-nowrap hover:text-white/80">
+            <a
+              key={n.label}
+              href={n.href}
+              className="whitespace-nowrap hover:text-white/80"
+            >
               {n.label}
             </a>
           ))}
@@ -87,7 +92,7 @@ export default function Header() {
             <ChevronDown width={18} height={18} />
           </button>
         </div>
-      </div>
+      </Container>
     </header>
   );
 }

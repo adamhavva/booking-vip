@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CloseIcon } from "./icons";
+import { CloseIcon } from "@/components/icons";
 
 export default function StickyAppBanner() {
   const [open, setOpen] = useState(true);
