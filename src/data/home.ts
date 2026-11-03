@@ -1,6 +1,6 @@
 // Placeholder data — original content for a VIP travel concierge.
 // Only four services: Airport VIP Service, Transport, Tour Package, eVOA.
-// Prices/ratings are dummy values for layout demonstration only.
+// Prices/ratings are dummy values for layout demonstration only (in USD).
 
 import type {
   Article,
@@ -44,40 +44,40 @@ export const categories: Category[] = [
 
 /* ---- Airport VIP services ---- */
 export const vipServices: VipService[] = [
-  { title: "Meet & Greet", desc: "A personal greeter escorts you from curbside to the gate.", airport: "Soekarno-Hatta (CGK)", priceFrom: 1200000, priceNet: 850000, ribbon: "Best seller", tone: "from-sky-400 to-blue-600" },
-  { title: "Fast Track Immigration", desc: "Skip the queues at immigration and customs.", airport: "Ngurah Rai, Bali (DPS)", priceFrom: 900000, priceNet: 650000, tone: "from-indigo-400 to-indigo-700" },
-  { title: "Premium Lounge Access", desc: "Relax in a private lounge before departure.", airport: "Soekarno-Hatta (CGK)", priceNet: 450000, tone: "from-amber-300 to-orange-500" },
-  { title: "Baggage & Porter Assistance", desc: "Travel hands-free with dedicated porter help.", airport: "Juanda, Surabaya (SUB)", priceNet: 300000, tone: "from-emerald-400 to-teal-600" },
-  { title: "VIP Terminal & Buggy", desc: "Private buggy transfer across the terminal.", airport: "Kualanamu, Medan (KNO)", priceFrom: 750000, priceNet: 500000, ribbon: "New", tone: "from-rose-400 to-pink-600" },
-  { title: "Family VIP Package", desc: "Meet & greet plus lounge for the whole family.", airport: "Soekarno-Hatta (CGK)", priceFrom: 2400000, priceNet: 1750000, tone: "from-fuchsia-400 to-purple-600" },
+  { title: "Meet & Greet", desc: "A personal greeter escorts you from curbside to the gate.", airport: "Soekarno-Hatta (CGK)", priceFrom: 120, priceNet: 85, ribbon: "Best seller", tone: "from-sky-400 to-blue-600" },
+  { title: "Fast Track Immigration", desc: "Skip the queues at immigration and customs.", airport: "Ngurah Rai, Bali (DPS)", priceFrom: 90, priceNet: 65, tone: "from-indigo-400 to-indigo-700" },
+  { title: "Premium Lounge Access", desc: "Relax in a private lounge before departure.", airport: "Soekarno-Hatta (CGK)", priceNet: 45, tone: "from-amber-300 to-orange-500" },
+  { title: "Baggage & Porter Assistance", desc: "Travel hands-free with dedicated porter help.", airport: "Juanda, Surabaya (SUB)", priceNet: 30, tone: "from-emerald-400 to-teal-600" },
+  { title: "VIP Terminal & Buggy", desc: "Private buggy transfer across the terminal.", airport: "Kualanamu, Medan (KNO)", priceFrom: 75, priceNet: 50, ribbon: "New", tone: "from-rose-400 to-pink-600" },
+  { title: "Family VIP Package", desc: "Meet & greet plus lounge for the whole family.", airport: "Soekarno-Hatta (CGK)", priceFrom: 240, priceNet: 175, tone: "from-fuchsia-400 to-purple-600" },
 ];
 
 /* ---- Transport (private transfers) ---- */
 export const transports: Transport[] = [
-  { model: "Executive Sedan", category: "Private Transfer", seats: 3, bags: 2, priceFrom: 650000, priceNet: 450000, ribbon: "Popular", tone: "from-slate-400 to-slate-700" },
-  { model: "Premium SUV", category: "Private Transfer", seats: 5, bags: 4, priceFrom: 850000, priceNet: 620000, tone: "from-sky-400 to-blue-600" },
-  { model: "Luxury Van", category: "Group Transfer", seats: 9, bags: 8, priceFrom: 1100000, priceNet: 820000, tone: "from-emerald-400 to-teal-600" },
-  { model: "First-Class Limousine", category: "Chauffeur Service", seats: 3, bags: 3, priceFrom: 1900000, priceNet: 1450000, ribbon: "VIP", tone: "from-indigo-400 to-indigo-700" },
-  { model: "City Hourly Hire", category: "By the Hour", seats: 4, bags: 2, priceNet: 350000, tone: "from-amber-300 to-orange-500" },
+  { model: "Executive Sedan", category: "Private Transfer", seats: 3, bags: 2, priceFrom: 65, priceNet: 45, ribbon: "Popular", tone: "from-slate-400 to-slate-700" },
+  { model: "Premium SUV", category: "Private Transfer", seats: 5, bags: 4, priceFrom: 85, priceNet: 62, tone: "from-sky-400 to-blue-600" },
+  { model: "Luxury Van", category: "Group Transfer", seats: 9, bags: 8, priceFrom: 110, priceNet: 82, tone: "from-emerald-400 to-teal-600" },
+  { model: "First-Class Limousine", category: "Chauffeur Service", seats: 3, bags: 3, priceFrom: 190, priceNet: 145, ribbon: "VIP", tone: "from-indigo-400 to-indigo-700" },
+  { model: "City Hourly Hire", category: "By the Hour", seats: 4, bags: 2, priceNet: 35, tone: "from-amber-300 to-orange-500" },
 ];
 
 /* ---- Tour packages ---- */
 export const tours: Tour[] = [
-  { title: "Bali Highlights", location: "Bali", duration: "3D2N", rating: 4.8, reviews: 1240, priceFrom: 3500000, priceNet: 2650000, ribbon: "Best seller", tone: "from-amber-300 to-orange-500" },
-  { title: "Komodo Island Sailing", location: "Labuan Bajo", duration: "4D3N", rating: 4.9, reviews: 860, priceFrom: 6200000, priceNet: 4900000, tone: "from-cyan-400 to-blue-600" },
-  { title: "Yogyakarta Heritage", location: "Yogyakarta", duration: "3D2N", rating: 4.7, reviews: 640, priceFrom: 2800000, priceNet: 2100000, tone: "from-rose-400 to-pink-600" },
-  { title: "Lombok & Gili Escape", location: "Lombok", duration: "4D3N", rating: 4.6, reviews: 520, priceFrom: 4100000, priceNet: 3200000, tone: "from-emerald-400 to-teal-600" },
-  { title: "Bromo Sunrise Tour", location: "East Java", duration: "2D1N", rating: 4.8, reviews: 980, priceFrom: 1900000, priceNet: 1450000, ribbon: "Popular", tone: "from-indigo-400 to-indigo-700" },
-  { title: "Raja Ampat Explorer", location: "West Papua", duration: "5D4N", rating: 4.9, reviews: 410, priceFrom: 11500000, priceNet: 9200000, tone: "from-teal-300 to-cyan-600" },
+  { title: "Bali Highlights", location: "Bali", duration: "3D2N", rating: 4.8, reviews: 1240, priceFrom: 350, priceNet: 265, ribbon: "Best seller", tone: "from-amber-300 to-orange-500" },
+  { title: "Komodo Island Sailing", location: "Labuan Bajo", duration: "4D3N", rating: 4.9, reviews: 860, priceFrom: 620, priceNet: 490, tone: "from-cyan-400 to-blue-600" },
+  { title: "Yogyakarta Heritage", location: "Yogyakarta", duration: "3D2N", rating: 4.7, reviews: 640, priceFrom: 280, priceNet: 210, tone: "from-rose-400 to-pink-600" },
+  { title: "Lombok & Gili Escape", location: "Lombok", duration: "4D3N", rating: 4.6, reviews: 520, priceFrom: 410, priceNet: 320, tone: "from-emerald-400 to-teal-600" },
+  { title: "Bromo Sunrise Tour", location: "East Java", duration: "2D1N", rating: 4.8, reviews: 980, priceFrom: 190, priceNet: 145, ribbon: "Popular", tone: "from-indigo-400 to-indigo-700" },
+  { title: "Raja Ampat Explorer", location: "West Papua", duration: "5D4N", rating: 4.9, reviews: 410, priceFrom: 1150, priceNet: 920, tone: "from-teal-300 to-cyan-600" },
 ];
 
 /* ---- eVOA plans ---- */
 export const evoaPlans: EvoaPlan[] = [
-  { name: "Tourist eVOA", destination: "Indonesia", stay: "30 days", processing: "24 hours", priceNet: 500000, ribbon: "Most popular", tone: "from-violet-400 to-purple-600" },
-  { name: "Extendable eVOA", destination: "Indonesia", stay: "30 + 30 days", processing: "24 hours", priceNet: 750000, tone: "from-sky-400 to-blue-600" },
-  { name: "Business eVOA", destination: "Indonesia", stay: "60 days", processing: "48 hours", priceNet: 1200000, tone: "from-emerald-400 to-teal-600" },
-  { name: "Express eVOA", destination: "Indonesia", stay: "30 days", processing: "4 hours", priceNet: 900000, ribbon: "Fastest", tone: "from-rose-400 to-pink-600" },
-  { name: "Transit eVOA", destination: "Indonesia", stay: "7 days", processing: "24 hours", priceNet: 350000, tone: "from-amber-300 to-orange-500" },
+  { name: "Tourist eVOA", destination: "Indonesia", stay: "30 days", processing: "24 hours", priceNet: 50, ribbon: "Most popular", tone: "from-violet-400 to-purple-600" },
+  { name: "Extendable eVOA", destination: "Indonesia", stay: "30 + 30 days", processing: "24 hours", priceNet: 75, tone: "from-sky-400 to-blue-600" },
+  { name: "Business eVOA", destination: "Indonesia", stay: "60 days", processing: "48 hours", priceNet: 120, tone: "from-emerald-400 to-teal-600" },
+  { name: "Express eVOA", destination: "Indonesia", stay: "30 days", processing: "4 hours", priceNet: 90, ribbon: "Fastest", tone: "from-rose-400 to-pink-600" },
+  { name: "Transit eVOA", destination: "Indonesia", stay: "7 days", processing: "24 hours", priceNet: 35, tone: "from-amber-300 to-orange-500" },
 ];
 
 /* ---- Destinations & promos (shared) ---- */

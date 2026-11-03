@@ -28,7 +28,7 @@ export default function Header() {
             </a>
           ))}
           <button className="flex items-center gap-1 hover:text-white">
-            EN | IDR <ChevronDown width={14} height={14} />
+            EN | USD <ChevronDown width={14} height={14} />
           </button>
         </Container>
       </div>

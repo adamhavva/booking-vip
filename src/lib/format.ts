@@ -1,3 +1,3 @@
-export function idr(value: number): string {
-  return "IDR " + value.toLocaleString("id-ID");
+export function usd(value: number): string {
+  return "$" + value.toLocaleString("en-US");
 }

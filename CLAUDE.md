@@ -46,4 +46,4 @@ Single-page marketing/concierge UI (Booking VIP, a tiket.com-style educational c
 
 **Icons:** hand-rolled inline SVGs in `src/components/icons.tsx` driven by a `base()` prop helper (24×24, currentColor, 2px stroke). Add new icons there instead of importing an icon library.
 
-**Conventions:** `@/*` aliases `src/*` (see `tsconfig.json`). Currency is formatted with `idr()` from `src/lib/format.ts`. Layout is mobile-first — fixed `BottomTabBar` (safe-area padded) on mobile, absolute-over-hero `Header` on desktop, and every section wraps content in `<Container>` (`mx-auto max-w-[1200px] px-4 sm:px-6`). The root layout sets `viewportFit: "cover"` so the bottom bar respects device safe areas.
+**Conventions:** `@/*` aliases `src/*` (see `tsconfig.json`). Currency is formatted with `usd()` from `src/lib/format.ts` (all prices in `src/data/home.ts` are USD integers). Layout is mobile-first — fixed `BottomTabBar` (safe-area padded) on mobile, absolute-over-hero `Header` on desktop, and every section wraps content in `<Container>` (`mx-auto max-w-[1200px] px-4 sm:px-6`). The root layout sets `viewportFit: "cover"` so the bottom bar respects device safe areas.
