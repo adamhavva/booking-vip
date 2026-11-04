@@ -18,13 +18,14 @@ function generateTimeSlots(): string[] {
 
 /** Get the earliest allowed date based on lead time */
 function getMinDate(leadTimeHours: number, leadTimeDays: number): string {
-  const now = new Date();
-  if (leadTimeDays > 0) {
-    now.setDate(now.getDate() + leadTimeDays);
-  } else if (leadTimeHours > 0) {
-    now.setHours(now.getHours() + leadTimeHours);
-  }
-  return now.toISOString().split("T")[0]!;
+  // Compute lead time in milliseconds (use days if specified, else hours)
+  const leadTimeMs = (leadTimeDays > 0 ? leadTimeDays * 24 : leadTimeHours) * 60 * 60 * 1000;
+  const minDate = new Date(Date.now() + leadTimeMs);
+  // Format as YYYY-MM-DD in local time (no UTC conversion)
+  const year = minDate.getFullYear();
+  const month = String(minDate.getMonth() + 1).padStart(2, "0");
+  const day = String(minDate.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 const TIME_SLOTS = generateTimeSlots();

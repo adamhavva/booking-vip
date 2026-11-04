@@ -284,9 +284,11 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
 /**
  * Fetch options for select fields (airports, cities, service types, countries, airlines).
  * Returns an empty array on error.
+ * For serviceType, optionally scope by lineSlug.
  */
 export async function getOptions(
-  kind: "airport" | "city" | "serviceType" | "airline" | "country"
+  kind: "airport" | "city" | "serviceType" | "airline" | "country",
+  lineSlug?: string
 ): Promise<OptionDTO[]> {
   try {
     if (kind === "airport") {
@@ -304,15 +306,29 @@ export async function getOptions(
 
     if (kind === "city") {
       const rows = await db.orm.public.Airport
-        .select("id", "city")
+        .select("city")
         .where((f) => f.active.eq(true))
         .where((f) => f.kind.eq("city"))
         .orderBy((f) => f.city.asc())
         .all();
-      return rows.map((r) => ({ value: r.id, label: r.city }));
+      return rows.map((r) => ({ value: r.city, label: r.city }));
     }
 
     if (kind === "serviceType") {
+      // If lineSlug is provided, scope service types to that line
+      if (lineSlug) {
+        const line = await getLineBySlug(lineSlug);
+        if (line) {
+          const rows = await db.orm.public.ServiceType
+            .select("slug", "name")
+            .where((f) => f.lineId.eq(line.id))
+            .where((f) => f.active.eq(true))
+            .orderBy((f) => f.name.asc())
+            .all();
+          return rows.map((r) => ({ value: r.slug, label: r.name }));
+        }
+      }
+      // Fallback: return all active service types
       const rows = await db.orm.public.ServiceType
         .select("slug", "name")
         .where((f) => f.active.eq(true))

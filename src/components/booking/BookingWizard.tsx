@@ -37,7 +37,7 @@ const LAST_BOOKING_KEY = "booking-vip:last-booking";
 export default function BookingWizard() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const { currency, formatMoney, t } = useLocale();
+  const { currency, rates, formatMoney, t } = useLocale();
 
   const slug = params.slug as string;
   const [product, setProduct] = useState<ProductDetailDTO | null>(null);
@@ -150,8 +150,9 @@ export default function BookingWizard() {
 
     const serviceAtISO = new Date(`${date}T${time}:00`).toISOString();
 
-    // Get current FX rate (simplified — use 1 for USD, 16500 for IDR)
-    const fxRate = currency === "IDR" ? 16500 : 1;
+    // Use the live cached FX rate from the provider (same rate shown in UI).
+    // USD rate is implicitly 1; for other currencies pull from `rates`.
+    const fxRate = currency === "USD" ? 1 : (rates[currency] ?? 1);
 
     const result = await createBooking({
       productSlug: slug,
@@ -248,6 +249,7 @@ export default function BookingWizard() {
               code={bookingCode}
               email={contact.email}
               total={total}
+              lineSlug={product.lineSlug}
               productSlug={slug}
             />
           )}

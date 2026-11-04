@@ -241,6 +241,10 @@ export const id: Record<DictKey, string> = {
   "search.ariaLabel": "Cari",
   "search.resultsCount": "{n} hasil untuk",
   "search.emptyHint": "Ketik sesuatu di atas untuk mencari layanan VIP, transportasi, wisata, eVOA, dan promo.",
+  "search.loading": "Mencari…",
+
+  // Home / service layout
+  "home.backToHome": "Kembali ke beranda",
 
   // Product detail
   "product.arrival": "🛬 Kedatangan",

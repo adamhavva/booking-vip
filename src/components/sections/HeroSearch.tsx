@@ -147,15 +147,23 @@ export default function HeroSearch() {
       else if (f.kind === "select-country") kinds.add("country");
     }
 
+    // Derive lineSlug from the selected service's route (e.g., "/transport" -> "transport")
+    const href = SERVICE_ROUTES[service] ?? "/";
+    const lineSlug = href.replace(/^\//, "");
+
     for (const kind of kinds) {
       const key = kind as "airport" | "city" | "serviceType" | "country";
-      if (!options[key]) {
-        getOptions(key).then((opts) => {
-          setOptions((prev) => ({ ...prev, [key]: opts }));
+      // Create a unique cache key that includes lineSlug for serviceType
+      const cacheKey = key === "serviceType" ? `serviceType:${lineSlug}` : key;
+      if (!options[cacheKey]) {
+        // Pass lineSlug for serviceType to scope the options
+        const opts = key === "serviceType" ? lineSlug : undefined;
+        getOptions(key, opts).then((opts) => {
+          setOptions((prev) => ({ ...prev, [cacheKey]: opts }));
         });
       }
     }
-  }, [fields]);
+  }, [fields, service]);
 
   // Restore the last submitted search (persisted on this device).
   useEffect(() => {
@@ -242,7 +250,12 @@ export default function HeroSearch() {
                   let fieldOptions: OptionDTO[] | undefined;
                   if (f.kind === "select-airport") fieldOptions = options.airport;
                   else if (f.kind === "select-city") fieldOptions = options.city;
-                  else if (f.kind === "select-service-type") fieldOptions = options.serviceType;
+                  else if (f.kind === "select-service-type") {
+                    // Use lineSlug-specific cache key
+                    const href = SERVICE_ROUTES[service] ?? "/";
+                    const lineSlug = href.replace(/^\//, "");
+                    fieldOptions = options[`serviceType:${lineSlug}`];
+                  }
                   else if (f.kind === "select-country") fieldOptions = options.country;
 
                   return (

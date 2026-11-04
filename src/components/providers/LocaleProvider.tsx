@@ -31,6 +31,8 @@ type LocaleState = {
   currency: CurrencyCode;
   setCurrency: (c: CurrencyCode) => void;
   formatMoney: (usd: number) => string;
+  /** Live FX rates (e.g. `{IDR: 16500}`). USD is always implicit 1. */
+  rates: Record<string, number>;
   /** Translate a dictionary key using the current language. */
   t: (key: DictKey, vars?: Record<string, string | number>) => string;
 };
@@ -102,8 +104,8 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value = useMemo<LocaleState>(
-    () => ({ lang, setLang, currency, setCurrency, formatMoney, t: translate }),
-    [lang, setLang, currency, setCurrency, formatMoney, translate]
+    () => ({ lang, setLang, currency, setCurrency, formatMoney, rates, t: translate }),
+    [lang, setLang, currency, setCurrency, formatMoney, rates, translate]
   );
 
   return (
@@ -114,8 +116,8 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
 /**
  * Read the current locale/currency + helpers.
  *
- * Contract shape for Tasks 3-5: `{ lang, setLang, currency, setCurrency,
- * formatMoney }` — do not rename fields.
+ * Contract shape: `{ lang, setLang, currency, setCurrency, formatMoney,
+ * rates, t }` — do not rename fields.
  */
 export function useLocale(): LocaleState {
   const ctx = useContext(LocaleContext);

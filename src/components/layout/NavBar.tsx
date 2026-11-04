@@ -174,7 +174,7 @@ export default function NavBar({
                   <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-brand to-brand-dark text-[9px] font-bold text-white">
                     MB
                   </span>
-                  My Booking
+                  {t("nav.myBooking")}
                 </Link>
               </li>
             </ul>

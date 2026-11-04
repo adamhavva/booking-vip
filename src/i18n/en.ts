@@ -239,6 +239,10 @@ export const en = {
   "search.ariaLabel": "Search",
   "search.resultsCount": "{n} result{plural} for",
   "search.emptyHint": "Type something above to search across VIP services, transport, tours, eVOA, and promos.",
+  "search.loading": "Searching…",
+
+  // Home / service layout
+  "home.backToHome": "Back to home",
 
   // Product detail
   "product.arrival": "🛬 Arrival",

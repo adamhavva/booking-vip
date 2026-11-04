@@ -8,10 +8,11 @@ type Props = {
   code: string;
   email: string;
   total: number;
+  lineSlug: string;
   productSlug: string;
 };
 
-export default function StepResult({ code, email, total, productSlug }: Props) {
+export default function StepResult({ code, email, total, lineSlug, productSlug }: Props) {
   const { formatMoney, t } = useLocale();
 
   return (
@@ -56,7 +57,7 @@ export default function StepResult({ code, email, total, productSlug }: Props) {
           {t("wizard.result.viewBooking")}
         </Link>
         <Link
-          href={`/${productSlug.split("-")[0]}`}
+          href={`/${lineSlug}/${productSlug}`}
           className="rounded-xl border border-line bg-white px-6 py-3 text-base font-bold text-ink transition-colors hover:bg-canvas"
         >
           {t("wizard.result.bookAnother")}

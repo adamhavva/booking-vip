@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import Container from "@/components/ui/Container";
 import Header from "@/components/layout/Header";
 import BottomTabBar from "@/components/sections/BottomTabBar";
 import Footer from "@/components/sections/Footer";
 import SearchResults from "@/components/sections/SearchResults";
+import SearchFallback from "./SearchFallback";
 
 export const metadata: Metadata = {
   title: "Search - Booking VIP",
@@ -17,13 +17,7 @@ export default function SearchPage() {
       <Header variant="solid" />
 
       <main className="flex-1">
-        <Suspense
-          fallback={
-            <Container className="py-8">
-              <p className="text-sm text-muted">Searching…</p>
-            </Container>
-          }
-        >
+        <Suspense fallback={<SearchFallback />}>
           <SearchResults />
         </Suspense>
       </main>

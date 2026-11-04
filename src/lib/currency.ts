@@ -121,3 +121,17 @@ export function formatMoneyWith(
     maximumFractionDigits: spec.decimals,
   }).format(converted);
 }
+
+/**
+ * Format a USD amount using a *fixed* currency snapshot (the values recorded
+ * at booking time). Unlike `formatMoneyWith(usd, liveCurrency, liveRates)`,
+ * this always renders in the currency/rate the customer originally saw —
+ * even if they later switch locale in the UI.
+ */
+export function formatSnapshot(
+  usd: number,
+  currencyCode: string,
+  fxRate: number
+): string {
+  return formatMoneyWith(usd, currencyCode, { [currencyCode]: fxRate });
+}
