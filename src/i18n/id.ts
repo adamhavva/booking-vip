@@ -234,4 +234,29 @@ export const id: Record<DictKey, string> = {
   "banner.corporateTitle": "Booking VIP untuk Perusahaan",
   "banner.corporateSubtitle": "Manajemen perjalanan VIP untuk eksekutif dan tamu Anda",
   "banner.corporateCta": "Pelajari lebih lanjut",
+
+  // Search results
+  "search.title": "Hasil pencarian",
+  "search.placeholder": "Cari layanan VIP, wisata, transfer…",
+  "search.ariaLabel": "Cari",
+  "search.resultsCount": "{n} hasil untuk",
+  "search.emptyHint": "Ketik sesuatu di atas untuk mencari layanan VIP, transportasi, wisata, eVOA, dan promo.",
+
+  // Product detail
+  "product.arrival": "🛬 Kedatangan",
+  "product.departure": "🛫 Keberangkatan",
+  "product.bothDirections": "🔄 Dua arah",
+  "product.leadTimeHours": "Pesan minimal {n} jam sebelumnya",
+  "product.leadTimeDays": "Pesan minimal {n} hari sebelumnya",
+  "product.availableNow": "Tersedia sekarang",
+  "product.notFoundTitle": "Produk tidak ditemukan",
+  "product.notFoundDesc": "Produk yang Anda cari tidak ada atau telah dihapus.",
+  "product.backTo": "← Kembali ke {line}",
+  "product.home": "Beranda",
+  "product.about": "Tentang",
+  "product.requirements": "Persyaratan",
+  "product.included": "Termasuk",
+  "product.notIncluded": "Tidak Termasuk",
+  "product.none": "Tidak ada",
+  "product.canAdd": "Bisa ditambah",
 };

@@ -14,7 +14,7 @@ export default function SearchResults() {
   const router = useRouter();
   const q = params.get("q") ?? "";
   const [query, setQuery] = useState(q);
-  const { formatMoney } = useLocale();
+  const { formatMoney, t } = useLocale();
 
   const results = useMemo(() => searchAll(q), [q]);
 
@@ -26,7 +26,7 @@ export default function SearchResults() {
   return (
     <Container as="section" className="py-8">
       <h1 className="text-xl font-extrabold text-ink md:text-2xl">
-        Search results
+        {t("search.title")}
       </h1>
 
       <form onSubmit={submit} className="relative mt-4 max-w-lg">
@@ -38,23 +38,22 @@ export default function SearchResults() {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search VIP services, tours, transfers…"
-          aria-label="Search"
+          placeholder={t("search.placeholder")}
+          aria-label={t("search.ariaLabel")}
           className="h-11 w-full rounded-full border border-line bg-white pl-11 pr-4 text-sm text-ink outline-none focus:border-brand"
         />
       </form>
 
       {q && (
         <p className="mt-4 text-sm text-muted">
-          {results.length} result{results.length === 1 ? "" : "s"} for{" "}
-          <span className="font-semibold text-ink">“{q}”</span>
+          {t("search.resultsCount", { n: results.length, plural: results.length === 1 ? "" : "s" })}{" "}
+          <span className="font-semibold text-ink">&ldquo;{q}&rdquo;</span>
         </p>
       )}
 
       {!q && (
         <p className="mt-6 text-sm text-muted">
-          Type something above to search across VIP services, transport, tours,
-          eVOA, and promos.
+          {t("search.emptyHint")}
         </p>
       )}
 

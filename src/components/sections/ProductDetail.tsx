@@ -10,17 +10,20 @@ import Thumb from "@/components/ui/Thumb";
 import type { ProductDetailDTO } from "@/types";
 import { getProduct } from "@/app/actions/catalog";
 import BookingBox from "@/components/booking/BookingBox";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 function DirectionBadge({ direction }: { direction: string }) {
-  if (direction === "arrival") return <span>🛬 Arrival</span>;
-  if (direction === "departure") return <span>🛫 Departure</span>;
-  return <span>🔄 Both directions</span>;
+  const { t } = useLocale();
+  if (direction === "arrival") return <span>{t("product.arrival")}</span>;
+  if (direction === "departure") return <span>{t("product.departure")}</span>;
+  return <span>{t("product.bothDirections")}</span>;
 }
 
 function LeadTimeLabel({ hours, days }: { hours: number; days: number }) {
-  if (days > 0) return <span>Book at least {days} day{days > 1 ? "s" : ""} ahead</span>;
-  if (hours > 0) return <span>Book at least {hours} hour{hours > 1 ? "s" : ""} ahead</span>;
-  return <span>Available now</span>;
+  const { t } = useLocale();
+  if (days > 0) return <span>{t("product.leadTimeDays", { n: days, plural: days > 1 ? "s" : "" })}</span>;
+  if (hours > 0) return <span>{t("product.leadTimeHours", { n: hours, plural: hours > 1 ? "s" : "" })}</span>;
+  return <span>{t("product.availableNow")}</span>;
 }
 
 /**
@@ -29,6 +32,7 @@ function LeadTimeLabel({ hours, days }: { hours: number; days: number }) {
 export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
   const params = useParams();
   const slug = params.slug as string;
+  const { t } = useLocale();
   const [product, setProduct] = useState<ProductDetailDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [infoTab, setInfoTab] = useState(0);
@@ -57,29 +61,29 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
     return (
       <Container className="py-10">
         <div className="rounded-xl border border-line bg-canvas p-8 text-center">
-          <p className="text-lg font-semibold text-ink">Product not found</p>
+          <p className="text-lg font-semibold text-ink">{t("product.notFoundTitle")}</p>
           <p className="mt-2 text-sm text-muted">
-            The product you&apos;re looking for doesn&apos;t exist or has been removed.
+            {t("product.notFoundDesc")}
           </p>
           <Link
             href={`/${lineSlug}`}
             className="mt-4 inline-block rounded-xl bg-brand px-6 py-2 text-sm font-bold text-white hover:bg-brand-dark"
           >
-            &larr; Back to {lineSlug}
+            {t("product.backTo", { line: lineSlug })}
           </Link>
         </div>
       </Container>
     );
   }
 
-  const infoTabs = ["Included", "Not Included"];
+  const infoTabs = [t("product.included"), t("product.notIncluded")];
   const infoLists = [product.included, product.notIncluded];
 
   return (
     <Container className="py-10">
       {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-2 text-sm text-muted">
-        <Link href="/" className="hover:text-brand">Home</Link>
+        <Link href="/" className="hover:text-brand">{t("product.home")}</Link>
         <span>›</span>
         <Link href={`/${lineSlug}`} className="capitalize hover:text-brand">
           {lineSlug.replace("-", " ")}
@@ -132,7 +136,7 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
           {/* Description */}
           {product.description && (
             <div className="mb-6">
-              <h2 className="mb-2 text-lg font-extrabold text-ink">About</h2>
+              <h2 className="mb-2 text-lg font-extrabold text-ink">{t("product.about")}</h2>
               <p className="text-sm leading-relaxed text-muted">{product.description}</p>
             </div>
           )}
@@ -140,7 +144,7 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
           {/* Requirements */}
           {product.requirements.length > 0 && (
             <div className="mb-6">
-              <h2 className="mb-2 text-lg font-extrabold text-ink">Requirements</h2>
+              <h2 className="mb-2 text-lg font-extrabold text-ink">{t("product.requirements")}</h2>
               <ul className="space-y-1.5 text-sm text-muted">
                 {product.requirements.map((req, i) => (
                   <li key={i} className="flex items-start gap-2">
@@ -173,7 +177,7 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
                     </li>
                   ))
                 ) : (
-                  <li className="text-muted">None</li>
+                  <li className="text-muted">{t("product.none")}</li>
                 )}
               </ul>
             </div>
@@ -182,7 +186,7 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
           {/* Add-ons */}
           {product.addOns.length > 0 && (
             <div className="mb-6">
-              <h2 className="mb-2 text-lg font-extrabold text-ink">Can add</h2>
+              <h2 className="mb-2 text-lg font-extrabold text-ink">{t("product.canAdd")}</h2>
               <div className="flex flex-wrap gap-2">
                 {product.addOns.map((a) => (
                   <Badge key={a.slug} variant="light">

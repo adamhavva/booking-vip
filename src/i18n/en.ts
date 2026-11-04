@@ -232,6 +232,31 @@ export const en = {
   "banner.corporateTitle": "Booking VIP for Corporate",
   "banner.corporateSubtitle": "VIP travel management for your executives and guests",
   "banner.corporateCta": "Learn more",
+
+  // Search results
+  "search.title": "Search results",
+  "search.placeholder": "Search VIP services, tours, transfers…",
+  "search.ariaLabel": "Search",
+  "search.resultsCount": "{n} result{plural} for",
+  "search.emptyHint": "Type something above to search across VIP services, transport, tours, eVOA, and promos.",
+
+  // Product detail
+  "product.arrival": "🛬 Arrival",
+  "product.departure": "🛫 Departure",
+  "product.bothDirections": "🔄 Both directions",
+  "product.leadTimeHours": "Book at least {n} hour{plural} ahead",
+  "product.leadTimeDays": "Book at least {n} day{plural} ahead",
+  "product.availableNow": "Available now",
+  "product.notFoundTitle": "Product not found",
+  "product.notFoundDesc": "The product you're looking for doesn't exist or has been removed.",
+  "product.backTo": "← Back to {line}",
+  "product.home": "Home",
+  "product.about": "About",
+  "product.requirements": "Requirements",
+  "product.included": "Included",
+  "product.notIncluded": "Not Included",
+  "product.none": "None",
+  "product.canAdd": "Can add",
 } as const;
 
 export type DictKey = keyof typeof en;
