@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Container from "@/components/ui/Container";
-import { ChevronDown, UserIcon } from "@/components/icons";
+import { UserIcon } from "@/components/icons";
 import { utilityLinks } from "@/data/home";
 import Logo from "./Logo";
 import NavBar from "./NavBar";
+import LocaleMenu from "./LocaleMenu";
 
 /**
  * Site header: utility bar + brand row, followed by the {@link NavBar}.
@@ -57,13 +58,7 @@ export default function Header({
               {u.label}
             </Link>
           ))}
-          <button
-            className={`flex items-center gap-1 ${
-              solid ? "hover:text-ink" : "hover:text-white"
-            }`}
-          >
-            EN | USD <ChevronDown width={14} height={14} />
-          </button>
+          <LocaleMenu variant={solid ? "solid" : "overlay"} />
         </Container>
       </div>
 
@@ -82,6 +77,9 @@ export default function Header({
           >
             Sign in
           </Link>
+          <div className="text-xs lg:hidden">
+            <LocaleMenu variant={solid ? "solid" : "overlay"} />
+          </div>
           <button
             aria-label="Account"
             className={`flex h-9 w-9 items-center justify-center rounded-full lg:hidden ${

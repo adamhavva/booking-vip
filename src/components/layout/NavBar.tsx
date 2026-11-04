@@ -7,6 +7,8 @@ import Container from "@/components/ui/Container";
 import { CloseIcon, MenuIcon, SearchIcon } from "@/components/icons";
 import { searchPlaceholders } from "@/data/home";
 import { serviceNav } from "@/data/services";
+import { useLocale, type Lang } from "@/components/providers/LocaleProvider";
+import { SUPPORTED, type CurrencyCode } from "@/lib/currency";
 
 /**
  * Primary navigation bar: the search field plus the four service menus.
@@ -20,6 +22,7 @@ export default function NavBar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { lang, setLang, currency, setCurrency } = useLocale();
   const solid = variant === "solid";
 
   const [idx, setIdx] = useState(0);
@@ -144,6 +147,65 @@ export default function NavBar({
                 );
               })}
             </ul>
+
+            <div
+              className={`my-2 h-px ${
+                solid ? "bg-line" : "bg-white/15"
+              }`}
+            />
+
+            <div
+              className={`px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider ${
+                solid ? "text-muted" : "text-white/50"
+              }`}
+            >
+              Language
+            </div>
+            <div className="flex gap-2 px-2">
+              {([
+                { code: "en" as Lang, label: "English" },
+                { code: "id" as Lang, label: "Indonesia" },
+              ]).map((l) => (
+                <button
+                  key={l.code}
+                  onClick={() => setLang(l.code)}
+                  className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-semibold transition-colors ${
+                    lang === l.code
+                      ? "bg-brand-soft text-brand"
+                      : solid
+                        ? "bg-canvas text-ink"
+                        : "bg-white/10 text-white/90"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
+
+            <div
+              className={`mt-3 px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider ${
+                solid ? "text-muted" : "text-white/50"
+              }`}
+            >
+              Currency
+            </div>
+            <div className="flex gap-2 px-2">
+              {SUPPORTED.map((s) => (
+                <button
+                  key={s.code}
+                  onClick={() => setCurrency(s.code as CurrencyCode)}
+                  className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-semibold transition-colors ${
+                    currency === s.code
+                      ? "bg-brand-soft text-brand"
+                      : solid
+                        ? "bg-canvas text-ink"
+                        : "bg-white/10 text-white/90"
+                  }`}
+                >
+                  {s.symbol} {s.code}
+                </button>
+              ))}
+            </div>
           </Container>
         </div>
       )}

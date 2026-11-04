@@ -43,6 +43,7 @@ export type SearchResult = {
   subtitle: string;
   href: string;
   tone: string;
+  priceUsd?: number;
 };
 
 /** A search the user submitted — persisted in localStorage. */

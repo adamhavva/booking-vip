@@ -7,12 +7,14 @@ import Container from "@/components/ui/Container";
 import Thumb from "@/components/ui/Thumb";
 import { ArrowRightIcon, SearchIcon } from "@/components/icons";
 import { searchAll } from "@/data/search";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export default function SearchResults() {
   const params = useSearchParams();
   const router = useRouter();
   const q = params.get("q") ?? "";
   const [query, setQuery] = useState(q);
+  const { formatMoney } = useLocale();
 
   const results = useMemo(() => searchAll(q), [q]);
 
@@ -71,8 +73,15 @@ export default function SearchResults() {
                 <span className="block truncate text-sm font-semibold text-ink">
                   {r.title}
                 </span>
-                <span className="block truncate text-xs text-muted">
-                  {r.subtitle}
+                <span className="flex items-center gap-2">
+                  <span className="truncate text-xs text-muted">
+                    {r.subtitle}
+                  </span>
+                  {typeof r.priceUsd === "number" && (
+                    <span className="shrink-0 text-xs font-semibold text-danger">
+                      {formatMoney(r.priceUsd)}
+                    </span>
+                  )}
                 </span>
               </span>
               <ArrowRightIcon
