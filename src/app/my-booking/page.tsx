@@ -4,6 +4,7 @@ import Footer from "@/components/sections/Footer";
 import Container from "@/components/ui/Container";
 import MyBookingLookup from "@/components/booking/MyBookingLookup";
 import { MyBookingHeader } from "./MyBookingHeader";
+import { MyBookingFallback } from "./MyBookingFallback";
 
 export default function MyBookingPage() {
   return (
@@ -14,13 +15,7 @@ export default function MyBookingPage() {
       <main className="min-h-screen bg-canvas pt-6">
         <Container>
           <MyBookingHeader />
-          <Suspense
-            fallback={
-              <div className="py-12 text-center">
-                <p className="text-muted">Loading…</p>
-              </div>
-            }
-          >
+          <Suspense fallback={<MyBookingFallback />}>
             <MyBookingLookup />
           </Suspense>
         </Container>
