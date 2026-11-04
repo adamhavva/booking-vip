@@ -279,21 +279,21 @@ export async function createBooking(
         }
       }
 
-      // 4. Contact
+      // 4. Contact (normalize: trim names, lowercase+trim email for case-insensitive lookup)
       const contactId = crypto.randomUUID();
       await db.orm.public.Contact.create({
         id: contactId,
         bookingId,
-        firstName: input.contact.firstName,
-        lastName: input.contact.lastName,
-        email: input.contact.email,
+        firstName: input.contact.firstName.trim(),
+        lastName: input.contact.lastName.trim(),
+        email: input.contact.email.trim().toLowerCase(),
         phoneCountryCode: input.contact.phoneCountryCode,
         phone: input.contact.phone,
         isGuestSelf: input.contact.isGuestSelf,
         notes: input.contact.notes ?? null,
       });
 
-      // 5. Traveler*
+      // 5. Traveler* (normalize names)
       for (let i = 0; i < input.travelers.length; i++) {
         const traveler = input.travelers[i];
         if (traveler) {
@@ -301,7 +301,7 @@ export async function createBooking(
           await db.orm.public.Traveler.create({
             id: travelerId,
             bookingId,
-            fullName: traveler.fullName,
+            fullName: traveler.fullName.trim(),
             kind: traveler.kind,
             sortOrder: i,
           });
@@ -397,7 +397,11 @@ export async function getBookingByCode(
       .all();
 
     const contact = contacts[0];
-    if (!contact || contact.email.toLowerCase() !== email.toLowerCase()) {
+    // Case-insensitive + whitespace-tolerant comparison on both sides.
+    if (
+      !contact ||
+      contact.email.trim().toLowerCase() !== email.trim().toLowerCase()
+    ) {
       return { found: false, reason: "not_found" };
     }
 

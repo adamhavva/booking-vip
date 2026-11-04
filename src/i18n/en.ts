@@ -149,6 +149,7 @@ export const en = {
   "wizard.payment.processing": "Processing...",
   "wizard.payment.bookNow": "Book Now",
   "wizard.payment.fullPayment": "Full payment — no deposit",
+  "wizard.missingDate": "Please choose a valid date and time to continue.",
 
   // Step result
   "wizard.result.title": "Booking Confirmed!",

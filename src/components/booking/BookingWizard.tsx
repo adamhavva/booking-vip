@@ -42,7 +42,6 @@ export default function BookingWizard() {
   const slug = params.slug as string;
   const [product, setProduct] = useState<ProductDetailDTO | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Read query params
   const date = searchParams.get("date") ?? "";
@@ -145,10 +144,19 @@ export default function BookingWizard() {
   const handleSubmit = async () => {
     if (!product || !selectedPackage) return;
 
+    // Guard against missing/invalid date/time BEFORE constructing the ISO
+    // string — `new Date(...).toISOString()` throws RangeError on invalid input.
+    const serviceAtValue =
+      date && time ? new Date(`${date}T${time}:00`) : null;
+    if (!date || !time || !serviceAtValue || !Number.isFinite(serviceAtValue.getTime())) {
+      setSubmitError(t("wizard.missingDate"));
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const serviceAtISO = new Date(`${date}T${time}:00`).toISOString();
+    const serviceAtISO = serviceAtValue.toISOString();
 
     // Use the live cached FX rate from the provider (same rate shown in UI).
     // USD rate is implicitly 1; for other currencies pull from `rates`.
@@ -197,10 +205,10 @@ export default function BookingWizard() {
     );
   }
 
-  if (error || !product) {
+  if (!product) {
     return (
       <div className="py-12 text-center">
-        <p className="text-danger">{error ?? t("common.productNotFound")}</p>
+        <p className="text-danger">{t("common.productNotFound")}</p>
       </div>
     );
   }

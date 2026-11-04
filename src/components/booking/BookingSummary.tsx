@@ -50,14 +50,16 @@ export default function BookingSummary({
   const addOnsTotal = addOns.reduce((sum, a) => sum + a.unitUsd * a.qty, 0);
   const total = subtotal + addOnsTotal;
 
-  const formattedDate = date
-    ? new Date(date + "T00:00:00").toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
-    : "";
+  const dateValue = date ? new Date(date + "T00:00:00") : null;
+  const formattedDate =
+    dateValue && Number.isFinite(dateValue.getTime())
+      ? dateValue.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "";
 
   return (
     <div className="rounded-2xl border border-line bg-white p-5 shadow-sm lg:sticky lg:top-24">

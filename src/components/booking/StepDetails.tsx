@@ -82,14 +82,16 @@ export default function StepDetails({
     onTravelersChange(updated);
   };
 
-  const formattedDate = date
-    ? new Date(date + "T00:00:00").toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
-    : "";
+  const dateValue = date ? new Date(date + "T00:00:00") : null;
+  const formattedDate =
+    dateValue && Number.isFinite(dateValue.getTime())
+      ? dateValue.toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "";
 
   const canContinue =
     contact.firstName &&

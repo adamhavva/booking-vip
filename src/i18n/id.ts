@@ -151,6 +151,7 @@ export const id: Record<DictKey, string> = {
   "wizard.payment.processing": "Memproses...",
   "wizard.payment.bookNow": "Pesan Sekarang",
   "wizard.payment.fullPayment": "Pembayaran penuh — tanpa deposit",
+  "wizard.missingDate": "Pilih tanggal dan waktu yang valid untuk melanjutkan.",
 
   // Step result
   "wizard.result.title": "Pemesanan Dikonfirmasi!",
