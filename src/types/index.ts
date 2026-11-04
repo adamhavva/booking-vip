@@ -1,5 +1,10 @@
 export type { Article } from "./article";
 export type {
+  BookingLookupDTO,
+  CreateBookingInput,
+  CreateBookingResult,
+} from "./booking";
+export type {
   AddOnDTO,
   CatalogDTO,
   OptionDTO,

@@ -343,3 +343,21 @@ export async function getOptions(
     return [];
   }
 }
+
+/**
+ * Fetch active payment methods.
+ * Returns an empty array on error.
+ */
+export async function getPaymentMethods(): Promise<{ code: string; label: string }[]> {
+  try {
+    const rows = await db.orm.public.PaymentMethod
+      .select("code", "label")
+      .where((f) => f.active.eq(true))
+      .orderBy((f) => f.sortOrder.asc())
+      .all();
+    return rows.map((r) => ({ code: r.code, label: r.label }));
+  } catch (error) {
+    console.error("[catalog] could not load payment methods", error);
+    return [];
+  }
+}

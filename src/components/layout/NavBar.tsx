@@ -94,6 +94,20 @@ export default function NavBar({
               </li>
             );
           })}
+          <li>
+            <Link
+              href="/my-booking"
+              className={`block whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
+                pathname === "/my-booking"
+                  ? "bg-brand-soft text-brand"
+                  : solid
+                    ? "text-ink hover:bg-canvas"
+                    : "text-white/90 hover:bg-white/10"
+              }`}
+            >
+              My Booking
+            </Link>
+          </li>
         </ul>
 
         {/* Mobile menu toggle */}
@@ -146,6 +160,23 @@ export default function NavBar({
                   </li>
                 );
               })}
+              <li>
+                <Link
+                  href="/my-booking"
+                  className={`flex items-center gap-2 rounded-lg px-2 py-2.5 text-sm font-semibold ${
+                    pathname === "/my-booking"
+                      ? "bg-brand-soft text-brand"
+                      : solid
+                        ? "text-ink"
+                        : "text-white/90"
+                  }`}
+                >
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-brand to-brand-dark text-[9px] font-bold text-white">
+                    MB
+                  </span>
+                  My Booking
+                </Link>
+              </li>
             </ul>
 
             <div
