@@ -19,3 +19,305 @@ model SearchLog {
 
   @@index([createdAt])
 }
+
+/// Top-level service line (VIP, Transport, Tour, eVOA).
+model ServiceLine {
+  id        String        @id @default(uuid())
+  slug      String        @unique
+  label     String
+  short     String
+  tone      String
+  sortOrder Int           @default(0)
+  active    Boolean       @default(true)
+  types     ServiceType[]
+  products  Product[]
+  priceTiers PriceTier[]
+}
+
+/// Sub-category within a line (e.g. Meet & Greet, Sedan, Tourist eVOA).
+model ServiceType {
+  id        String    @id @default(uuid())
+  lineId    String
+  slug      String
+  name      String
+  sortOrder Int       @default(0)
+  active    Boolean   @default(true)
+  line      ServiceLine @relation(fields: [lineId], references: [id])
+  products  Product[]
+
+  @@unique([lineId, slug])
+}
+
+/// Airport or city reference (used by Products for geographic scope).
+model Airport {
+  id         String    @id @default(uuid())
+  /// "airport" | "city"
+  kind       String    @default("airport")
+  iataCode   String?   @unique
+  name       String
+  city       String
+  country    String    @default("Indonesia")
+  active     Boolean   @default(true)
+  products   Product[]
+}
+
+/// A bookable product (VIP service, vehicle, tour package, eVOA plan).
+/// `direction` allowed values: "arrival" | "departure" | "both"
+/// `isAddOn`: true for add-on products that piggyback on other bookings.
+model Product {
+  id               String    @id @default(uuid())
+  slug             String    @unique
+  lineId           String
+  serviceTypeId    String?
+  airportId        String?
+  title            String
+  description      String    @default("")
+  /// "arrival" | "departure" | "both"
+  direction        String    @default("both")
+  leadTimeHours    Int       @default(0)
+  leadTimeDays     Int       @default(0)
+  included         Json      @default("[]")
+  notIncluded      Json      @default("[]")
+  requirements     Json      @default("[]")
+  isAddOn          Boolean   @default(false)
+  imageUrl         String?
+  tone             String    @default("from-sky-400 to-blue-600")
+  ribbon           String?
+  rating           Float?
+  reviews          Int?
+  durationLabel    String?
+  fromPriceUsdCents Int?
+  active           Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  line             ServiceLine   @relation(fields: [lineId], references: [id])
+  serviceType      ServiceType?  @relation(fields: [serviceTypeId], references: [id])
+  airport          Airport?      @relation(fields: [airportId], references: [id])
+  packages         ProductPackage[]
+  /// Add-ons this product offers (where this product is the host).
+  hostAddOns       ProductAddOn[] @relation("HostAddOns")
+  /// Add-ons where this product is the offered add-on itself.
+  addOnOffers      ProductAddOn[] @relation("AddOnOffers")
+  amenities        ProductAmenity[]
+  bookingItems     BookingItem[]
+  bookingAddOns    BookingAddOn[]
+
+  @@index([lineId])
+}
+
+/// A purchasable package/variant of a Product (e.g. Standard per-pax tier, or a 6hr/10hr hourly hire).
+/// `unitKind` allowed values: "per_pax" | "per_unit"
+model ProductPackage {
+  id              String    @id @default(uuid())
+  productId       String
+  label           String
+  /// "per_pax" | "per_unit"
+  unitKind        String    @default("per_pax")
+  adultUsdCents   Int?
+  childUsdCents   Int?
+  infantUsdCents  Int?      @default(0)
+  unitUsdCents    Int?
+  durationHours   Int?
+  extraHourUsdCents Int?
+  sortOrder       Int       @default(0)
+  active          Boolean   @default(true)
+  product         Product   @relation(fields: [productId], references: [id])
+  bookingItems    BookingItem[]
+}
+
+/// Price band used for UI filtering of catalog results per line.
+model PriceTier {
+  id          String      @id @default(uuid())
+  lineId      String?
+  label       String
+  maxUsdCents Int
+  sortOrder   Int         @default(0)
+  active      Boolean     @default(true)
+  line        ServiceLine? @relation(fields: [lineId], references: [id])
+}
+
+/// An amenity (e.g. "With Driver", "AC"). Join table `ProductAmenity`.
+model Amenity {
+  id       String           @id @default(uuid())
+  label    String           @unique
+  products ProductAmenity[]
+}
+
+model ProductAmenity {
+  id        String  @id @default(uuid())
+  productId String
+  amenityId String
+  product   Product @relation(fields: [productId], references: [id])
+  amenity   Amenity @relation(fields: [amenityId], references: [id])
+
+  @@unique([productId, amenityId])
+}
+
+/// Directed edge: product (host) offers product (addOn).
+model ProductAddOn {
+  id        String  @id @default(uuid())
+  productId String
+  addOnId   String
+  sortOrder Int     @default(0)
+  product   Product @relation("HostAddOns", fields: [productId], references: [id])
+  addOn     Product @relation("AddOnOffers", fields: [addOnId], references: [id])
+
+  @@unique([productId, addOnId])
+}
+
+/// A customer booking (one per checkout wizard).
+/// `status` allowed values: "awaiting_payment" | "confirmed" | "cancelled" | "completed"
+model Booking {
+  id              String    @id @default(uuid())
+  code            String    @unique
+  /// "awaiting_payment" | "confirmed" | "cancelled" | "completed"
+  status          String    @default("awaiting_payment")
+  serviceAt       DateTime
+  adultCount      Int       @default(1)
+  childCount      Int       @default(0)
+  infantCount     Int       @default(0)
+  subtotalUsdCents Int
+  addOnsUsdCents  Int       @default(0)
+  totalUsdCents   Int
+  currencyCode    String    @default("USD")
+  fxRate          Float     @default(1)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  contact         Contact?
+  flight          FlightDetails?
+  travelers       Traveler[]
+  items           BookingItem[]
+  addOns          BookingAddOn[]
+  payments        Payment[]
+
+  @@index([createdAt])
+}
+
+model BookingItem {
+  id            String   @id @default(uuid())
+  bookingId     String
+  productId     String
+  packageId     String?
+  label         String
+  packageLabel  String?
+  /// "per_pax" | "per_unit"
+  unitKind      String
+  adultCount    Int
+  childCount    Int
+  infantCount   Int
+  unitUsdCents  Int
+  totalUsdCents Int
+  booking       Booking  @relation(fields: [bookingId], references: [id])
+  product       Product  @relation(fields: [productId], references: [id])
+  package       ProductPackage? @relation(fields: [packageId], references: [id])
+}
+
+model BookingAddOn {
+  id             String  @id @default(uuid())
+  bookingId      String
+  addOnProductId String
+  label          String
+  quantity       Int     @default(1)
+  unitUsdCents   Int
+  totalUsdCents  Int
+  booking        Booking @relation(fields: [bookingId], references: [id])
+  addOnProduct   Product @relation(fields: [addOnProductId], references: [id])
+}
+
+model Contact {
+  id              String  @id @default(uuid())
+  bookingId       String  @unique
+  firstName       String
+  lastName        String
+  email           String
+  phoneCountryCode String
+  phone           String
+  isGuestSelf     Boolean @default(true)
+  notes           String?
+  booking         Booking @relation(fields: [bookingId], references: [id])
+}
+
+model Traveler {
+  id        String  @id @default(uuid())
+  bookingId String
+  fullName  String
+  /// "adult" | "child" | "infant"
+  kind      String
+  sortOrder Int
+  booking   Booking @relation(fields: [bookingId], references: [id])
+}
+
+model FlightDetails {
+  id           String  @id @default(uuid())
+  bookingId    String  @unique
+  /// "arrival" | "departure"
+  airportName  String?
+  location     String?
+  airline      String?
+  flightCode   String?
+  /// "arrival" | "departure"
+  direction    String?
+  booking      Booking @relation(fields: [bookingId], references: [id])
+}
+
+model PaymentMethod {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  label     String
+  sortOrder Int       @default(0)
+  active    Boolean   @default(true)
+  payments  Payment[]
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  bookingId      String
+  methodId       String?
+  /// "pending" | "paid" | "failed" | "refunded"
+  status         String   @default("pending")
+  amountUsdCents Int
+  currencyCode   String
+  fxRate         Float    @default(1)
+  reference      String?
+  createdAt      DateTime @default(now())
+  booking        Booking  @relation(fields: [bookingId], references: [id])
+  method         PaymentMethod? @relation(fields: [methodId], references: [id])
+}
+
+model Currency {
+  code        String        @id
+  name        String
+  symbol      String
+  decimals    Int           @default(2)
+  locale      String        @default("en-US")
+  isDefault   Boolean       @default(false)
+  sortOrder   Int           @default(0)
+  active      Boolean       @default(true)
+  rate        ExchangeRate?
+}
+
+model ExchangeRate {
+  code       String   @id
+  ratePerUsd Float
+  /// ISO date (YYYY-MM-DD) this rate is quoted for.
+  rateDate   String
+  fetchedAt  DateTime @default(now())
+  currency   Currency @relation(fields: [code], references: [code])
+}
+
+model Airline {
+  id     String  @id @default(uuid())
+  code   String  @unique
+  name   String
+  active Boolean @default(true)
+}
+
+model Country {
+  id       String  @id @default(uuid())
+  code     String  @unique
+  name     String
+  dialCode String
+  active   Boolean @default(true)
+}

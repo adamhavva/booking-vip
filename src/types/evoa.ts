@@ -1,4 +1,5 @@
 export type EvoaPlan = {
+  slug: string;
   name: string;
   destination: string;
   stay: string;

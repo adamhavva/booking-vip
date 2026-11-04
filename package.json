@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "contract:emit": "prisma contract emit"
+    "contract:emit": "prisma contract emit",
+    "db:seed": "node --experimental-strip-types scripts/seed.mts"
   },
   "dependencies": {
     "@prisma/client": "^7.10.1",

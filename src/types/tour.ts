@@ -1,4 +1,5 @@
 export type Tour = {
+  slug: string;
   title: string;
   location: string;
   duration: string;

@@ -1,4 +1,5 @@
 export type VipService = {
+  slug: string;
   title: string;
   desc: string;
   airport: string;

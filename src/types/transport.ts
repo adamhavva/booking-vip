@@ -1,4 +1,5 @@
 export type Transport = {
+  slug: string;
   model: string;
   category: string;
   seats: number;
