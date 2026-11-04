@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import Container from "@/components/ui/Container";
 import Header from "@/components/layout/Header";
@@ -7,6 +6,7 @@ import BookingPanel from "@/components/sections/BookingPanel";
 import Footer from "@/components/sections/Footer";
 import ServiceCatalog from "@/components/sections/ServiceCatalog";
 import ServiceSearchSection from "@/components/sections/ServiceSearchSection";
+import BackToHomeLink from "@/components/sections/BackToHomeLink";
 import type { ServicePage } from "@/types";
 
 /**
@@ -22,12 +22,7 @@ export default function ServiceLayout({ service }: { service: ServicePage }) {
         {/* Hero band */}
         <section className="bg-gradient-to-b from-hero-from via-hero-via to-hero-to py-12 md:py-16">
           <Container>
-            <Link
-              href="/"
-              className="text-sm font-semibold text-white/70 hover:text-white"
-            >
-              &larr; Back to home
-            </Link>
+            <BackToHomeLink />
             <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-white/60">
               {service.eyebrow}
             </p>
