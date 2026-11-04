@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getPaymentMethods } from "@/app/actions/catalog";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 type PaymentMethodDTO = {
   code: string;
@@ -21,6 +22,8 @@ export default function StepPayment({
   isSubmitting,
   error,
 }: Props) {
+  const { t } = useLocale();
+
   const [methods, setMethods] = useState<PaymentMethodDTO[]>([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -35,7 +38,7 @@ export default function StepPayment({
 
   return (
     <div>
-      <h2 className="mb-4 text-xl font-bold text-ink">Payment</h2>
+      <h2 className="mb-4 text-xl font-bold text-ink">{t("wizard.payment.title")}</h2>
 
       {loaded && !hasMethods ? (
         <div className="mb-6 rounded-2xl border border-line bg-canvas p-8 text-center">
@@ -57,17 +60,14 @@ export default function StepPayment({
             </div>
           </div>
           <p className="mb-2 text-base font-semibold text-ink">
-            Payment options are being set up
+            {t("wizard.payment.setupTitle")}
           </p>
-          <p className="text-sm text-muted">
-            You can still confirm your booking — our team will send the payment
-            link to your email.
-          </p>
+          <p className="text-sm text-muted">{t("wizard.payment.setupDesc")}</p>
         </div>
       ) : (
         <div className="mb-6 rounded-2xl border border-line bg-white p-5">
           <h3 className="mb-4 text-base font-bold text-ink">
-            Select Payment Method
+            {t("wizard.payment.selectMethod")}
           </h3>
           <div className="space-y-2">
             {methods.map((m) => (
@@ -101,20 +101,20 @@ export default function StepPayment({
           disabled={isSubmitting}
           className="rounded-xl border border-line bg-white px-6 py-3 text-base font-bold text-ink transition-colors hover:bg-canvas disabled:opacity-50"
         >
-          Back
+          {t("wizard.payment.back")}
         </button>
         <button
           onClick={onSubmit}
           disabled={isSubmitting}
           className="rounded-xl bg-brand px-8 py-3 text-base font-bold text-white shadow-sm transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting ? "Processing..." : "Book Now"}
+          {isSubmitting ? t("wizard.payment.processing") : t("wizard.payment.bookNow")}
         </button>
       </div>
 
       {!hasMethods && loaded && (
         <p className="mt-4 text-center text-xs text-muted">
-          Full payment — no deposit
+          {t("wizard.payment.fullPayment")}
         </p>
       )}
     </div>

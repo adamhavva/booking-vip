@@ -6,9 +6,10 @@ import { ChevronDown } from "@/components/icons";
 import { useLocale, type Lang } from "@/components/providers/LocaleProvider";
 import { SUPPORTED, type CurrencyCode } from "@/lib/currency";
 
-const LANGUAGES: { code: Lang; label: string }[] = [
-  { code: "en", label: "English" },
-  { code: "id", label: "Indonesia" },
+// Language labels — these stay in their native form
+const LANGUAGES: { code: Lang; labelKey: "locale.english" | "locale.indonesia" }[] = [
+  { code: "en", labelKey: "locale.english" },
+  { code: "id", labelKey: "locale.indonesia" },
 ];
 
 /**
@@ -27,7 +28,7 @@ export default function LocaleMenu({
 }: {
   variant?: "overlay" | "solid";
 }) {
-  const { lang, setLang, currency, setCurrency } = useLocale();
+  const { lang, setLang, currency, setCurrency, t } = useLocale();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -75,7 +76,7 @@ export default function LocaleMenu({
           className="absolute right-0 z-40 mt-2 w-44 origin-top-right rounded-xl border border-line bg-white p-1 text-sm text-ink shadow-lg"
         >
           <div className="px-2 pb-1 pt-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted">
-            Language
+            {t("locale.language")}
           </div>
           {LANGUAGES.map((l) => (
             <button
@@ -92,7 +93,7 @@ export default function LocaleMenu({
                   : "hover:bg-canvas"
               }`}
             >
-              {l.label}
+              {t(l.labelKey)}
               {lang === l.code && (
                 <span className="text-[10px] text-brand">✓</span>
               )}
@@ -102,7 +103,7 @@ export default function LocaleMenu({
           <div className="my-1 h-px bg-line" />
 
           <div className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted">
-            Currency
+            {t("locale.currency")}
           </div>
           {SUPPORTED.map((s) => (
             <button

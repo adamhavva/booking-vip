@@ -8,6 +8,7 @@ import { utilityLinks } from "@/data/home";
 import Logo from "./Logo";
 import NavBar from "./NavBar";
 import LocaleMenu from "./LocaleMenu";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 /**
  * Site header: utility bar + brand row, followed by the {@link NavBar}.
@@ -20,6 +21,7 @@ export default function Header({
 }: {
   variant?: "overlay" | "solid";
 }) {
+  const { t } = useLocale();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function Header({
 
       {/* Brand row */}
       <Container className="flex items-center gap-4 pb-3 md:gap-6">
-        <Link href="/" aria-label="Our Vacation home">
+        <Link href="/" aria-label={t("header.ourVacationHome")}>
           <Logo dark={solid} />
         </Link>
 
@@ -75,13 +77,13 @@ export default function Header({
               solid ? "text-ink hover:text-brand" : "text-white hover:text-white/80"
             }`}
           >
-            Sign in
+            {t("header.signIn")}
           </Link>
           <div className="text-xs lg:hidden">
             <LocaleMenu variant={solid ? "solid" : "overlay"} />
           </div>
           <button
-            aria-label="Account"
+            aria-label={t("nav.account")}
             className={`flex h-9 w-9 items-center justify-center rounded-full lg:hidden ${
               solid ? "bg-canvas text-ink" : "bg-white/20 text-white"
             }`}

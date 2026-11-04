@@ -1,4 +1,8 @@
+"use client";
+
 import Container from "@/components/ui/Container";
+import { useLocale } from "@/components/providers/LocaleProvider";
+import type { DictKey } from "@/i18n";
 
 export default function BannerStrip({
   title,
@@ -6,13 +10,25 @@ export default function BannerStrip({
   cta,
   tone = "from-blue-600 to-indigo-800",
   compact = false,
+  titleKey,
+  subtitleKey,
+  ctaKey,
 }: {
   title: string;
   subtitle?: string;
   cta?: string;
   tone?: string;
   compact?: boolean;
+  titleKey?: DictKey;
+  subtitleKey?: DictKey;
+  ctaKey?: DictKey;
 }) {
+  const { t } = useLocale();
+
+  const resolvedTitle = titleKey ? t(titleKey) : title;
+  const resolvedSubtitle = subtitleKey ? t(subtitleKey) : subtitle;
+  const resolvedCta = ctaKey ? t(ctaKey) : cta;
+
   return (
     <Container className="py-4">
       <div
@@ -21,14 +37,14 @@ export default function BannerStrip({
         }`}
       >
         <div>
-          <h3 className="text-lg font-extrabold md:text-2xl">{title}</h3>
-          {subtitle && (
-            <p className="mt-1 text-sm text-white/90 md:text-base">{subtitle}</p>
+          <h3 className="text-lg font-extrabold md:text-2xl">{resolvedTitle}</h3>
+          {resolvedSubtitle && (
+            <p className="mt-1 text-sm text-white/90 md:text-base">{resolvedSubtitle}</p>
           )}
         </div>
-        {cta && (
+        {resolvedCta && (
           <button className="shrink-0 rounded-lg bg-white px-5 py-2.5 text-sm font-bold text-brand hover:bg-white/90">
-            {cta}
+            {resolvedCta}
           </button>
         )}
       </div>

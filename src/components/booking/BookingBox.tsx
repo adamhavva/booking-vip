@@ -33,7 +33,7 @@ const TIME_SLOTS = generateTimeSlots();
  * Booking box — date/time picker, package selection, pax counts, total, and CTA.
  */
 export default function BookingBox({ product }: { product: ProductDetailDTO }) {
-  const { formatMoney } = useLocale();
+  const { formatMoney, t } = useLocale();
   const router = useRouter();
 
   const [date, setDate] = useState("");
@@ -66,7 +66,7 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
   }, [selectedPackage, isPerPax, adults, children, infants, quantity]);
 
   const canBook = date && time;
-  const ctaLabel = canBook ? "Book Now" : "Select date & time";
+  const ctaLabel = canBook ? t("bookingBox.bookNow") : t("bookingBox.selectDateTime");
 
   const handleBook = () => {
     if (!canBook) return;
@@ -91,13 +91,13 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
   return (
     <div className="sticky top-24 rounded-2xl border border-line bg-white p-5 shadow-lg">
       <div className="mb-4 border-b border-line pb-4">
-        <span className="text-xs text-muted">Starting from</span>
+        <span className="text-xs text-muted">{t("card.startingFrom")}</span>
         <p className="text-2xl font-extrabold text-ink">{formatMoney(product.fromUsd)}</p>
       </div>
 
       {/* Date picker */}
       <div className="mb-3">
-        <label className="mb-1 block text-xs font-semibold text-muted">Date</label>
+        <label className="mb-1 block text-xs font-semibold text-muted">{t("bookingBox.date")}</label>
         <input
           type="date"
           value={date}
@@ -107,25 +107,28 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
         />
         {product.leadTimeHours > 0 && !date && (
           <p className="mt-1 text-xs text-muted">
-            Book at least {product.leadTimeHours} hours ahead
+            {t("bookingBox.leadTimeHours", { n: product.leadTimeHours })}
           </p>
         )}
         {product.leadTimeDays > 0 && !date && (
           <p className="mt-1 text-xs text-muted">
-            Book at least {product.leadTimeDays} day{product.leadTimeDays > 1 ? "s" : ""} ahead
+            {t("bookingBox.leadTimeDays", {
+              n: product.leadTimeDays,
+              plural: product.leadTimeDays > 1 ? "s" : "",
+            })}
           </p>
         )}
       </div>
 
       {/* Time picker */}
       <div className="mb-4">
-        <label className="mb-1 block text-xs font-semibold text-muted">Time</label>
+        <label className="mb-1 block text-xs font-semibold text-muted">{t("bookingBox.time")}</label>
         <select
           value={time}
           onChange={(e) => setTime(e.target.value)}
           className="w-full rounded-xl border border-line bg-canvas px-4 py-2.5 text-sm font-semibold text-ink"
         >
-          <option value="">Select time</option>
+          <option value="">{t("bookingBox.selectTime")}</option>
           {TIME_SLOTS.map((slot) => (
             <option key={slot} value={slot}>
               {slot}
@@ -137,7 +140,7 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
       {/* Package selection */}
       {product.packages.length > 1 && (
         <div className="mb-4">
-          <label className="mb-2 block text-xs font-semibold text-muted">Choose Package</label>
+          <label className="mb-2 block text-xs font-semibold text-muted">{t("bookingBox.choosePackage")}</label>
           <div className="space-y-2">
             {product.packages.map((pkg, i) => (
               <label
@@ -173,7 +176,7 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
           {isPerPax ? (
             <>
               <PaxStepper
-                label="Adults"
+                label={t("bookingBox.adults")}
                 value={adults}
                 onChange={setAdults}
                 min={1}
@@ -181,7 +184,7 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
               />
               {(selectedPackage.childUsd ?? 0) > 0 && (
                 <PaxStepper
-                  label="Children"
+                  label={t("bookingBox.children")}
                   value={children}
                   onChange={setChildren}
                   price={formatMoney(selectedPackage.childUsd ?? 0)}
@@ -189,7 +192,7 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
               )}
               {(selectedPackage.infantUsd ?? 0) > 0 && (
                 <PaxStepper
-                  label="Infants"
+                  label={t("bookingBox.infants")}
                   value={infants}
                   onChange={setInfants}
                   price={formatMoney(selectedPackage.infantUsd ?? 0)}
@@ -198,7 +201,7 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
             </>
           ) : (
             <PaxStepper
-              label="Tickets"
+              label={t("bookingBox.tickets")}
               value={quantity}
               onChange={setQuantity}
               min={1}
@@ -210,7 +213,7 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
 
       {/* Total */}
       <div className="mb-4 flex items-center justify-between border-t border-line pt-4">
-        <span className="text-sm font-semibold text-muted">Total</span>
+        <span className="text-sm font-semibold text-muted">{t("bookingBox.total")}</span>
         <span className="text-xl font-extrabold text-ink">{formatMoney(total)}</span>
       </div>
 

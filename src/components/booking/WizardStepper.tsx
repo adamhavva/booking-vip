@@ -1,20 +1,23 @@
 "use client";
 
 import { CheckIcon } from "@/components/icons";
+import { useLocale } from "@/components/providers/LocaleProvider";
+import type { DictKey } from "@/i18n";
 
 type Step = {
   key: string;
-  label: string;
+  labelKey: DictKey;
 };
 
 const STEPS: Step[] = [
-  { key: "addons", label: "Additional Service" },
-  { key: "details", label: "Booking Form" },
-  { key: "payment", label: "Payment" },
-  { key: "result", label: "Result" },
+  { key: "addons", labelKey: "wizard.step.addons" },
+  { key: "details", labelKey: "wizard.step.details" },
+  { key: "payment", labelKey: "wizard.step.payment" },
+  { key: "result", labelKey: "wizard.step.result" },
 ];
 
 export default function WizardStepper({ currentStep }: { currentStep: string }) {
+  const { t } = useLocale();
   const currentIdx = STEPS.findIndex((s) => s.key === currentStep);
 
   return (
@@ -42,7 +45,7 @@ export default function WizardStepper({ currentStep }: { currentStep: string }) 
                   isCurrent ? "text-ink" : isDone ? "text-brand" : "text-muted"
                 }`}
               >
-                {step.label}
+                {t(step.labelKey)}
               </span>
               {i < STEPS.length - 1 && (
                 <div className="mx-2 h-px w-8 bg-line lg:w-12" />

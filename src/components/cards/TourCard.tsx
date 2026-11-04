@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { PinIcon } from "@/components/icons";
 import Badge from "@/components/ui/Badge";
@@ -6,6 +8,7 @@ import Rating from "@/components/ui/Rating";
 import Thumb from "@/components/ui/Thumb";
 import { cardShell } from "@/lib/styles";
 import type { Tour } from "@/types";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export default function TourCard({
   tour,
@@ -14,6 +17,7 @@ export default function TourCard({
   tour: Tour;
   href?: string;
 }) {
+  const { t } = useLocale();
   const content = (
     <div className={cardShell}>
       <div className="relative">
@@ -36,7 +40,7 @@ export default function TourCard({
         </p>
         <Rating rating={tour.rating} reviews={tour.reviews} />
         <div className="mt-auto">
-          <span className="text-[11px] text-muted">Per person from</span>
+          <span className="text-[11px] text-muted">{t("card.perPersonFrom")}</span>
           <PriceBlock from={tour.priceFrom} net={tour.priceNet} />
         </div>
       </div>

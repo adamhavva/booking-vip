@@ -5,6 +5,8 @@ import Link from "next/link";
 import Container from "@/components/ui/Container";
 import TabPills from "@/components/ui/TabPills";
 import { serviceNav } from "@/data/services";
+import { useLocale } from "@/components/providers/LocaleProvider";
+import type { DictKey } from "@/i18n";
 
 export type SeoLink = {
   label: string;
@@ -20,17 +22,22 @@ export default function SeoLinkGrid({
   title,
   tabs,
   links,
+  titleKey,
 }: {
   title: string;
   tabs: string[];
   links: SeoLink[];
+  titleKey?: DictKey;
 }) {
+  const { t } = useLocale();
   const [active, setActive] = useState(0);
+
+  const resolvedTitle = titleKey ? t(titleKey) : title;
 
   return (
     <Container as="section" className="py-8">
       <h2 className="mb-4 text-xl font-extrabold text-ink md:text-2xl">
-        {title}
+        {resolvedTitle}
       </h2>
 
       <TabPills

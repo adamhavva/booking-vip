@@ -17,7 +17,7 @@ export default function StepAddOns({
   onAddOnsChange,
   onContinue,
 }: Props) {
-  const { formatMoney } = useLocale();
+  const { formatMoney, t } = useLocale();
 
   const handleQtyChange = (slug: string, qty: number) => {
     const existing = selectedAddOns.find((a) => a.slug === slug);
@@ -37,15 +37,15 @@ export default function StepAddOns({
 
   return (
     <div>
-      <h2 className="mb-4 text-xl font-bold text-ink">Additional Services</h2>
+      <h2 className="mb-4 text-xl font-bold text-ink">{t("wizard.addons.title")}</h2>
       <p className="mb-6 text-sm text-muted">
-        Enhance your booking with optional add-ons. You can skip this step.
+        {t("wizard.addons.subtitle")}
       </p>
 
       {product.addOns.length === 0 ? (
         <div className="rounded-2xl border border-line bg-canvas p-8 text-center">
           <p className="text-sm text-muted">
-            No add-ons available for this product.
+            {t("wizard.addons.empty")}
           </p>
         </div>
       ) : (
@@ -58,7 +58,7 @@ export default function StepAddOns({
               <div className="flex-1">
                 <p className="font-semibold text-ink">{addOn.label}</p>
                 <p className="text-sm text-muted">
-                  {formatMoney(addOn.unitUsd)} per unit
+                  {formatMoney(addOn.unitUsd)} {t("wizard.addons.perUnit")}
                 </p>
               </div>
               <div className="w-32">
@@ -81,7 +81,7 @@ export default function StepAddOns({
           onClick={onContinue}
           className="rounded-xl bg-brand px-8 py-3 text-base font-bold text-white shadow-sm transition-colors hover:bg-brand-dark"
         >
-          Continue
+          {t("wizard.addons.continue")}
         </button>
       </div>
     </div>

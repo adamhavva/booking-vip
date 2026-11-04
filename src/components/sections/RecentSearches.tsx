@@ -6,6 +6,7 @@ import Container from "@/components/ui/Container";
 import { getRecentSearches, type StoredSearch } from "@/app/actions/search";
 import { serviceSearchFields } from "@/data/services";
 import { loadRecent } from "@/lib/searchDraft";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 type Entry = {
   key: string;
@@ -40,6 +41,7 @@ function summarize(service: string, values: Record<string, string>) {
  * unreachable).
  */
 export default function RecentSearches() {
+  const { t } = useLocale();
   const [entries, setEntries] = useState<Entry[]>([]);
 
   useEffect(() => {
@@ -79,7 +81,7 @@ export default function RecentSearches() {
   return (
     <Container as="section" className="pb-2 pt-6">
       <h2 className="mb-3 text-sm font-extrabold uppercase tracking-wide text-muted">
-        Pencarian terakhir 🕘
+        {t("recentSearches.title")}
       </h2>
       <ul className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
         {entries.map((e) => (

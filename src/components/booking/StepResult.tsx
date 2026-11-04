@@ -12,7 +12,7 @@ type Props = {
 };
 
 export default function StepResult({ code, email, total, productSlug }: Props) {
-  const { formatMoney } = useLocale();
+  const { formatMoney, t } = useLocale();
 
   return (
     <div className="text-center">
@@ -22,27 +22,26 @@ export default function StepResult({ code, email, total, productSlug }: Props) {
         </div>
       </div>
 
-      <h2 className="mb-2 text-2xl font-bold text-ink">Booking Confirmed!</h2>
+      <h2 className="mb-2 text-2xl font-bold text-ink">{t("wizard.result.title")}</h2>
       <p className="mb-6 text-sm text-muted">
-        Your booking has been successfully created. A confirmation email will be
-        sent to <strong className="text-ink">{email}</strong>.
+        {t("wizard.result.desc", { email })}
       </p>
 
       <div className="mx-auto mb-6 max-w-md rounded-2xl border border-line bg-white p-6 text-left shadow-sm">
         <div className="mb-4 flex items-center justify-between border-b border-line pb-4">
-          <span className="text-sm text-muted">Booking Code</span>
+          <span className="text-sm text-muted">{t("wizard.result.bookingCode")}</span>
           <span className="rounded-lg bg-brand-soft px-3 py-1.5 font-mono text-sm font-bold text-brand">
             {code}
           </span>
         </div>
         <div className="mb-4 flex items-center justify-between border-b border-line pb-4">
-          <span className="text-sm text-muted">Status</span>
+          <span className="text-sm text-muted">{t("wizard.result.status")}</span>
           <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
-            Awaiting Payment
+            {t("wizard.result.awaitingPayment")}
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted">Total Amount</span>
+          <span className="text-sm text-muted">{t("wizard.result.totalAmount")}</span>
           <span className="text-lg font-bold text-ink">
             {formatMoney(total)}
           </span>
@@ -54,13 +53,13 @@ export default function StepResult({ code, email, total, productSlug }: Props) {
           href={`/my-booking?code=${encodeURIComponent(code)}`}
           className="rounded-xl bg-brand px-6 py-3 text-base font-bold text-white shadow-sm transition-colors hover:bg-brand-dark"
         >
-          View My Booking
+          {t("wizard.result.viewBooking")}
         </Link>
         <Link
           href={`/${productSlug.split("-")[0]}`}
           className="rounded-xl border border-line bg-white px-6 py-3 text-base font-bold text-ink transition-colors hover:bg-canvas"
         >
-          Book Another
+          {t("wizard.result.bookAnother")}
         </Link>
       </div>
     </div>

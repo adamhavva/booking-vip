@@ -1,20 +1,23 @@
+"use client";
+
 import Link from "next/link";
 import Container from "@/components/ui/Container";
 import Logo from "@/components/layout/Logo";
 import { footerColumns, socials } from "@/data/home";
 import { serviceNav } from "@/data/services";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 /** Label → route, so the Services column links to the service sub-pages. */
 const serviceRoutes = Object.fromEntries(
   serviceNav.map((s) => [s.label, s.href])
 );
 
-function AppBadge({ store }: { store: string }) {
+function AppBadge({ store, downloadLabel }: { store: string; downloadLabel: string }) {
   return (
     <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-left">
       <span className="h-6 w-6 rounded bg-gradient-to-br from-slate-300 to-slate-500" />
       <span className="text-xs leading-tight text-white/80">
-        Download on
+        {downloadLabel}
         <br />
         <span className="font-semibold text-white">{store}</span>
       </span>
@@ -23,6 +26,8 @@ function AppBadge({ store }: { store: string }) {
 }
 
 export default function Footer() {
+  const { t } = useLocale();
+
   return (
     <footer className="bg-[#0b1b2b] text-white/80">
       <Container className="py-12">
@@ -32,7 +37,7 @@ export default function Footer() {
             <Logo />
             <div className="mt-4 space-y-2 text-sm">
               <p>
-                <span className="text-white/60">Chat:</span> Chat with us
+                <span className="text-white/60">Chat:</span> {t("footer.chat")}
               </p>
               <p>
                 <span className="text-white/60">Email:</span> cs@example.com
@@ -62,11 +67,11 @@ export default function Footer() {
 
           <div>
             <h3 className="mb-3 text-sm font-bold text-white">
-              Cheaper on the app
+              {t("footer.cheaperOnApp")}
             </h3>
             <div className="flex flex-col gap-2">
-              <AppBadge store="App Store" />
-              <AppBadge store="Google Play" />
+              <AppBadge store="App Store" downloadLabel={t("footer.downloadOn")} />
+              <AppBadge store="Google Play" downloadLabel={t("footer.downloadOn")} />
             </div>
           </div>
         </div>
@@ -74,17 +79,17 @@ export default function Footer() {
         {/* Lower: partner / secure / awards / social */}
         <div className="grid gap-8 border-t border-white/10 pt-8 md:grid-cols-4">
           <div>
-            <h3 className="mb-3 text-sm font-bold text-white">Partner</h3>
+            <h3 className="mb-3 text-sm font-bold text-white">{t("footer.partner")}</h3>
             <div className="flex items-center gap-3">
               <span className="h-10 w-16 rounded bg-white/10" />
               <p className="text-xs text-white/60">
-                Official travel marketplace partner
+                {t("footer.partnerDesc")}
               </p>
             </div>
           </div>
           <div>
             <h3 className="mb-3 text-sm font-bold text-white">
-              Secure your transaction
+              {t("footer.secure")}
             </h3>
             <div className="flex flex-wrap gap-2">
               {["Visa", "Mastercard", "JCB", "Amex"].map((s) => (
@@ -98,7 +103,7 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h3 className="mb-3 text-sm font-bold text-white">Awards</h3>
+            <h3 className="mb-3 text-sm font-bold text-white">{t("footer.awards")}</h3>
             <div className="flex gap-2">
               {["IATA", "Top Brand", "Superbrands"].map((a) => (
                 <span
@@ -111,7 +116,7 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h3 className="mb-3 text-sm font-bold text-white">Follow us</h3>
+            <h3 className="mb-3 text-sm font-bold text-white">{t("footer.followUs")}</h3>
             <div className="flex flex-wrap gap-2">
               {socials.map((s) => (
                 <a
@@ -128,8 +133,7 @@ export default function Footer() {
         </div>
 
         <p className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/50">
-          © 2011-2026 Booking VIP Demo. This is an educational UI clone — not
-          affiliated with tiket.com.
+          {t("footer.copyright")}
         </p>
       </Container>
     </footer>

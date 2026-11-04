@@ -24,7 +24,9 @@ export default function BookingSummary({
   packageLabel,
   addOns,
 }: Props) {
-  const { formatMoney } = useLocale();
+  const { formatMoney, t } = useLocale();
+
+  const plural = (n: number) => (n !== 1 ? "s" : "");
 
   const selectedPackage = product.packages.find((p) => p.label === packageLabel);
   const isPerPax = selectedPackage?.unitKind === "per_pax";
@@ -64,30 +66,32 @@ export default function BookingSummary({
 
       <div className="mb-4 space-y-2 border-b border-line pb-4 text-sm">
         <div className="flex justify-between">
-          <span className="text-muted">Date</span>
+          <span className="text-muted">{t("wizard.summary.date")}</span>
           <span className="font-semibold text-ink">{formattedDate}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted">Time</span>
+          <span className="text-muted">{t("wizard.summary.time")}</span>
           <span className="font-semibold text-ink">{time}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted">Package</span>
+          <span className="text-muted">{t("wizard.summary.package")}</span>
           <span className="font-semibold text-ink">{packageLabel}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-muted">Travelers</span>
+          <span className="text-muted">{t("wizard.summary.travelers")}</span>
           <span className="font-semibold text-ink">
-            {adults} adult{adults !== 1 ? "s" : ""}
-            {children > 0 && `, ${children} child${children !== 1 ? "s" : ""}`}
-            {infants > 0 && `, ${infants} infant${infants !== 1 ? "s" : ""}`}
+            {t("wizard.summary.adult", { n: adults, plural: plural(adults) })}
+            {children > 0 &&
+              `, ${t("wizard.summary.child", { n: children, plural: plural(children) })}`}
+            {infants > 0 &&
+              `, ${t("wizard.summary.infant", { n: infants, plural: plural(infants) })}`}
           </span>
         </div>
       </div>
 
       <div className="mb-4 space-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-muted">Sub Total</span>
+          <span className="text-muted">{t("wizard.summary.subTotal")}</span>
           <span className="font-semibold text-ink">{formatMoney(subtotal)}</span>
         </div>
         {addOns.map((a) => (
@@ -103,7 +107,7 @@ export default function BookingSummary({
       </div>
 
       <div className="flex items-center justify-between border-t border-line pt-4">
-        <span className="text-base font-bold text-ink">Total</span>
+        <span className="text-base font-bold text-ink">{t("wizard.summary.total")}</span>
         <span className="text-xl font-extrabold text-brand">
           {formatMoney(total)}
         </span>

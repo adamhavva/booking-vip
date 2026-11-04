@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { UsersIcon } from "@/components/icons";
 import Badge from "@/components/ui/Badge";
@@ -5,6 +7,7 @@ import PriceBlock from "@/components/ui/PriceBlock";
 import Thumb from "@/components/ui/Thumb";
 import { cardShell } from "@/lib/styles";
 import type { Transport } from "@/types";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export default function TransportCard({
   item,
@@ -13,6 +16,7 @@ export default function TransportCard({
   item: Transport;
   href?: string;
 }) {
+  const { t } = useLocale();
   const content = (
     <div className={cardShell}>
       <div className="relative">
@@ -33,7 +37,7 @@ export default function TransportCard({
           <span>{item.bags} bags</span>
         </div>
         <div className="mt-auto">
-          <span className="text-[11px] text-muted">Starting from</span>
+          <span className="text-[11px] text-muted">{t("card.startingFrom")}</span>
           <PriceBlock from={item.priceFrom} net={item.priceNet} />
         </div>
       </div>

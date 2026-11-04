@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { CalendarIcon, CheckIcon, PinIcon } from "@/components/icons";
 import Badge from "@/components/ui/Badge";
 import PriceBlock from "@/components/ui/PriceBlock";
 import type { EvoaPlan } from "@/types";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export default function EvoaCard({
   plan,
@@ -11,6 +14,7 @@ export default function EvoaCard({
   plan: EvoaPlan;
   href?: string;
 }) {
+  const { t } = useLocale();
   const content = (
     <div className="flex w-[260px] shrink-0 snap-start flex-col rounded-xl border border-line bg-white p-4 transition-shadow hover:shadow-md">
       <div className="mb-2 flex items-center justify-between">
@@ -31,8 +35,8 @@ export default function EvoaCard({
         </li>
       </ul>
       <div className="mt-auto border-t border-line pt-3">
-        <span className="text-[11px] text-muted">From</span>
-        <PriceBlock net={plan.priceNet} unit="/person" />
+        <span className="text-[11px] text-muted">{t("card.from")}</span>
+        <PriceBlock net={plan.priceNet} unit={t("card.unitPerson")} />
       </div>
     </div>
   );

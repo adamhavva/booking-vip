@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { PinIcon } from "@/components/icons";
 import Badge from "@/components/ui/Badge";
@@ -5,6 +7,7 @@ import PriceBlock from "@/components/ui/PriceBlock";
 import Thumb from "@/components/ui/Thumb";
 import { cardShell } from "@/lib/styles";
 import type { VipService } from "@/types";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export default function VipServiceCard({
   service,
@@ -13,6 +16,7 @@ export default function VipServiceCard({
   service: VipService;
   href?: string;
 }) {
+  const { t } = useLocale();
   const content = (
     <div className={cardShell}>
       <div className="relative">
@@ -30,8 +34,8 @@ export default function VipServiceCard({
         </p>
         <p className="mb-2 line-clamp-2 text-xs text-muted">{service.desc}</p>
         <div className="mt-auto">
-          <span className="text-[11px] text-muted">Starting from</span>
-          <PriceBlock from={service.priceFrom} net={service.priceNet} unit="/pax" />
+          <span className="text-[11px] text-muted">{t("card.startingFrom")}</span>
+          <PriceBlock from={service.priceFrom} net={service.priceNet} unit={t("card.unitPax")} />
         </div>
       </div>
     </div>

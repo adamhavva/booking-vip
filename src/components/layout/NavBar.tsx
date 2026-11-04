@@ -22,7 +22,7 @@ export default function NavBar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { lang, setLang, currency, setCurrency } = useLocale();
+  const { lang, setLang, currency, setCurrency, t } = useLocale();
   const solid = variant === "solid";
 
   const [idx, setIdx] = useState(0);
@@ -68,7 +68,7 @@ export default function NavBar({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={searchPlaceholders[idx]}
-            aria-label="Search services"
+            aria-label={t("nav.searchAria")}
             className="h-11 w-full rounded-full bg-white pl-11 pr-4 text-sm text-ink shadow-sm outline-none placeholder:text-muted"
           />
         </form>
@@ -105,7 +105,7 @@ export default function NavBar({
                     : "text-white/90 hover:bg-white/10"
               }`}
             >
-              My Booking
+              {t("nav.myBooking")}
             </Link>
           </li>
         </ul>
@@ -113,7 +113,7 @@ export default function NavBar({
         {/* Mobile menu toggle */}
         <button
           onClick={() => setMenuOpen((o) => !o)}
-          aria-label="Menu"
+          aria-label={t("nav.menu")}
           aria-expanded={menuOpen}
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full lg:hidden ${
             solid ? "bg-canvas text-ink" : "bg-white/20 text-white"
@@ -190,12 +190,12 @@ export default function NavBar({
                 solid ? "text-muted" : "text-white/50"
               }`}
             >
-              Language
+              {t("locale.language")}
             </div>
             <div className="flex gap-2 px-2">
               {([
-                { code: "en" as Lang, label: "English" },
-                { code: "id" as Lang, label: "Indonesia" },
+                { code: "en" as Lang, label: t("locale.english") },
+                { code: "id" as Lang, label: t("locale.indonesia") },
               ]).map((l) => (
                 <button
                   key={l.code}
@@ -218,7 +218,7 @@ export default function NavBar({
                 solid ? "text-muted" : "text-white/50"
               }`}
             >
-              Currency
+              {t("locale.currency")}
             </div>
             <div className="flex gap-2 px-2">
               {SUPPORTED.map((s) => (

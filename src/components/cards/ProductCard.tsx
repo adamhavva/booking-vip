@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { PinIcon } from "@/components/icons";
 import Badge from "@/components/ui/Badge";
@@ -6,6 +8,7 @@ import Rating from "@/components/ui/Rating";
 import Thumb from "@/components/ui/Thumb";
 import { cardShell } from "@/lib/styles";
 import type { ProductCardDTO } from "@/types";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 /**
  * Generic product card for DB-backed catalog data.
@@ -18,6 +21,7 @@ export default function ProductCard({
   product: ProductCardDTO;
   href: string;
 }) {
+  const { t } = useLocale();
   return (
     <Link href={href} className="block transition-shadow hover:shadow-lg">
       <div className={cardShell}>
@@ -49,7 +53,7 @@ export default function ProductCard({
           )}
           <p className="mb-2 line-clamp-2 text-xs text-muted">{product.subtitle}</p>
           <div className="mt-auto">
-            <span className="text-[11px] text-muted">Starting from</span>
+            <span className="text-[11px] text-muted">{t("card.startingFrom")}</span>
             <PriceBlock from={product.fromUsd} net={product.priceUsd} unit={product.unit} />
           </div>
         </div>

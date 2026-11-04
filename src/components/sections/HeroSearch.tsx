@@ -19,6 +19,7 @@ import { loadDraft, rememberSearch } from "@/lib/searchDraft";
 import { logSearch } from "@/app/actions/search";
 import { getOptions } from "@/app/actions/catalog";
 import type { Category, OptionDTO, SearchFieldIcon, ServiceSearchField } from "@/types";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 const ICONS: Record<SearchFieldIcon, ReactNode> = {
   plane: <PlaneIcon width={18} height={18} />,
@@ -126,6 +127,7 @@ function ServiceTab({
 
 export default function HeroSearch() {
   const router = useRouter();
+  const { t } = useLocale();
   const [service, setService] = useState(categories[0].label);
   const [values, setValues] = useState<Values>({});
   const [resume, setResume] = useState<{ href: string; label: string } | null>(
@@ -210,11 +212,11 @@ export default function HeroSearch() {
         {/* Heading */}
         <div className="hidden py-6 text-center md:block">
           <h1 className="text-[34px] font-normal text-white">
-            Hey there,{" "}
-            <span className="font-extrabold">travelling in style?</span>
+            {t("hero.heading1")}
+            <span className="font-extrabold">{t("hero.heading2")}</span>
           </h1>
           <p className="mt-2 text-sm text-white/85">
-            Booking VIP - Airport VIP, transport, tours & eVOA in one place.
+            {t("hero.subtitle")}
           </p>
         </div>
 
@@ -259,7 +261,7 @@ export default function HeroSearch() {
                 onClick={submit}
                 className="shrink-0 rounded-xl bg-brand px-8 py-3 text-base font-bold text-white shadow-sm hover:bg-brand-dark lg:self-stretch"
               >
-                Search
+                {t("hero.search")}
               </button>
             </div>
 
@@ -267,23 +269,23 @@ export default function HeroSearch() {
             {resume && (
               <p className="mt-4 flex flex-wrap items-center gap-1 border-t border-line pt-4 text-sm text-ink">
                 <span className="mr-1">🕘</span>
-                Terakhir searched:{" "}
+                {t("hero.resume")}
                 <Link
                   href={resume.href}
                   className="font-semibold text-brand hover:underline"
                 >
                   {resume.label}
                 </Link>
-                <span className="text-muted">— di perangkat ini</span>
+                <span className="text-muted">{t("hero.resumeDevice")}</span>
               </p>
             )}
 
             {/* Promo strip */}
             <div className="mt-4 flex flex-wrap items-center gap-1 border-t border-line pt-4 text-sm text-ink">
               <span className="mr-1">🏷️</span>
-              Check the promos you can use to make your trip more rewarding.{" "}
+              {t("hero.promo")}
               <a href="#" className="font-semibold text-brand">
-                See promos now!
+                {t("hero.promoCta")}
               </a>
             </div>
           </div>

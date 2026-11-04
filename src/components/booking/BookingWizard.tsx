@@ -37,7 +37,7 @@ const LAST_BOOKING_KEY = "booking-vip:last-booking";
 export default function BookingWizard() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const { currency, formatMoney } = useLocale();
+  const { currency, formatMoney, t } = useLocale();
 
   const slug = params.slug as string;
   const [product, setProduct] = useState<ProductDetailDTO | null>(null);
@@ -94,9 +94,7 @@ export default function BookingWizard() {
     getProduct(slug).then((p) => {
       setProduct(p);
       setLoading(false);
-      if (!p) {
-        setError("Product not found");
-      } else {
+      if (p) {
         // Update airport name from product data
         setFlight((f) => ({ ...f, airportName: p.placeLabel ?? "" }));
       }
@@ -190,7 +188,7 @@ export default function BookingWizard() {
   if (loading) {
     return (
       <div className="py-12 text-center">
-        <p className="text-muted">Loading...</p>
+        <p className="text-muted">{t("booking.loadingShort")}</p>
       </div>
     );
   }
@@ -198,7 +196,7 @@ export default function BookingWizard() {
   if (error || !product) {
     return (
       <div className="py-12 text-center">
-        <p className="text-danger">{error ?? "Product not found"}</p>
+        <p className="text-danger">{error ?? t("common.productNotFound")}</p>
       </div>
     );
   }

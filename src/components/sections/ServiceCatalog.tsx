@@ -13,6 +13,7 @@ import {
 import { evoaPlans, tours, transports, vipServices } from "@/data/home";
 import type { CatalogDTO, ProductCardDTO, ServiceCatalogKind } from "@/types";
 import { getCatalog } from "@/app/actions/catalog";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 /** Map ServiceCatalogKind to the DB lineSlug */
 const KIND_TO_LINE_SLUG: Record<ServiceCatalogKind, string> = {
@@ -86,6 +87,7 @@ export default function ServiceCatalog({
   kind: ServiceCatalogKind;
   tabs: string[];
 }) {
+  const { t } = useLocale();
   const [catalog, setCatalog] = useState<CatalogDTO | null>(null);
   const [typeIdx, setTypeIdx] = useState(0);
   const [placeIdx, setPlaceIdx] = useState(0);
@@ -165,7 +167,7 @@ export default function ServiceCatalog({
     return (
       <Container as="section" className="py-8">
         <h2 className="mb-4 text-xl font-extrabold text-ink md:text-2xl">
-          Available options
+          {t("catalog.availableOptions")}
         </h2>
 
         {/* Service Type facets */}
@@ -205,9 +207,9 @@ export default function ServiceCatalog({
             onChange={(e) => setSort(e.target.value as SortMode)}
             className="ml-auto rounded-xl border border-line bg-canvas px-4 py-2 text-sm font-semibold text-ink"
           >
-            <option value="recommended">Recommended</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
+            <option value="recommended">{t("catalog.recommended")}</option>
+            <option value="price-asc">{t("catalog.priceLowHigh")}</option>
+            <option value="price-desc">{t("catalog.priceHighLow")}</option>
           </select>
         </div>
 
@@ -228,7 +230,7 @@ export default function ServiceCatalog({
   return (
     <Container as="section" className="py-8">
       <h2 className="mb-4 text-xl font-extrabold text-ink md:text-2xl">
-        Available options
+        {t("catalog.availableOptions")}
       </h2>
 
       <TabPills

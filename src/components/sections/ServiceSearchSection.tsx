@@ -7,6 +7,7 @@ import BookingPanel from "@/components/sections/BookingPanel";
 import { serviceSearchFields } from "@/data/services";
 import { loadDraft } from "@/lib/searchDraft";
 import type { ServicePage } from "@/types";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 /**
  * Reads the search the user submitted on the home page (query string), with
@@ -19,6 +20,7 @@ export default function ServiceSearchSection({
   service: ServicePage;
 }) {
   const params = useSearchParams();
+  const { t } = useLocale();
   const [saved, setSaved] = useState<Record<string, string> | null>(null);
 
   const fields = serviceSearchFields[service.eyebrow] ?? [];
@@ -53,13 +55,13 @@ export default function ServiceSearchSection({
         <div className="rounded-2xl border border-brand/20 bg-brand-soft p-5">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-sm font-bold text-ink">
-              {values.source === "url" ? "Your search" : "Last saved search"}
+              {values.source === "url" ? t("serviceSearch.yourSearch") : t("serviceSearch.lastSaved")}
             </h3>
             <Link
               href="/"
               className="text-xs font-semibold text-brand hover:underline"
             >
-              Edit search
+              {t("serviceSearch.editSearch")}
             </Link>
           </div>
 
@@ -74,8 +76,7 @@ export default function ServiceSearchSection({
 
           {values.source === "saved" && (
             <p className="mt-3 text-[11px] text-muted">
-              Diambil dari penyimpanan perangkat ini — kirim ulang pencarian
-              dari beranda untuk mengubahnya.
+              {t("serviceSearch.savedNote")}
             </p>
           )}
         </div>

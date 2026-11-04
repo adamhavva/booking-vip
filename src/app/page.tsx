@@ -41,7 +41,7 @@ export default function Home() {
       <RecentSearches />
 
       {/* Special deals */}
-      <SectionBand title="Special deals" emoji="🎉">
+      <SectionBand title="Special deals" emoji="🎉" titleKey="home.specialDeals">
         <Carousel>
           {promos.map((p) => (
             <PromoCard key={p.title} promo={p} />
@@ -56,6 +56,9 @@ export default function Home() {
         tabs={["All", "Meet & Greet", "Fast Track", "Lounge", "Porter"]}
         seeAll="See all VIP services"
         seeAllHref="/vip-service"
+        eyebrowKey="home.vipEyebrow"
+        titleKey="home.vipTitle"
+        seeAllKey="home.vipSeeAll"
       >
         <Carousel>
           {vipServices.map((s) => (
@@ -71,6 +74,9 @@ export default function Home() {
         cta="Book VIP"
         tone="from-sky-600 to-blue-800"
         compact
+        titleKey="banner.fastTrackTitle"
+        subtitleKey="banner.fastTrackSubtitle"
+        ctaKey="banner.fastTrackCta"
       />
 
       {/* 2 — Transport */}
@@ -80,6 +86,9 @@ export default function Home() {
         tabs={["All", "Sedan", "SUV", "Van", "Limousine"]}
         seeAll="See all transport"
         seeAllHref="/transport"
+        eyebrowKey="home.transportEyebrow"
+        titleKey="home.transportTitle"
+        seeAllKey="home.transportSeeAll"
       >
         <Carousel>
           {transports.map((t) => (
@@ -95,6 +104,9 @@ export default function Home() {
         tabs={["All", "Bali", "Labuan Bajo", "Yogyakarta", "Lombok", "Papua"]}
         seeAll="See all tours"
         seeAllHref="/tour-package"
+        eyebrowKey="home.tourEyebrow"
+        titleKey="home.tourTitle"
+        seeAllKey="home.tourSeeAll"
       >
         <Carousel>
           {tours.map((t) => (
@@ -104,7 +116,7 @@ export default function Home() {
       </SectionBand>
 
       {/* Tour destinations */}
-      <SectionBand title="Popular destinations" emoji="📌" seeAll="See all!">
+      <SectionBand title="Popular destinations" emoji="📌" seeAll="See all!" titleKey="home.destinationsTitle" seeAllKey="home.destinationsSeeAll">
         <Carousel>
           {destinations.map((d) => (
             <DestinationCard key={d.name} dest={d} />
@@ -119,6 +131,9 @@ export default function Home() {
         tabs={["All", "Tourist", "Business", "Express", "Transit"]}
         seeAll="Check eligibility"
         seeAllHref="/evoa"
+        eyebrowKey="home.evoaEyebrow"
+        titleKey="home.evoaTitle"
+        seeAllKey="home.evoaSeeAll"
       >
         <Carousel>
           {evoaPlans.map((p) => (
@@ -134,6 +149,9 @@ export default function Home() {
         cta="Apply now"
         tone="from-violet-600 to-purple-800"
         compact
+        titleKey="banner.evoaTitle"
+        subtitleKey="banner.evoaSubtitle"
+        ctaKey="banner.evoaCta"
       />
 
       {/* Promos */}
@@ -142,6 +160,8 @@ export default function Home() {
         emoji="🤩"
         tabs={promoTabs}
         seeAll="See all promos"
+        titleKey="home.promosTitle"
+        seeAllKey="home.promosSeeAll"
       >
         <Carousel>
           {promos.map((p) => (
@@ -157,10 +177,13 @@ export default function Home() {
         cta="Learn more"
         tone="from-slate-700 to-slate-900"
         compact
+        titleKey="banner.corporateTitle"
+        subtitleKey="banner.corporateSubtitle"
+        ctaKey="banner.corporateCta"
       />
 
       {/* Articles / guides */}
-      <SectionBand title="Travel guides & tips" emoji="📖">
+      <SectionBand title="Travel guides & tips" emoji="📖" titleKey="home.articlesTitle">
         <Carousel>
           {articles.map((a) => (
             <ArticleCard key={a.title} article={a} />
@@ -176,11 +199,13 @@ export default function Home() {
         title="Our Recommendations"
         tabs={recommendationTabs}
         links={recommendationLinks}
+        titleKey="home.recommendationsTitle"
       />
       <SeoLinkGrid
         title="Explore Our Services"
         tabs={serviceSeoTabs}
         links={serviceSeoLinks}
+        titleKey="home.exploreServicesTitle"
       />
 
       <Footer />

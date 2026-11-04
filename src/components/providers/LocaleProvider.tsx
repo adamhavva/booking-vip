@@ -13,6 +13,7 @@ import {
   formatMoneyWith,
   type CurrencyCode,
 } from "@/lib/currency";
+import { makeTranslator, type DictKey } from "@/i18n";
 
 // ---------------------------------------------------------------------------
 // Locale + currency context.
@@ -30,6 +31,8 @@ type LocaleState = {
   currency: CurrencyCode;
   setCurrency: (c: CurrencyCode) => void;
   formatMoney: (usd: number) => string;
+  /** Translate a dictionary key using the current language. */
+  t: (key: DictKey, vars?: Record<string, string | number>) => string;
 };
 
 const LocaleContext = createContext<LocaleState | null>(null);
@@ -91,9 +94,16 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     [currency, rates]
   );
 
+  // Bound translator for the current language.
+  const translate = useCallback(
+    (key: DictKey, vars?: Record<string, string | number>) =>
+      makeTranslator(lang)(key, vars),
+    [lang]
+  );
+
   const value = useMemo<LocaleState>(
-    () => ({ lang, setLang, currency, setCurrency, formatMoney }),
-    [lang, setLang, currency, setCurrency, formatMoney]
+    () => ({ lang, setLang, currency, setCurrency, formatMoney, t: translate }),
+    [lang, setLang, currency, setCurrency, formatMoney, translate]
   );
 
   return (

@@ -4,6 +4,8 @@ import { useState, type ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import SectionHeading from "@/components/ui/SectionHeading";
 import TabPills from "@/components/ui/TabPills";
+import { useLocale } from "@/components/providers/LocaleProvider";
+import type { DictKey } from "@/i18n";
 
 export default function SectionBand({
   title,
@@ -14,6 +16,10 @@ export default function SectionBand({
   seeAllHref = "#",
   children,
   className = "",
+  // i18n keys — when provided, they override the literal props above
+  titleKey,
+  eyebrowKey,
+  seeAllKey,
 }: {
   title: string;
   eyebrow?: string;
@@ -23,16 +29,24 @@ export default function SectionBand({
   seeAllHref?: string;
   children: ReactNode;
   className?: string;
+  titleKey?: DictKey;
+  eyebrowKey?: DictKey;
+  seeAllKey?: DictKey;
 }) {
+  const { t } = useLocale();
   const [active, setActive] = useState(0);
+
+  const resolvedTitle = titleKey ? t(titleKey) : title;
+  const resolvedEyebrow = eyebrowKey ? t(eyebrowKey) : eyebrow;
+  const resolvedSeeAll = seeAllKey ? t(seeAllKey) : seeAll;
 
   return (
     <Container as="section" className={`py-6 ${className}`}>
       <SectionHeading
-        eyebrow={eyebrow}
-        title={title}
+        eyebrow={resolvedEyebrow}
+        title={resolvedTitle}
         emoji={emoji}
-        seeAll={seeAll || undefined}
+        seeAll={resolvedSeeAll || undefined}
         seeAllHref={seeAllHref}
       />
 

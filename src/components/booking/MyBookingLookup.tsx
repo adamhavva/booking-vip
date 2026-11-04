@@ -10,7 +10,9 @@ const LAST_BOOKING_KEY = "booking-vip:last-booking";
 
 export default function MyBookingLookup() {
   const searchParams = useSearchParams();
-  const { formatMoney } = useLocale();
+  const { formatMoney, t } = useLocale();
+
+  const plural = (n: number) => (n !== 1 ? "s" : "");
 
   const [code, setCode] = useState("");
   const [email, setEmail] = useState("");
@@ -56,22 +58,22 @@ export default function MyBookingLookup() {
     if (result.found) {
       setBooking(result.booking);
     } else if (result.reason === "not_found") {
-      setError("Booking not found. Please check your code and email.");
+      setError("not_found");
     } else {
-      setError("Lookup unavailable. Please try again later.");
+      setError("unavailable");
     }
   };
 
   const statusLabel = (status: string) => {
     switch (status) {
       case "awaiting_payment":
-        return { text: "Awaiting Payment", className: "bg-yellow-100 text-yellow-800" };
+        return { text: t("myBooking.status.awaitingPayment"), className: "bg-yellow-100 text-yellow-800" };
       case "confirmed":
-        return { text: "Confirmed", className: "bg-green-100 text-green-800" };
+        return { text: t("myBooking.status.confirmed"), className: "bg-green-100 text-green-800" };
       case "cancelled":
-        return { text: "Cancelled", className: "bg-red-100 text-red-800" };
+        return { text: t("myBooking.status.cancelled"), className: "bg-red-100 text-red-800" };
       case "completed":
-        return { text: "Completed", className: "bg-blue-100 text-blue-800" };
+        return { text: t("myBooking.status.completed"), className: "bg-blue-100 text-blue-800" };
       default:
         return { text: status, className: "bg-gray-100 text-gray-800" };
     }
@@ -82,30 +84,30 @@ export default function MyBookingLookup() {
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="mx-auto max-w-md rounded-2xl border border-line bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-center text-xl font-bold text-ink">
-            Find Your Booking
+            {t("myBooking.findTitle")}
           </h2>
           <div className="space-y-4">
             <div>
               <label className="mb-1 block text-xs font-semibold text-muted">
-                Booking Code
+                {t("myBooking.code")}
               </label>
               <input
                 type="text"
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
-                placeholder="BV-XXXXXX"
+                placeholder={t("myBooking.codePlaceholder")}
                 className="w-full rounded-xl border border-line bg-white px-4 py-2.5 font-mono text-sm text-ink"
               />
             </div>
             <div>
               <label className="mb-1 block text-xs font-semibold text-muted">
-                Email Address
+                {t("myBooking.email")}
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder={t("myBooking.emailPlaceholder")}
                 className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm text-ink"
               />
             </div>
@@ -114,7 +116,7 @@ export default function MyBookingLookup() {
               disabled={!code || !email || loading}
               className="w-full rounded-xl bg-brand py-3 text-base font-bold text-white shadow-sm transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Searching..." : "Find Booking"}
+              {loading ? t("myBooking.searching") : t("myBooking.findBooking")}
             </button>
           </div>
         </div>
@@ -122,7 +124,11 @@ export default function MyBookingLookup() {
 
       {error && searched && (
         <div className="mx-auto max-w-md rounded-xl border border-danger/20 bg-danger/5 p-6 text-center">
-          <p className="text-sm text-danger">{error}</p>
+          <p className="text-sm text-danger">
+            {error === "not_found"
+              ? t("myBooking.notFound")
+              : t("myBooking.unavailable")}
+          </p>
         </div>
       )}
 
@@ -131,7 +137,7 @@ export default function MyBookingLookup() {
           <div className="mb-6 rounded-2xl border border-line bg-white p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between border-b border-line pb-4">
               <div>
-                <p className="text-xs text-muted">Booking Code</p>
+                <p className="text-xs text-muted">{t("myBooking.code")}</p>
                 <p className="font-mono text-lg font-bold text-ink">
                   {booking.code}
                 </p>
@@ -147,7 +153,7 @@ export default function MyBookingLookup() {
 
             <div className="mb-4 grid grid-cols-2 gap-4 border-b border-line pb-4 text-sm">
               <div>
-                <p className="text-muted">Service Date</p>
+                <p className="text-muted">{t("myBooking.serviceDate")}</p>
                 <p className="font-semibold text-ink">
                   {new Date(booking.serviceAt).toLocaleDateString("en-US", {
                     weekday: "short",
@@ -158,20 +164,28 @@ export default function MyBookingLookup() {
                 </p>
               </div>
               <div>
-                <p className="text-muted">Travelers</p>
+                <p className="text-muted">{t("myBooking.travelers")}</p>
                 <p className="font-semibold text-ink">
-                  {booking.adultCount} adult
-                  {booking.adultCount !== 1 ? "s" : ""}
+                  {t("wizard.summary.adult", {
+                    n: booking.adultCount,
+                    plural: plural(booking.adultCount),
+                  })}
                   {booking.childCount > 0 &&
-                    `, ${booking.childCount} child${booking.childCount !== 1 ? "s" : ""}`}
+                    `, ${t("wizard.summary.child", {
+                      n: booking.childCount,
+                      plural: plural(booking.childCount),
+                    })}`}
                   {booking.infantCount > 0 &&
-                    `, ${booking.infantCount} infant${booking.infantCount !== 1 ? "s" : ""}`}
+                    `, ${t("wizard.summary.infant", {
+                      n: booking.infantCount,
+                      plural: plural(booking.infantCount),
+                    })}`}
                 </p>
               </div>
             </div>
 
             <div className="mb-4 border-b border-line pb-4">
-              <p className="mb-2 text-xs font-semibold text-muted">Items</p>
+              <p className="mb-2 text-xs font-semibold text-muted">{t("myBooking.items")}</p>
               {booking.items.map((item, i) => (
                 <div key={i} className="mb-2 flex justify-between text-sm">
                   <span className="text-ink">
@@ -196,16 +210,16 @@ export default function MyBookingLookup() {
             </div>
 
             <div className="mb-4 border-b border-line pb-4">
-              <p className="mb-2 text-xs font-semibold text-muted">Travelers</p>
-              {booking.travelers.map((t, i) => (
+              <p className="mb-2 text-xs font-semibold text-muted">{t("myBooking.travelers")}</p>
+              {booking.travelers.map((traveler, i) => (
                 <div key={i} className="text-sm text-ink">
-                  {t.fullName} ({t.kind})
+                  {traveler.fullName} ({traveler.kind})
                 </div>
               ))}
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-muted">Total</span>
+              <span className="text-sm font-semibold text-muted">{t("myBooking.total")}</span>
               <span className="text-xl font-bold text-brand">
                 {formatMoney(booking.totalUsd)}
               </span>
