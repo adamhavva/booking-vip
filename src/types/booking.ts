@@ -7,6 +7,7 @@ export type CreateBookingInput = {
   adult: number;
   child: number;
   infant: number;
+  units?: number; // for per_unit packages (default 1)
   addOns: { slug: string; qty: number }[];
   contact: {
     firstName: string;

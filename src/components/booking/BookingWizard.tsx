@@ -50,6 +50,7 @@ export default function BookingWizard() {
   const adultParam = parseInt(searchParams.get("adult") ?? "1", 10);
   const childParam = parseInt(searchParams.get("child") ?? "0", 10);
   const infantParam = parseInt(searchParams.get("infant") ?? "0", 10);
+  const qtyParam = parseInt(searchParams.get("qty") ?? "1", 10);
   const packageId = searchParams.get("pkg") ?? undefined;
 
   const [adults, setAdults] = useState(adultParam);
@@ -119,14 +120,15 @@ export default function BookingWizard() {
       subtotal += (selectedPackage.childUsd ?? 0) * children;
       subtotal += (selectedPackage.infantUsd ?? 0) * infants;
     } else {
-      subtotal += selectedPackage.unitUsd ?? 0;
+      // per_unit: multiply by quantity
+      subtotal += (selectedPackage.unitUsd ?? 0) * qtyParam;
     }
     const addOnsTotal = selectedAddOns.reduce((sum, a) => {
       const addOn = product.addOns.find((o) => o.slug === a.slug);
       return sum + (addOn?.unitUsd ?? 0) * a.qty;
     }, 0);
     return subtotal + addOnsTotal;
-  }, [product, selectedPackage, adults, children, infants, selectedAddOns]);
+  }, [product, selectedPackage, adults, children, infants, selectedAddOns, qtyParam]);
 
   const addOnsWithLabels = useMemo(() => {
     return selectedAddOns.map((a) => {
@@ -158,6 +160,7 @@ export default function BookingWizard() {
       adult: adults,
       child: children,
       infant: infants,
+      units: selectedPackage.unitKind === "per_unit" ? qtyParam : undefined,
       addOns: selectedAddOns,
       contact,
       flight,
@@ -259,6 +262,7 @@ export default function BookingWizard() {
               adults={adults}
               children={children}
               infants={infants}
+              units={selectedPackage?.unitKind === "per_unit" ? qtyParam : undefined}
               packageLabel={selectedPackage?.label ?? ""}
               addOns={addOnsWithLabels}
             />

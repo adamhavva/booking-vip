@@ -10,6 +10,7 @@ type Props = {
   adults: number;
   children: number;
   infants: number;
+  units?: number; // for per_unit packages
   packageLabel: string;
   addOns: { slug: string; qty: number; label: string; unitUsd: number }[];
 };
@@ -21,6 +22,7 @@ export default function BookingSummary({
   adults,
   children,
   infants,
+  units,
   packageLabel,
   addOns,
 }: Props) {
@@ -39,7 +41,8 @@ export default function BookingSummary({
       subtotal += (selectedPackage.childUsd ?? 0) * children;
       subtotal += (selectedPackage.infantUsd ?? 0) * infants;
     } else {
-      subtotal += selectedPackage.unitUsd ?? 0;
+      // per_unit: multiply by units (quantity)
+      subtotal += (selectedPackage.unitUsd ?? 0) * (units ?? 1);
     }
   }
 

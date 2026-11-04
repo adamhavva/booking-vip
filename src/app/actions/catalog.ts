@@ -166,10 +166,12 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
         "requirements",
         "fromPriceUsdCents",
         "serviceTypeId",
-        "airportId"
+        "airportId",
+        "isAddOn"
       )
       .where((f) => f.slug.eq(slug))
       .where((f) => f.active.eq(true))
+      .where((f) => f.isAddOn.eq(false))
       .limit(1)
       .all();
 

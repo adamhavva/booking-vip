@@ -48,11 +48,12 @@ export async function createBooking(
   input: CreateBookingInput
 ): Promise<CreateBookingResult> {
   try {
-    // Validate product exists and is active
+    // Validate product exists, is active, and is not an add-on
     const products = await db.orm.public.Product
-      .select("id", "slug", "leadTimeHours", "leadTimeDays", "lineId")
+      .select("id", "slug", "leadTimeHours", "leadTimeDays", "lineId", "isAddOn")
       .where((f) => f.slug.eq(input.productSlug))
       .where((f) => f.active.eq(true))
+      .where((f) => f.isAddOn.eq(false))
       .limit(1)
       .all();
 
@@ -61,9 +62,24 @@ export async function createBooking(
       return { ok: false, error: "Product not found or inactive" };
     }
 
-    // Validate package if provided
+    // Validate package — check if product has active packages first
+    const allActivePackages = await db.orm.public.ProductPackage
+      .select("id")
+      .where((f) => f.productId.eq(product.id))
+      .where((f) => f.active.eq(true))
+      .all();
+
+    if (allActivePackages.length === 0) {
+      return { ok: false, error: "Product has no active packages available for booking" };
+    }
+
+    // packageId is required when product has active packages
+    if (!input.packageId) {
+      return { ok: false, error: "Package selection is required" };
+    }
+
     let packageRecord: { id: string; label: string; unitKind: string; adultUsdCents: number | null; childUsdCents: number | null; infantUsdCents: number | null; unitUsdCents: number | null } | null = null;
-    if (input.packageId) {
+    {
       const packageId = input.packageId; // narrow to string
       const packages = await db.orm.public.ProductPackage
         .select("id", "label", "unitKind", "adultUsdCents", "childUsdCents", "infantUsdCents", "unitUsdCents")
@@ -78,9 +94,19 @@ export async function createBooking(
       }
     }
 
-    // Validate lead time
+    // Validate serviceAt is a valid date
     const serviceAt = new Date(input.serviceAt);
+    if (!Number.isFinite(serviceAt.getTime())) {
+      return { ok: false, error: "Invalid service date" };
+    }
+
+    // Validate serviceAt is in the future (at least current second)
     const now = new Date();
+    if (serviceAt < now) {
+      return { ok: false, error: "Service date must be in the future" };
+    }
+
+    // Validate lead time
     if (product.leadTimeDays > 0) {
       const minDate = new Date(now.getTime() + product.leadTimeDays * 24 * 60 * 60 * 1000);
       if (serviceAt < minDate) {
@@ -93,9 +119,36 @@ export async function createBooking(
       }
     }
 
-    // Validate adult >= 1
-    if (input.adult < 1) {
+    // Validate adult count (NaN-safe)
+    if (!Number.isFinite(input.adult) || input.adult < 1) {
       return { ok: false, error: "At least 1 adult is required" };
+    }
+
+    // Validate child count (NaN-safe, clamp negative to 0)
+    if (!Number.isFinite(input.child) || input.child < 0) {
+      return { ok: false, error: "Child count must be 0 or greater" };
+    }
+
+    // Validate infant count (NaN-safe, clamp negative to 0)
+    if (!Number.isFinite(input.infant) || input.infant < 0) {
+      return { ok: false, error: "Infant count must be 0 or greater" };
+    }
+
+    // Validate units (for per_unit packages) — default 1, range 1-99
+    const units = input.units ?? 1;
+    if (!Number.isFinite(units) || units < 1 || units > 99) {
+      return { ok: false, error: "Quantity must be between 1 and 99" };
+    }
+
+    // Validate travelers count matches adult + child
+    const expectedTravelers = input.adult + input.child;
+    if (input.travelers.length !== expectedTravelers) {
+      return { ok: false, error: `Expected ${expectedTravelers} traveler(s), got ${input.travelers.length}` };
+    }
+
+    // Validate fxRate is positive and finite
+    if (!Number.isFinite(input.fxRate) || input.fxRate <= 0) {
+      return { ok: false, error: "Invalid exchange rate" };
     }
 
     // Resolve add-ons
@@ -146,7 +199,8 @@ export async function createBooking(
         subtotalUsdCents += (packageRecord.childUsdCents ?? 0) * input.child;
         subtotalUsdCents += (packageRecord.infantUsdCents ?? 0) * input.infant;
       } else {
-        subtotalUsdCents += (packageRecord.unitUsdCents ?? 0);
+        // per_unit: multiply by units (quantity)
+        subtotalUsdCents += (packageRecord.unitUsdCents ?? 0) * units;
       }
     }
 
