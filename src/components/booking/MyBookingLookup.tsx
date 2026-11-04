@@ -53,10 +53,12 @@ export default function MyBookingLookup() {
 
     setLoading(false);
 
-    if (result) {
-      setBooking(result);
-    } else {
+    if (result.found) {
+      setBooking(result.booking);
+    } else if (result.reason === "not_found") {
       setError("Booking not found. Please check your code and email.");
+    } else {
+      setError("Lookup unavailable. Please try again later.");
     }
   };
 

@@ -7,7 +7,9 @@ import MyBookingLookup from "@/components/booking/MyBookingLookup";
 export default function MyBookingPage() {
   return (
     <>
-      <Header variant="solid" />
+      <Suspense>
+        <Header variant="solid" />
+      </Suspense>
       <main className="min-h-screen bg-canvas pt-6">
         <Container>
           <div className="mb-6">

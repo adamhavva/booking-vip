@@ -72,3 +72,7 @@ export type BookingLookupDTO = {
   travelers: { fullName: string; kind: string }[];
   createdAt: string;
 };
+
+export type BookingLookupResult =
+  | { found: true; booking: BookingLookupDTO }
+  | { found: false; reason: "not_found" | "error" };

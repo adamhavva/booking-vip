@@ -3,6 +3,7 @@
 import { db } from "@/prisma/db";
 import type {
   BookingLookupDTO,
+  BookingLookupResult,
   CreateBookingInput,
   CreateBookingResult,
 } from "@/types";
@@ -303,12 +304,12 @@ export async function createBooking(
 
 /**
  * Lookup a booking by code + email.
- * Returns null if not found.
+ * Returns discriminated result: found with booking, or not found/error.
  */
 export async function getBookingByCode(
   code: string,
   email: string
-): Promise<BookingLookupDTO | null> {
+): Promise<BookingLookupResult> {
   try {
     // Find booking by code
     const bookings = await db.orm.public.Booking
@@ -332,7 +333,7 @@ export async function getBookingByCode(
       .all();
 
     const booking = bookings[0];
-    if (!booking) return null;
+    if (!booking) return { found: false, reason: "not_found" };
 
     // Verify contact email matches
     const contacts = await db.orm.public.Contact
@@ -343,7 +344,7 @@ export async function getBookingByCode(
 
     const contact = contacts[0];
     if (!contact || contact.email.toLowerCase() !== email.toLowerCase()) {
-      return null;
+      return { found: false, reason: "not_found" };
     }
 
     // Get items
@@ -366,48 +367,51 @@ export async function getBookingByCode(
       .all();
 
     return {
-      code: booking.code,
-      status: booking.status,
-      serviceAt: new Date(booking.serviceAt).toISOString(),
-      adultCount: booking.adultCount,
-      childCount: booking.childCount,
-      infantCount: booking.infantCount,
-      subtotalUsd: (booking.subtotalUsdCents ?? 0) / 100,
-      addOnsUsd: (booking.addOnsUsdCents ?? 0) / 100,
-      totalUsd: (booking.totalUsdCents ?? 0) / 100,
-      currencyCode: booking.currencyCode,
-      fxRate: booking.fxRate,
-      items: items.map((item) => ({
-        label: item.label,
-        packageLabel: item.packageLabel ?? undefined,
-        unitKind: item.unitKind,
-        adultCount: item.adultCount,
-        childCount: item.childCount,
-        infantCount: item.infantCount,
-        unitUsd: (item.unitUsdCents ?? 0) / 100,
-        totalUsd: (item.totalUsdCents ?? 0) / 100,
-      })),
-      addOns: addOns.map((a) => ({
-        label: a.label,
-        quantity: a.quantity,
-        unitUsd: (a.unitUsdCents ?? 0) / 100,
-        totalUsd: (a.totalUsdCents ?? 0) / 100,
-      })),
-      contact: {
-        firstName: contact.firstName,
-        lastName: contact.lastName,
-        email: contact.email,
-        phoneCountryCode: contact.phoneCountryCode,
-        phone: contact.phone,
+      found: true,
+      booking: {
+        code: booking.code,
+        status: booking.status,
+        serviceAt: new Date(booking.serviceAt).toISOString(),
+        adultCount: booking.adultCount,
+        childCount: booking.childCount,
+        infantCount: booking.infantCount,
+        subtotalUsd: (booking.subtotalUsdCents ?? 0) / 100,
+        addOnsUsd: (booking.addOnsUsdCents ?? 0) / 100,
+        totalUsd: (booking.totalUsdCents ?? 0) / 100,
+        currencyCode: booking.currencyCode,
+        fxRate: booking.fxRate,
+        items: items.map((item) => ({
+          label: item.label,
+          packageLabel: item.packageLabel ?? undefined,
+          unitKind: item.unitKind,
+          adultCount: item.adultCount,
+          childCount: item.childCount,
+          infantCount: item.infantCount,
+          unitUsd: (item.unitUsdCents ?? 0) / 100,
+          totalUsd: (item.totalUsdCents ?? 0) / 100,
+        })),
+        addOns: addOns.map((a) => ({
+          label: a.label,
+          quantity: a.quantity,
+          unitUsd: (a.unitUsdCents ?? 0) / 100,
+          totalUsd: (a.totalUsdCents ?? 0) / 100,
+        })),
+        contact: {
+          firstName: contact.firstName,
+          lastName: contact.lastName,
+          email: contact.email,
+          phoneCountryCode: contact.phoneCountryCode,
+          phone: contact.phone,
+        },
+        travelers: travelers.map((t) => ({
+          fullName: t.fullName,
+          kind: t.kind,
+        })),
+        createdAt: new Date(booking.createdAt).toISOString(),
       },
-      travelers: travelers.map((t) => ({
-        fullName: t.fullName,
-        kind: t.kind,
-      })),
-      createdAt: new Date(booking.createdAt).toISOString(),
     };
   } catch (error) {
     console.error("[booking] could not lookup booking", error);
-    return null;
+    return { found: false, reason: "error" };
   }
 }

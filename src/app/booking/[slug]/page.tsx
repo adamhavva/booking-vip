@@ -3,24 +3,13 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/sections/Footer";
 import Container from "@/components/ui/Container";
 import BookingWizard from "@/components/booking/BookingWizard";
-import { getProduct } from "@/app/actions/catalog";
 
-export const instant = false;
-
-export default async function BookingPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-
-  // Fetch product to get airport name for the wizard
-  const product = await getProduct(slug);
-  const airportName = product?.placeLabel ?? "";
-
+export default function BookingPage() {
   return (
     <>
-      <Header variant="solid" />
+      <Suspense>
+        <Header variant="solid" />
+      </Suspense>
       <main className="min-h-screen bg-canvas pt-6">
         <Container>
           <Suspense
@@ -30,7 +19,7 @@ export default async function BookingPage({
               </div>
             }
           >
-            <BookingWizard airportName={airportName} />
+            <BookingWizard />
           </Suspense>
         </Container>
       </main>

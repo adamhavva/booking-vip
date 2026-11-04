@@ -34,11 +34,7 @@ type FlightData = {
 
 const LAST_BOOKING_KEY = "booking-vip:last-booking";
 
-export default function BookingWizard({
-  airportName,
-}: {
-  airportName: string;
-}) {
+export default function BookingWizard() {
   const params = useParams();
   const searchParams = useSearchParams();
   const { currency, formatMoney } = useLocale();
@@ -76,8 +72,9 @@ export default function BookingWizard({
     notes: "",
   });
 
+  // Airport name will be derived from product after fetch
   const [flight, setFlight] = useState<FlightData>({
-    airportName,
+    airportName: "",
     location: "",
     airline: "",
     flightCode: "",
@@ -99,6 +96,9 @@ export default function BookingWizard({
       setLoading(false);
       if (!p) {
         setError("Product not found");
+      } else {
+        // Update airport name from product data
+        setFlight((f) => ({ ...f, airportName: p.placeLabel ?? "" }));
       }
     });
   }, [slug]);
@@ -221,7 +221,7 @@ export default function BookingWizard({
             <StepDetails
               date={date}
               time={time}
-              airportName={airportName}
+              airportName={flight.airportName}
               adults={adults}
               children={children}
               contact={contact}
