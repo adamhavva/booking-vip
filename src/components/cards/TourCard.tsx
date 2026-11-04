@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PinIcon } from "@/components/icons";
 import Badge from "@/components/ui/Badge";
 import PriceBlock from "@/components/ui/PriceBlock";
@@ -6,8 +7,14 @@ import Thumb from "@/components/ui/Thumb";
 import { cardShell } from "@/lib/styles";
 import type { Tour } from "@/types";
 
-export default function TourCard({ tour }: { tour: Tour }) {
-  return (
+export default function TourCard({
+  tour,
+  href,
+}: {
+  tour: Tour;
+  href?: string;
+}) {
+  const content = (
     <div className={cardShell}>
       <div className="relative">
         <Thumb tone={tour.tone} className="h-32 w-full" />
@@ -35,4 +42,14 @@ export default function TourCard({ tour }: { tour: Tour }) {
       </div>
     </div>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="block transition-shadow hover:shadow-lg">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }

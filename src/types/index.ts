@@ -1,4 +1,12 @@
 export type { Article } from "./article";
+export type {
+  AddOnDTO,
+  CatalogDTO,
+  OptionDTO,
+  PackageDTO,
+  ProductCardDTO,
+  ProductDetailDTO,
+} from "./catalog";
 export type { FooterColumns, LinkItem } from "./common";
 export type { Destination } from "./destination";
 export type { EvoaPlan } from "./evoa";

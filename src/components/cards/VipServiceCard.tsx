@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PinIcon } from "@/components/icons";
 import Badge from "@/components/ui/Badge";
 import PriceBlock from "@/components/ui/PriceBlock";
@@ -5,8 +6,14 @@ import Thumb from "@/components/ui/Thumb";
 import { cardShell } from "@/lib/styles";
 import type { VipService } from "@/types";
 
-export default function VipServiceCard({ service }: { service: VipService }) {
-  return (
+export default function VipServiceCard({
+  service,
+  href,
+}: {
+  service: VipService;
+  href?: string;
+}) {
+  const content = (
     <div className={cardShell}>
       <div className="relative">
         <Thumb tone={service.tone} className="h-32 w-full" />
@@ -29,4 +36,14 @@ export default function VipServiceCard({ service }: { service: VipService }) {
       </div>
     </div>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="block transition-shadow hover:shadow-lg">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }

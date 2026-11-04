@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { UsersIcon } from "@/components/icons";
 import Badge from "@/components/ui/Badge";
 import PriceBlock from "@/components/ui/PriceBlock";
@@ -5,8 +6,14 @@ import Thumb from "@/components/ui/Thumb";
 import { cardShell } from "@/lib/styles";
 import type { Transport } from "@/types";
 
-export default function TransportCard({ item }: { item: Transport }) {
-  return (
+export default function TransportCard({
+  item,
+  href,
+}: {
+  item: Transport;
+  href?: string;
+}) {
+  const content = (
     <div className={cardShell}>
       <div className="relative">
         <Thumb tone={item.tone} className="h-28 w-full" />
@@ -32,4 +39,14 @@ export default function TransportCard({ item }: { item: Transport }) {
       </div>
     </div>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="block transition-shadow hover:shadow-lg">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }

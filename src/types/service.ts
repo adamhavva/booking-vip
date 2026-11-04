@@ -16,12 +16,23 @@ export type ServiceCatalogKind = "vip" | "transport" | "tour" | "evoa";
 /** Icon slot used by the search form fields. */
 export type SearchFieldIcon = "plane" | "pin" | "cal" | "users" | "star";
 
+/** Field kind — determines how the field renders. */
+export type ServiceSearchFieldKind =
+  | "text"
+  | "date"
+  | "select-airport"
+  | "select-city"
+  | "select-service-type"
+  | "select-country";
+
 export type ServiceSearchField = {
   /** Query-string key, also the key of the persisted draft value. */
   key: string;
   label: string;
   defaultValue: string;
   icon: SearchFieldIcon;
+  /** Field kind — determines how the field renders. */
+  kind: ServiceSearchFieldKind;
 };
 
 export type ServicePage = {

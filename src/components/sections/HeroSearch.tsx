@@ -17,7 +17,8 @@ import { categories } from "@/data/home";
 import { serviceNav, serviceSearchFields } from "@/data/services";
 import { loadDraft, rememberSearch } from "@/lib/searchDraft";
 import { logSearch } from "@/app/actions/search";
-import type { Category, SearchFieldIcon } from "@/types";
+import { getOptions } from "@/app/actions/catalog";
+import type { Category, OptionDTO, SearchFieldIcon, ServiceSearchField } from "@/types";
 
 const ICONS: Record<SearchFieldIcon, ReactNode> = {
   plane: <PlaneIcon width={18} height={18} />,
@@ -34,27 +35,56 @@ const SERVICE_ROUTES = Object.fromEntries(
 type Values = Record<string, Record<string, string>>;
 
 function Field({
-  label,
+  field,
   icon,
   value,
   onChange,
+  options,
 }: {
-  label: string;
+  field: ServiceSearchField;
   icon: ReactNode;
   value: string;
   onChange: (v: string) => void;
+  options?: OptionDTO[];
 }) {
+  const isSelect = field.kind.startsWith("select-");
+  const isDate = field.kind === "date";
+
   return (
     <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl bg-canvas px-4 py-2.5">
       <span className="text-muted">{icon}</span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[11px] text-muted">{label}</span>
-        <input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          aria-label={label}
-          className="w-full bg-transparent text-sm font-semibold text-ink outline-none placeholder:text-muted"
-        />
+        <span className="block text-[11px] text-muted">{field.label}</span>
+        {isSelect && options ? (
+          <select
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            aria-label={field.label}
+            className="w-full appearance-none bg-transparent pr-6 text-sm font-semibold text-ink outline-none"
+          >
+            <option value="">{field.defaultValue}</option>
+            {options.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        ) : isDate ? (
+          <input
+            type="date"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            aria-label={field.label}
+            className="w-full bg-transparent text-sm font-semibold text-ink outline-none placeholder:text-muted"
+          />
+        ) : (
+          <input
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            aria-label={field.label}
+            className="w-full bg-transparent text-sm font-semibold text-ink outline-none placeholder:text-muted"
+          />
+        )}
       </span>
     </div>
   );
@@ -101,8 +131,29 @@ export default function HeroSearch() {
   const [resume, setResume] = useState<{ href: string; label: string } | null>(
     null
   );
+  const [options, setOptions] = useState<Record<string, OptionDTO[]>>({});
 
   const fields = serviceSearchFields[service] ?? [];
+
+  // Fetch options for select fields
+  useEffect(() => {
+    const kinds = new Set<string>();
+    for (const f of fields) {
+      if (f.kind === "select-airport") kinds.add("airport");
+      else if (f.kind === "select-city") kinds.add("city");
+      else if (f.kind === "select-service-type") kinds.add("serviceType");
+      else if (f.kind === "select-country") kinds.add("country");
+    }
+
+    for (const kind of kinds) {
+      const key = kind as "airport" | "city" | "serviceType" | "country";
+      if (!options[key]) {
+        getOptions(key).then((opts) => {
+          setOptions((prev) => ({ ...prev, [key]: opts }));
+        });
+      }
+    }
+  }, [fields]);
 
   // Restore the last submitted search (persisted on this device).
   useEffect(() => {
@@ -185,15 +236,24 @@ export default function HeroSearch() {
           <div className="relative rounded-2xl bg-white p-4 shadow-xl md:p-6 md:pt-10">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
               <div className="grid flex-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {fields.map((f) => (
-                  <Field
-                    key={f.key}
-                    label={f.label}
-                    icon={ICONS[f.icon]}
-                    value={currentValues[f.key] ?? ""}
-                    onChange={(v) => setField(f.key, v)}
-                  />
-                ))}
+                {fields.map((f) => {
+                  let fieldOptions: OptionDTO[] | undefined;
+                  if (f.kind === "select-airport") fieldOptions = options.airport;
+                  else if (f.kind === "select-city") fieldOptions = options.city;
+                  else if (f.kind === "select-service-type") fieldOptions = options.serviceType;
+                  else if (f.kind === "select-country") fieldOptions = options.country;
+
+                  return (
+                    <Field
+                      key={f.key}
+                      field={f}
+                      icon={ICONS[f.icon]}
+                      value={currentValues[f.key] ?? ""}
+                      onChange={(v) => setField(f.key, v)}
+                      options={fieldOptions}
+                    />
+                  );
+                })}
               </div>
               <button
                 onClick={submit}
