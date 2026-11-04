@@ -1,6 +1,13 @@
+import Link from "next/link";
 import Container from "@/components/ui/Container";
 import Logo from "@/components/layout/Logo";
 import { footerColumns, socials } from "@/data/home";
+import { serviceNav } from "@/data/services";
+
+/** Label → route, so the Services column links to the service sub-pages. */
+const serviceRoutes = Object.fromEntries(
+  serviceNav.map((s) => [s.label, s.href])
+);
 
 function AppBadge({ store }: { store: string }) {
   return (
@@ -44,9 +51,9 @@ export default function Footer() {
               <ul className="space-y-2 text-sm">
                 {items.map((i) => (
                   <li key={i}>
-                    <a href="#" className="hover:text-white">
+                    <Link href={serviceRoutes[i] ?? "#"} className="hover:text-white">
                       {i}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

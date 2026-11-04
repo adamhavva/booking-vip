@@ -1,8 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Container from "@/components/ui/Container";
 import TabPills from "@/components/ui/TabPills";
+import { serviceNav } from "@/data/services";
+
+export type SeoLink = {
+  label: string;
+  service: string;
+  tags?: string[];
+};
+
+const serviceRoutes = Object.fromEntries(
+  serviceNav.map((s) => [s.label, s.href])
+);
 
 export default function SeoLinkGrid({
   title,
@@ -11,7 +23,7 @@ export default function SeoLinkGrid({
 }: {
   title: string;
   tabs: string[];
-  links: string[];
+  links: SeoLink[];
 }) {
   const [active, setActive] = useState(0);
 
@@ -31,13 +43,13 @@ export default function SeoLinkGrid({
 
       <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 md:grid-cols-4">
         {links.map((l) => (
-          <a
-            key={l}
-            href="#"
+          <Link
+            key={l.label}
+            href={serviceRoutes[l.service] ?? "#"}
             className="text-sm text-muted hover:text-brand hover:underline"
           >
-            {l}
-          </a>
+            {l.label}
+          </Link>
         ))}
       </div>
     </Container>

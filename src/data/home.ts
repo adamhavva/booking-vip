@@ -124,19 +124,46 @@ export const seoBlocks = [
   },
 ];
 
-export const recommendationTabs = ["Airport VIP", "Transport", "Tour Package", "eVOA", "Bali", "Jakarta"];
+export const recommendationTabs = ["All", "Airport VIP Service", "Transport", "Tour Package", "eVOA", "Bali", "Jakarta"];
 
+/**
+ * SEO link lists. `service` maps the link to one of the four service routes
+ * (`serviceNav`); `tags` are extra filter keys (e.g. a destination).
+ */
 export const recommendationLinks = [
-  "Meet & Greet at Soekarno-Hatta", "Fast Track at Ngurah Rai Bali", "Premium Lounge Jakarta", "Family VIP Package",
-  "Private Transfer in Bali", "Airport Transfer Jakarta", "Chauffeur Service Surabaya", "Hourly Car Hire",
-  "Bali Highlights Tour", "Komodo Sailing Trip", "Yogyakarta Heritage Tour", "Tourist eVOA Indonesia",
+  { label: "Meet & Greet at Soekarno-Hatta", service: "Airport VIP Service", tags: ["Jakarta"] },
+  { label: "Fast Track at Ngurah Rai Bali", service: "Airport VIP Service", tags: ["Bali"] },
+  { label: "Premium Lounge Jakarta", service: "Airport VIP Service", tags: ["Jakarta"] },
+  { label: "Family VIP Package", service: "Airport VIP Service", tags: [] },
+  { label: "Private Transfer in Bali", service: "Transport", tags: ["Bali"] },
+  { label: "Airport Transfer Jakarta", service: "Transport", tags: ["Jakarta"] },
+  { label: "Chauffeur Service Surabaya", service: "Transport", tags: [] },
+  { label: "Hourly Car Hire", service: "Transport", tags: [] },
+  { label: "Bali Highlights Tour", service: "Tour Package", tags: ["Bali"] },
+  { label: "Komodo Sailing Trip", service: "Tour Package", tags: [] },
+  { label: "Yogyakarta Heritage Tour", service: "Tour Package", tags: [] },
+  { label: "Tourist eVOA Indonesia", service: "eVOA", tags: [] },
 ];
 
+export const serviceSeoTabs = ["All", "Airport VIP Service", "Transport", "Tour Package", "eVOA"];
+
 export const serviceSeoLinks = [
-  "Airport VIP Service Jakarta", "Airport VIP Service Bali", "Airport VIP Service Surabaya", "Airport VIP Service Medan",
-  "Private Transport Bali", "Private Transport Jakarta", "Group Van Transfer", "Luxury Limousine Service",
-  "Tour Package Bali", "Tour Package Lombok", "Tour Package Labuan Bajo", "Tour Package Yogyakarta",
-  "eVOA Indonesia 30 Days", "Business eVOA", "Express eVOA", "Transit eVOA",
+  { label: "Airport VIP Service Jakarta", service: "Airport VIP Service", tags: [] },
+  { label: "Airport VIP Service Bali", service: "Airport VIP Service", tags: [] },
+  { label: "Airport VIP Service Surabaya", service: "Airport VIP Service", tags: [] },
+  { label: "Airport VIP Service Medan", service: "Airport VIP Service", tags: [] },
+  { label: "Private Transport Bali", service: "Transport", tags: [] },
+  { label: "Private Transport Jakarta", service: "Transport", tags: [] },
+  { label: "Group Van Transfer", service: "Transport", tags: [] },
+  { label: "Luxury Limousine Service", service: "Transport", tags: [] },
+  { label: "Tour Package Bali", service: "Tour Package", tags: [] },
+  { label: "Tour Package Lombok", service: "Tour Package", tags: [] },
+  { label: "Tour Package Labuan Bajo", service: "Tour Package", tags: [] },
+  { label: "Tour Package Yogyakarta", service: "Tour Package", tags: [] },
+  { label: "eVOA Indonesia 30 Days", service: "eVOA", tags: [] },
+  { label: "Business eVOA", service: "eVOA", tags: [] },
+  { label: "Express eVOA", service: "eVOA", tags: [] },
+  { label: "Transit eVOA", service: "eVOA", tags: [] },
 ];
 
 export const footerColumns: FooterColumns = {

@@ -125,3 +125,15 @@ export const PlaneIcon = (p: SVGProps<SVGSVGElement>) => (
     <path d="M17.8 19.2 16 11l3.5-3.5a2.1 2.1 0 0 0-3-3L13 8 4.8 6.2a1 1 0 0 0-.9 1.7l5.3 3.6-2.1 2.1-2.4-.3a1 1 0 0 0-.9 1.6L6 18l1.4 1.9a1 1 0 0 0 1.6-.9l-.3-2.4 2.1-2.1 3.6 5.3a1 1 0 0 0 1.7-.9Z" />
   </svg>
 );
+
+export const MenuIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M4 7h16M4 12h16M4 17h16" />
+  </svg>
+);
+
+export const ArrowRightIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+);

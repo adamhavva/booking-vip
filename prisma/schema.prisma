@@ -7,3 +7,15 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+/// Searches submitted from the home page form.
+/// Append-only history; `values` holds the entered form fields per service.
+model SearchLog {
+  id        String   @id @default(uuid())
+  service   String
+  href      String
+  values    Json
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

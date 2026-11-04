@@ -1,0 +1,116 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.SearchLog",
+    "label": "Create table \"SearchLog\"",
+    "summary": "Creates table \"SearchLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SearchLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SearchLog\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SearchLog\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"SearchLog\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SearchLog\"",
+        "sql": "CREATE TABLE \"public\".\"SearchLog\" (\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"href\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"service\" text NOT NULL,\n  \"values\" jsonb NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SearchLog\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"SearchLog\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"SearchLog\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "index.SearchLog.SearchLog_createdAt_idx",
+    "label": "Create index \"SearchLog_createdAt_idx\" on \"SearchLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SearchLog_createdAt_idx",
+        "table": "SearchLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SearchLog_createdAt_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SearchLog_createdAt_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"SearchLog_createdAt_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SearchLog_createdAt_idx\"",
+        "sql": "CREATE INDEX \"SearchLog_createdAt_idx\" ON \"public\".\"SearchLog\" (\"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SearchLog_createdAt_idx\" exists on \"SearchLog\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"SearchLog_createdAt_idx\"",
+          "i",
+          "I",
+          "\"public\".\"SearchLog\"",
+          "btree",
+          "[\"createdAt\"]"
+        ]
+      }
+    ]
+  }
+]

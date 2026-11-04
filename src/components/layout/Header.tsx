@@ -1,76 +1,99 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Container from "@/components/ui/Container";
-import { ChevronDown, SearchIcon } from "@/components/icons";
-import { searchPlaceholders, utilityLinks } from "@/data/home";
+import { ChevronDown, UserIcon } from "@/components/icons";
+import { utilityLinks } from "@/data/home";
 import Logo from "./Logo";
+import NavBar from "./NavBar";
 
-export default function Header() {
-  const [idx, setIdx] = useState(0);
+/**
+ * Site header: utility bar + brand row, followed by the {@link NavBar}.
+ * `overlay` sits transparently on top of the home hero and turns into a
+ * solid white bar once the page is scrolled; `solid` is always a sticky
+ * white bar (used on the service sub-pages).
+ */
+export default function Header({
+  variant = "overlay",
+}: {
+  variant?: "overlay" | "solid";
+}) {
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const t = setInterval(
-      () => setIdx((i) => (i + 1) % searchPlaceholders.length),
-      2800
-    );
-    return () => clearInterval(t);
-  }, []);
+    if (variant === "solid") return;
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [variant]);
+
+  const solid = variant === "solid" || scrolled;
 
   return (
-    <header className="absolute inset-x-0 top-0 z-30">
+    <header
+      className={`z-30 ${
+        variant === "solid"
+          ? "sticky top-0 border-b border-line bg-white"
+          : scrolled
+            ? "fixed inset-x-0 top-0 border-b border-line bg-white shadow-sm"
+            : "absolute inset-x-0 top-0"
+      }`}
+    >
       {/* Utility bar */}
       <div className="hidden lg:block">
-        <Container className="flex items-center justify-end gap-6 py-2.5 text-[13px] font-medium text-white/90">
+        <Container
+          className={`flex items-center justify-end gap-6 py-2.5 text-[13px] font-medium ${
+            solid ? "text-muted" : "text-white/90"
+          }`}
+        >
           {utilityLinks.map((u) => (
-            <a key={u.label} href={u.href} className="hover:text-white">
+            <Link
+              key={u.label}
+              href={u.href}
+              className={solid ? "hover:text-ink" : "hover:text-white"}
+            >
               {u.label}
-            </a>
+            </Link>
           ))}
-          <button className="flex items-center gap-1 hover:text-white">
+          <button
+            className={`flex items-center gap-1 ${
+              solid ? "hover:text-ink" : "hover:text-white"
+            }`}
+          >
             EN | USD <ChevronDown width={14} height={14} />
           </button>
         </Container>
       </div>
 
-      {/* Main navbar */}
+      {/* Brand row */}
       <Container className="flex items-center gap-4 pb-3 md:gap-6">
-        <a href="#" aria-label="Our Vacation home">
-          <Logo />
-        </a>
+        <Link href="/" aria-label="Our Vacation home">
+          <Logo dark={solid} />
+        </Link>
 
-        {/* Desktop search box */}
-        <div className="relative hidden flex-1 lg:block">
-          <SearchIcon
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
-            width={18}
-            height={18}
-          />
-          <input
-            readOnly
-            placeholder={searchPlaceholders[idx]}
-            className="h-11 w-full rounded-full border border-white/0 bg-white pl-11 pr-4 text-sm text-ink shadow-sm outline-none placeholder:text-muted"
-          />
-        </div>
-
-        <div className="flex flex-1 items-center gap-2 lg:hidden">
-          <div className="relative flex-1">
-            <SearchIcon
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
-              width={16}
-              height={16}
-            />
-            <input
-              readOnly
-              placeholder={searchPlaceholders[idx]}
-              className="h-9 w-full rounded-full bg-white pl-9 pr-3 text-xs text-ink outline-none placeholder:text-muted"
-            />
-          </div>
-          <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white">
-            <ChevronDown width={18} height={18} />
+        <div className="flex flex-1 items-center justify-end gap-3">
+          <Link
+            href="#"
+            className={`hidden text-sm font-semibold lg:block ${
+              solid ? "text-ink hover:text-brand" : "text-white hover:text-white/80"
+            }`}
+          >
+            Sign in
+          </Link>
+          <button
+            aria-label="Account"
+            className={`flex h-9 w-9 items-center justify-center rounded-full lg:hidden ${
+              solid ? "bg-canvas text-ink" : "bg-white/20 text-white"
+            }`}
+          >
+            <UserIcon width={18} height={18} />
           </button>
         </div>
       </Container>
+
+      <NavBar variant={solid ? "solid" : "overlay"} />
     </header>
   );
 }

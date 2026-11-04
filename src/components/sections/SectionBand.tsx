@@ -11,6 +11,7 @@ export default function SectionBand({
   emoji,
   tabs,
   seeAll = "See all",
+  seeAllHref = "#",
   children,
   className = "",
 }: {
@@ -19,6 +20,7 @@ export default function SectionBand({
   emoji?: string;
   tabs?: string[];
   seeAll?: string | null;
+  seeAllHref?: string;
   children: ReactNode;
   className?: string;
 }) {
@@ -31,6 +33,7 @@ export default function SectionBand({
         title={title}
         emoji={emoji}
         seeAll={seeAll || undefined}
+        seeAllHref={seeAllHref}
       />
 
       {tabs && tabs.length > 0 && (

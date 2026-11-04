@@ -20,9 +20,20 @@ npx prisma contract print   # show the compiled contract as PSL
 
 ## Database — Prisma ORM 8 + Supabase
 
-Connection strings live in `.env` (gitignored): `DATABASE_URL` = Supabase transaction-mode pooler (port 6543, `?pgbouncer=true`) for the runtime client; `DIRECT_URL` = session-mode pooler (port 5432) for CLI-side operations, wired through `prisma.config.ts`. The password is still the `[YOUR-PASSWORD]` placeholder — replace it before running anything that contacts the database.
+Connection strings live in `.env` (gitignored): `DATABASE_URL` = Supabase transaction-mode pooler (port 6543, `?pgbouncer=true`) for the runtime client; `DIRECT_URL` = session-mode pooler (port 5432) for CLI-side operations, wired through `prisma.config.ts`. The Supabase project is live and the password in `.env` is filled in — the CLI and the app both reach the real database.
 
-Prisma 8 rearchitected the CLI: there is no `prisma validate` / `prisma generate`. The contract source is the Prisma-7-style `prisma/schema.prisma`, consumed via `prisma7Schema()` in `prisma.config.ts`; `npx prisma contract emit` compiles it to `src/prisma/contract.json` + `contract.d.ts`. The runtime client is `src/prisma/db.ts` — import `db` from there, do not instantiate your own client. No models, migrations, or seeds exist yet (initial setup was deliberately scoped to configuration only); Supabase agent skills are installed under `.claude/skills/` and pinned in `skills-lock.json`. First contact with the real database is `npx prisma db sign` (records that the DB matches the contract; migrations themselves stay on the Prisma 7 side via `prisma7 migrate dev`) — see `prisma-8.md` for the transition loop.
+Prisma 8 rearchitected the CLI: there is no `prisma validate` / `prisma generate`. The contract source is the Prisma-7-style `prisma/schema.prisma`, consumed via `prisma7Schema()` in `prisma.config.ts`; `npx prisma contract emit` compiles it to `src/prisma/contract.json` + `contract.d.ts` (both committed). The runtime client is `src/prisma/db.ts` — import `db` from there, do not instantiate your own client. Supabase agent skills are installed under `.claude/skills/` and pinned in `skills-lock.json`.
+
+**Current model:** `SearchLog` (append-only history of submitted searches: `service`, `href`, `values` jsonb, `createdAt`). Migrations live in `migrations/app/` and are committed. The Prisma 8 loop for a schema change is:
+
+```bash
+npx prisma contract emit          # schema → contract.json + contract.d.ts
+npx prisma migration plan --name <slug>   # write the migration package (offline)
+npx prisma db migrate             # apply it to the live database
+npx prisma db sign                # record that the DB matches the contract
+```
+
+**App usage:** queries go through `db.orm.public.<Model>` (e.g. `db.orm.public.SearchLog.create({...})`, `.select(...).orderBy(...).limit(n).all()`; filtered writes like `.where(...).deleteAll()`). Server Actions in `src/app/actions/search.ts` (`logSearch`, `getRecentSearches`) wrap the DB for the UI and swallow errors, so the UI keeps working from the localStorage copy when the database is unreachable. `logSearch` dedupes identical submissions (same service + href + values refreshes `createdAt` instead of inserting) and prunes rows older than 30 days (`RETENTION_DAYS`) on every insert. Never read the database during render of a statically prerendered page — the pages stay static and fetch from the client.
 
 ## This is Next.js 16 — not the version in your training data
 
@@ -36,20 +47,27 @@ Prisma 8 rearchitected the CLI: there is no `prisma validate` / `prisma generate
 
 Single-page marketing/concierge UI (Booking VIP, a tiket.com-style educational clone). Next.js App Router, React 19, TypeScript strict, Tailwind v4. No backend, API routes, database, or auth — all content is hard-coded placeholder data.
 
-**Composition:** `src/app/page.tsx` (server component) assembles the whole page. There is only one route; new sections are added there rather than as new pages. `StickyAppBanner` is intentionally left commented out in `page.tsx` — don't "fix" that by re-enabling it unless asked.
+**Composition:** `src/app/page.tsx` (server component) assembles the whole home page. `StickyAppBanner` is intentionally left commented out in `page.tsx` — don't "fix" that by re-enabling it unless asked.
+
+**Routes:** `/` (home) plus four service sub-pages — `/vip-service`, `/transport`, `/tour-package`, `/evoa` — and `/search?q=…`. Each sub-page is a thin wrapper around `src/components/sections/ServiceLayout.tsx` (header + navbar, hero band, copy, `BookingPanel`, `ServiceCatalog`, footer, bottom tab bar) fed by `src/data/services.ts`. New service menus: add an entry to `serviceNav` + `servicePages` in `src/data/services.ts` and create the matching `src/app/<slug>/page.tsx`.
+
+**Navigation:** `src/components/layout/NavBar.tsx` is the primary navbar — a working search form (submits to `/search?q=…`, index built in `src/data/search.ts`), the four service links (`serviceNav`) with `usePathname()` active state, and a mobile drawer behind a hamburger button. It is rendered inside `Header`, which is a client component with two variants: `overlay` (transparent over the home hero, becomes fixed + white after 80px of scroll) and `solid` (sticky white bar, used on the sub-pages). Both variants keep the navbar on every page.
+
+**Search flow:** the home hero form (`HeroSearch`) selects a service with the category rail and fills real inputs; pressing **Search** navigates to that service page with the entered values in the query string (`/transport?pickup=…&pax=…&service=Transport`). Field keys per service live in `serviceSearchFields` (`src/data/services.ts`). The submitted search is stored twice: in the database (Server Action `logSearch` → `SearchLog` table, cross-device) and on the device (`src/lib/searchDraft.ts` localStorage — last search + five recent). The home form pre-fills from the local copy, the "Pencarian terakhir" section (`RecentSearches`) reads the database with a localStorage fallback, and the sub-page falls back to the local copy when the URL carries no values.
 
 **Folder layout:**
 
 - `src/components/ui/` — shared primitives: `Container` (page gutter/max-width), `TabPills`, `Badge`, `PriceBlock`, `Rating`, `Thumb`, `SectionHeading`, `Carousel`.
 - `src/components/cards/` — one file per card type (`VipServiceCard`, `TourCard`, …) plus a barrel `index.ts`. Card components are composable from `ui/` primitives; the shared shell lives in `src/lib/styles.ts`.
-- `src/components/sections/` — page-level sections (`HeroSearch`, `SectionBand`, `SeoLinkGrid`, `Footer`, …).
-- `src/components/layout/` — `Header` and `Logo`.
+- `src/components/sections/` — page-level sections (`HeroSearch`, `SectionBand`, `SeoLinkGrid`, `Footer`, `ServiceLayout`, `ServiceCatalog`, `ServiceSearchSection`, `BookingPanel`, `SearchResults`, …).
+- `src/components/layout/` — `Header`, `NavBar`, and `Logo`.
+- `src/lib/` — `format.ts` (currency), `styles.ts` (card shell), `searchDraft.ts` (client-side search persistence).
 - `src/types/` — all shared data types, exported from `src/types/index.ts`.
 - `src/components/icons.tsx` — the single icon module.
 
-**Data flow:** every piece of copy, price, card, tab list, footer link, and SEO link lives in `src/data/home.ts`. Components receive typed props (`VipService`, `Transport`, `Tour`, `EvoaPlan`, ...) imported from `@/types`. To change content, edit `home.ts`, not the components. Data is dummy/placeholder by design.
+**Data flow:** every piece of copy, price, card, tab list, footer link, and SEO link lives in `src/data/home.ts`; service menus and sub-page copy live in `src/data/services.ts`; the search index in `src/data/search.ts`. Components receive typed props (`VipService`, `Transport`, `Tour`, `EvoaPlan`, `ServicePage`, ...) imported from `@/types`. To change content, edit the data files, not the components. Data is dummy/placeholder by design.
 
-**Rendering boundary:** interactive widgets are `"use client"` — `Header`, `HeroSearch`, `SectionBand`, `SeoLinkGrid`, `TabPills`, `Carousel`, `BottomTabBar`, `StickyAppBanner`. Everything else (`Footer`, `SeoContent`, `BannerStrip`, `Logo`, `Container`, `SectionHeading`, all `cards/*`, `icons.tsx`) is a server component. Keep this split: do not add client directives to presentational components.
+**Rendering boundary:** interactive widgets are `"use client"` — `Header`, `NavBar`, `HeroSearch`, `SectionBand`, `SeoLinkGrid`, `TabPills`, `Carousel`, `ServiceCatalog`, `BookingPanel`, `SearchResults`, `BottomTabBar`, `StickyAppBanner`. Everything else (`Footer`, `SeoContent`, `BannerStrip`, `Logo`, `Container`, `SectionHeading`, `ServiceLayout`, all `cards/*`, `icons.tsx`) is a server component. Keep this split: do not add client directives to presentational components.
 
 **Cards:** `src/components/cards/` maps each data type to a card component using shared `Badge`, `PriceBlock`, `Rating`, and `Thumb` primitives. Images are intentional gradient placeholders: each data record carries a Tailwind `tone` string (e.g. `"from-sky-400 to-blue-600"`) rendered through `Thumb`, not real image assets. The SVGs in `public/` are unused create-next-app leftovers.
 

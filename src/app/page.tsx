@@ -11,6 +11,7 @@ import BottomTabBar from "@/components/sections/BottomTabBar";
 import BannerStrip from "@/components/sections/BannerStrip";
 import Footer from "@/components/sections/Footer";
 import HeroSearch from "@/components/sections/HeroSearch";
+import RecentSearches from "@/components/sections/RecentSearches";
 import SectionBand from "@/components/sections/SectionBand";
 import SeoContent from "@/components/sections/SeoContent";
 import SeoLinkGrid from "@/components/sections/SeoLinkGrid";
@@ -26,6 +27,7 @@ import {
   recommendationLinks,
   recommendationTabs,
   serviceSeoLinks,
+  serviceSeoTabs,
   tours,
   transports,
   vipServices,
@@ -36,6 +38,7 @@ export default function Home() {
     <div className="bg-white pb-20 lg:pb-0">
       <Header />
       <HeroSearch />
+      <RecentSearches />
 
       {/* Special deals */}
       <SectionBand title="Special deals" emoji="🎉">
@@ -51,6 +54,8 @@ export default function Home() {
         eyebrow="Airport VIP Service ✈️"
         title="Breeze through the airport"
         tabs={["All", "Meet & Greet", "Fast Track", "Lounge", "Porter"]}
+        seeAll="See all VIP services"
+        seeAllHref="/vip-service"
       >
         <Carousel>
           {vipServices.map((s) => (
@@ -73,6 +78,8 @@ export default function Home() {
         eyebrow="Transport 🚘"
         title="Private transfers & chauffeur service"
         tabs={["All", "Sedan", "SUV", "Van", "Limousine"]}
+        seeAll="See all transport"
+        seeAllHref="/transport"
       >
         <Carousel>
           {transports.map((t) => (
@@ -86,6 +93,8 @@ export default function Home() {
         eyebrow="Tour Package 🗺️"
         title="Curated tours across Indonesia"
         tabs={["All", "Bali", "Labuan Bajo", "Yogyakarta", "Lombok", "Papua"]}
+        seeAll="See all tours"
+        seeAllHref="/tour-package"
       >
         <Carousel>
           {tours.map((t) => (
@@ -109,6 +118,7 @@ export default function Home() {
         title="Electronic Visa on Arrival, made easy"
         tabs={["All", "Tourist", "Business", "Express", "Transit"]}
         seeAll="Check eligibility"
+        seeAllHref="/evoa"
       >
         <Carousel>
           {evoaPlans.map((p) => (
@@ -169,7 +179,7 @@ export default function Home() {
       />
       <SeoLinkGrid
         title="Explore Our Services"
-        tabs={["Airport VIP", "Transport", "Tour Package", "eVOA"]}
+        tabs={serviceSeoTabs}
         links={serviceSeoLinks}
       />
 
