@@ -52,3 +52,5 @@ dist/
 .env
 .vscode
 .credentials
+docs/
+opencode*
