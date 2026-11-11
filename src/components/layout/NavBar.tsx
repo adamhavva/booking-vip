@@ -177,6 +177,23 @@ export default function NavBar({
                   {t("nav.myBooking")}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/account"
+                  className={`flex items-center gap-2 rounded-lg px-2 py-2.5 text-sm font-semibold ${
+                    pathname === "/account"
+                      ? "bg-brand-soft text-brand"
+                      : solid
+                        ? "text-ink"
+                        : "text-white/90"
+                  }`}
+                >
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-ink to-muted text-[9px] font-bold text-white">
+                    AK
+                  </span>
+                  {t("nav.account")}
+                </Link>
+              </li>
             </ul>
 
             <div

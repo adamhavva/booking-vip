@@ -1,18 +1,38 @@
 "use server";
 
 import { db } from "@/prisma/db";
+import { getAdminSession } from "@/lib/admin/session";
+import type {
+  AdminAmenityRow,
+  AdminOption,
+  AdminPackageRow,
+  AdminPlaceRow,
+  AdminPriceTierRow,
+  AdminProductRow,
+  AdminReferenceData,
+  AdminServiceLineRow,
+  AdminServiceTypeRow,
+  AdminStats,
+} from "@/types/admin";
 
 /**
- * Reserved admin server actions.
+ * Admin server actions.
  *
- * Every function is gated by `ADMIN_ENABLED=1` in the environment; without it
- * the call throws immediately. No admin UI is wired — this surface exists so
- * a future webadmin can call these actions without changing the API shape.
+ * Every function is gated by `assertAdmin()`, which requires BOTH:
+ *   1. `ADMIN_ENABLED=1` in the environment — a deployment kill-switch, and
+ *   2. a valid admin session cookie whose email is on the `ADMIN_EMAILS`
+ *      allowlist — the actual authorization check.
+ *
+ * The env flag alone is not authorization; it only switches the surface off.
  */
 
-function assertAdmin(): void {
+async function assertAdmin(): Promise<void> {
   if (process.env.ADMIN_ENABLED !== "1") {
     throw new Error("admin disabled");
+  }
+  const session = await getAdminSession();
+  if (!session) {
+    throw new Error("admin unauthorized");
   }
 }
 
@@ -34,6 +54,24 @@ function assertBool(value: unknown, field: string): asserts value is boolean {
   }
 }
 
+/**
+ * Guard the natural key of an upsert.
+ *
+ * Editing always targets the row the operator picked (by id); creating always
+ * creates a new row. Either way the natural key — slug, label, code — must
+ * not already belong to a *different* row: silently overwriting somebody
+ * else's row is never what the operator meant.
+ */
+function assertNaturalKeyFree(
+  naturalOwner: { id: string } | null | undefined,
+  existing: { id: string } | null | undefined,
+  message: string,
+): void {
+  if (naturalOwner && naturalOwner.id !== existing?.id) {
+    throw new Error(message);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // upsertServiceType
 // ---------------------------------------------------------------------------
@@ -45,7 +83,7 @@ export async function upsertServiceType(input: {
   sortOrder?: number;
   active?: boolean;
 }): Promise<{ ok: true }> {
-  assertAdmin();
+  await assertAdmin();
   assertNonEmptyString(input.lineId, "lineId");
   assertNonEmptyString(input.slug, "slug");
   assertNonEmptyString(input.name, "name");
@@ -62,16 +100,25 @@ export async function upsertServiceType(input: {
     .first();
   if (!line) throw new Error("line not found");
 
-  // Unique check: (lineId, slug)
-  const existing = await db.orm.public.ServiceType
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
+    ? await db.orm.public.ServiceType
+        .select("id")
+        .where({ id: input.id })
+        .first()
+    : undefined;
+
+  // The (lineId, slug) pair must stay unique.
+  const slugOwner = await db.orm.public.ServiceType
     .select("id")
     .where({ lineId: input.lineId, slug: input.slug })
     .first();
+  assertNaturalKeyFree(slugOwner, existing, "slug already used in this line");
 
   if (existing) {
     await db.orm.public.ServiceType
       .where({ id: existing.id })
-      .update({ name: input.name, sortOrder, active });
+      .update({ lineId: input.lineId, slug: input.slug, name: input.name, sortOrder, active });
   } else {
     await db.orm.public.ServiceType.create({
       id: input.id ?? crypto.randomUUID(),
@@ -96,9 +143,10 @@ export async function upsertAirport(input: {
   name: string;
   city: string;
   country?: string;
+  imageUrl?: string | null;
   active?: boolean;
 }): Promise<{ ok: true }> {
-  assertAdmin();
+  await assertAdmin();
   assertNonEmptyString(input.name, "name");
   assertNonEmptyString(input.city, "city");
 
@@ -111,17 +159,22 @@ export async function upsertAirport(input: {
   const active = input.active ?? true;
   assertBool(active, "active");
 
-  // Lookup by iataCode (if provided) else by kind+city.
-  const existing = input.iataCode
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
     ? await db.orm.public.Airport
         .select("id")
-        .where({ iataCode: input.iataCode })
+        .where({ id: input.id })
         .first()
-    : await db.orm.public.Airport
-        .select("id")
-        .where((f) => f.kind.eq(kind))
-        .where({ city: input.city })
-        .first();
+    : undefined;
+
+  // The IATA code must stay unique.
+  if (input.iataCode) {
+    const iataOwner = await db.orm.public.Airport
+      .select("id")
+      .where({ iataCode: input.iataCode })
+      .first();
+    assertNaturalKeyFree(iataOwner, existing, "iata code already used");
+  }
 
   if (existing) {
     await db.orm.public.Airport
@@ -132,6 +185,7 @@ export async function upsertAirport(input: {
         name: input.name,
         city: input.city,
         country,
+        imageUrl: input.imageUrl ?? null,
         active,
       });
   } else {
@@ -142,6 +196,7 @@ export async function upsertAirport(input: {
       name: input.name,
       city: input.city,
       country,
+      imageUrl: input.imageUrl ?? null,
       active,
     });
   }
@@ -160,7 +215,7 @@ export async function upsertPriceTier(input: {
   sortOrder?: number;
   active?: boolean;
 }): Promise<{ ok: true }> {
-  assertAdmin();
+  await assertAdmin();
   assertNonEmptyString(input.label, "label");
   assertIntGte(input.maxUsdCents, "maxUsdCents");
 
@@ -177,8 +232,16 @@ export async function upsertPriceTier(input: {
     if (!line) throw new Error("line not found");
   }
 
-  // Match by (lineId, label) — both nullable-safe.
-  const existing = input.lineId
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
+    ? await db.orm.public.PriceTier
+        .select("id")
+        .where({ id: input.id })
+        .first()
+    : undefined;
+
+  // The (lineId, label) pair must stay unique inside its scope.
+  const labelOwner = input.lineId
     ? await db.orm.public.PriceTier
         .select("id")
         .where({ lineId: input.lineId, label: input.label })
@@ -188,6 +251,7 @@ export async function upsertPriceTier(input: {
         .where((f) => f.lineId.isNull())
         .where({ label: input.label })
         .first();
+  assertNaturalKeyFree(labelOwner, existing, "label already used in this scope");
 
   if (existing) {
     await db.orm.public.PriceTier
@@ -239,8 +303,8 @@ export async function upsertProduct(input: {
   durationLabel?: string | null;
   fromPriceUsdCents?: number | null;
   active?: boolean;
-}): Promise<{ ok: true }> {
-  assertAdmin();
+}): Promise<{ ok: true; id: string }> {
+  await assertAdmin();
   assertNonEmptyString(input.slug, "slug");
   assertNonEmptyString(input.lineId, "lineId");
   assertNonEmptyString(input.title, "title");
@@ -275,11 +339,20 @@ export async function upsertProduct(input: {
     .first();
   if (!line) throw new Error("line not found");
 
-  // Unique slug check.
-  const existing = await db.orm.public.Product
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
+    ? await db.orm.public.Product
+        .select("id")
+        .where({ id: input.id })
+        .first()
+    : undefined;
+
+  // The slug must stay unique.
+  const slugOwner = await db.orm.public.Product
     .select("id")
     .where({ slug: input.slug })
     .first();
+  assertNaturalKeyFree(slugOwner, existing, "slug already used");
 
   const payload = {
     slug: input.slug,
@@ -307,14 +380,16 @@ export async function upsertProduct(input: {
 
   if (existing) {
     await db.orm.public.Product.where({ id: existing.id }).update(payload);
-  } else {
-    await db.orm.public.Product.create({
-      id: input.id ?? crypto.randomUUID(),
-      ...payload,
-    });
+    return { ok: true, id: existing.id };
   }
 
-  return { ok: true };
+  const id = input.id ?? crypto.randomUUID();
+  await db.orm.public.Product.create({
+    id,
+    ...payload,
+  });
+
+  return { ok: true, id };
 }
 
 // ---------------------------------------------------------------------------
@@ -334,7 +409,7 @@ export async function upsertPackage(input: {
   sortOrder?: number;
   active?: boolean;
 }): Promise<{ ok: true }> {
-  assertAdmin();
+  await assertAdmin();
   assertNonEmptyString(input.productId, "productId");
   assertNonEmptyString(input.label, "label");
 
@@ -372,11 +447,20 @@ export async function upsertPackage(input: {
     .first();
   if (!product) throw new Error("product not found");
 
-  // Unique by (productId, label).
-  const existing = await db.orm.public.ProductPackage
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
+    ? await db.orm.public.ProductPackage
+        .select("id")
+        .where({ id: input.id })
+        .first()
+    : undefined;
+
+  // The (productId, label) pair must stay unique.
+  const labelOwner = await db.orm.public.ProductPackage
     .select("id")
     .where({ productId: input.productId, label: input.label })
     .first();
+  assertNaturalKeyFree(labelOwner, existing, "label already used in this product");
 
   const payload = {
     productId: input.productId,
@@ -416,7 +500,7 @@ export async function upsertPaymentMethod(input: {
   sortOrder?: number;
   active?: boolean;
 }): Promise<{ ok: true }> {
-  assertAdmin();
+  await assertAdmin();
   assertNonEmptyString(input.code, "code");
   assertNonEmptyString(input.label, "label");
 
@@ -425,11 +509,20 @@ export async function upsertPaymentMethod(input: {
   const active = input.active ?? true;
   assertBool(active, "active");
 
-  // Unique code check.
-  const existing = await db.orm.public.PaymentMethod
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
+    ? await db.orm.public.PaymentMethod
+        .select("id")
+        .where({ id: input.id })
+        .first()
+    : undefined;
+
+  // The code must stay unique.
+  const codeOwner = await db.orm.public.PaymentMethod
     .select("id")
     .where({ code: input.code })
     .first();
+  assertNaturalKeyFree(codeOwner, existing, "code already used");
 
   if (existing) {
     await db.orm.public.PaymentMethod
@@ -457,18 +550,27 @@ export async function upsertAirline(input: {
   name: string;
   active?: boolean;
 }): Promise<{ ok: true }> {
-  assertAdmin();
+  await assertAdmin();
   assertNonEmptyString(input.code, "code");
   assertNonEmptyString(input.name, "name");
 
   const active = input.active ?? true;
   assertBool(active, "active");
 
-  // Unique code check.
-  const existing = await db.orm.public.Airline
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
+    ? await db.orm.public.Airline
+        .select("id")
+        .where({ id: input.id })
+        .first()
+    : undefined;
+
+  // The code must stay unique.
+  const codeOwner = await db.orm.public.Airline
     .select("id")
     .where({ code: input.code })
     .first();
+  assertNaturalKeyFree(codeOwner, existing, "code already used");
 
   if (existing) {
     await db.orm.public.Airline
@@ -496,7 +598,7 @@ export async function upsertCountry(input: {
   dialCode: string;
   active?: boolean;
 }): Promise<{ ok: true }> {
-  assertAdmin();
+  await assertAdmin();
   assertNonEmptyString(input.code, "code");
   assertNonEmptyString(input.name, "name");
   assertNonEmptyString(input.dialCode, "dialCode");
@@ -504,11 +606,20 @@ export async function upsertCountry(input: {
   const active = input.active ?? true;
   assertBool(active, "active");
 
-  // Unique code check.
-  const existing = await db.orm.public.Country
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
+    ? await db.orm.public.Country
+        .select("id")
+        .where({ id: input.id })
+        .first()
+    : undefined;
+
+  // The code must stay unique.
+  const codeOwner = await db.orm.public.Country
     .select("id")
     .where({ code: input.code })
     .first();
+  assertNaturalKeyFree(codeOwner, existing, "code already used");
 
   if (existing) {
     await db.orm.public.Country
@@ -525,4 +636,619 @@ export async function upsertCountry(input: {
   }
 
   return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+// Read actions — the admin tables
+// ---------------------------------------------------------------------------
+
+/** All products with their line / type / place labels. */
+export async function listProducts(): Promise<AdminProductRow[]> {
+  await assertAdmin();
+
+  const rows = await db.orm.public.Product
+    .select(
+      "id",
+      "slug",
+      "title",
+      "description",
+      "lineId",
+      "serviceTypeId",
+      "airportId",
+      "direction",
+      "leadTimeHours",
+      "leadTimeDays",
+      "included",
+      "notIncluded",
+      "requirements",
+      "isAddOn",
+      "imageUrl",
+      "tone",
+      "ribbon",
+      "rating",
+      "reviews",
+      "durationLabel",
+      "fromPriceUsdCents",
+      "active",
+    )
+    .include("line", (l) => l.select("label"))
+    .include("serviceType", (t) => t.select("name"))
+    .include("airport", (a) => a.select("name"))
+    .include("packages", (p) => p.count())
+    .orderBy((f) => f.title.asc())
+    .all();
+
+  return rows.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    description: r.description,
+    lineId: r.lineId,
+    lineLabel: r.line?.label ?? "—",
+    serviceTypeId: r.serviceTypeId,
+    serviceTypeName: r.serviceType?.name ?? null,
+    airportId: r.airportId,
+    airportName: r.airport?.name ?? null,
+    direction: r.direction,
+    leadTimeHours: r.leadTimeHours,
+    leadTimeDays: r.leadTimeDays,
+    included: (r.included as string[]) ?? [],
+    notIncluded: (r.notIncluded as string[]) ?? [],
+    requirements: (r.requirements as string[]) ?? [],
+    isAddOn: r.isAddOn,
+    imageUrl: r.imageUrl,
+    tone: r.tone,
+    ribbon: r.ribbon,
+    rating: r.rating,
+    reviews: r.reviews,
+    durationLabel: r.durationLabel,
+    fromPriceUsdCents: r.fromPriceUsdCents,
+    active: r.active,
+    packageCount: r.packages,
+  }));
+}
+
+/** All packages with the parent product title. */
+export async function listPackages(): Promise<AdminPackageRow[]> {
+  await assertAdmin();
+
+  const rows = await db.orm.public.ProductPackage
+    .select(
+      "id",
+      "productId",
+      "label",
+      "unitKind",
+      "adultUsdCents",
+      "childUsdCents",
+      "infantUsdCents",
+      "unitUsdCents",
+      "durationHours",
+      "extraHourUsdCents",
+      "sortOrder",
+      "active",
+    )
+    .include("product", (p) => p.select("title"))
+    .orderBy((f) => f.sortOrder.asc())
+    .all();
+
+  return rows.map((r) => ({
+    id: r.id,
+    productId: r.productId,
+    productTitle: r.product?.title ?? "—",
+    label: r.label,
+    unitKind: r.unitKind,
+    adultUsdCents: r.adultUsdCents,
+    childUsdCents: r.childUsdCents,
+    infantUsdCents: r.infantUsdCents,
+    unitUsdCents: r.unitUsdCents,
+    durationHours: r.durationHours,
+    extraHourUsdCents: r.extraHourUsdCents,
+    sortOrder: r.sortOrder,
+    active: r.active,
+  }));
+}
+
+/** All service types with their line label and product count. */
+export async function listServiceTypes(): Promise<AdminServiceTypeRow[]> {
+  await assertAdmin();
+
+  const rows = await db.orm.public.ServiceType
+    .select("id", "lineId", "slug", "name", "sortOrder", "active")
+    .include("line", (l) => l.select("label"))
+    .include("products", (p) => p.count())
+    .orderBy((f) => f.sortOrder.asc())
+    .all();
+
+  return rows.map((r) => ({
+    id: r.id,
+    lineId: r.lineId,
+    lineLabel: r.line?.label ?? "—",
+    slug: r.slug,
+    name: r.name,
+    sortOrder: r.sortOrder,
+    active: r.active,
+    productCount: r.products,
+  }));
+}
+
+/** All price tiers with the scope line — labels repeat per line, so the scope matters. */
+export async function listPriceTiers(): Promise<AdminPriceTierRow[]> {
+  await assertAdmin();
+
+  const rows = await db.orm.public.PriceTier
+    .select("id", "lineId", "label", "maxUsdCents", "sortOrder", "active")
+    .include("line", (l) => l.select("label"))
+    .orderBy((f) => f.sortOrder.asc())
+    .all();
+
+  return rows.map((r) => ({
+    id: r.id,
+    lineId: r.lineId,
+    lineLabel: r.line?.label ?? null,
+    label: r.label,
+    maxUsdCents: r.maxUsdCents,
+    sortOrder: r.sortOrder,
+    active: r.active,
+  }));
+}
+
+/** All places (airports and cities). */
+export async function listPlaces(): Promise<AdminPlaceRow[]> {
+  await assertAdmin();
+
+  const rows = await db.orm.public.Airport
+    .select("id", "kind", "iataCode", "name", "city", "country", "imageUrl", "active")
+    .include("products", (p) => p.count())
+    .orderBy((f) => f.name.asc())
+    .all();
+
+  return rows.map((r) => ({
+    id: r.id,
+    kind: r.kind,
+    iataCode: r.iataCode,
+    name: r.name,
+    city: r.city,
+    country: r.country,
+    imageUrl: r.imageUrl,
+    active: r.active,
+    productCount: r.products,
+  }));
+}
+
+/** All service lines. */
+export async function listServiceLines(): Promise<AdminServiceLineRow[]> {
+  await assertAdmin();
+
+  const rows = await db.orm.public.ServiceLine
+    .select("id", "slug", "label", "short", "badge", "tone", "imageUrl", "sortOrder", "active")
+    .include("products", (p) => p.count())
+    .orderBy((f) => f.sortOrder.asc())
+    .all();
+
+  return rows.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    label: r.label,
+    short: r.short,
+    badge: r.badge,
+    tone: r.tone,
+    imageUrl: r.imageUrl,
+    sortOrder: r.sortOrder,
+    active: r.active,
+    productCount: r.products,
+  }));
+}
+
+/** All amenities with the number of products using them. */
+export async function listAmenities(): Promise<AdminAmenityRow[]> {
+  await assertAdmin();
+
+  const rows = await db.orm.public.Amenity
+    .select("id", "label")
+    .include("products", (p) => p.count())
+    .orderBy((f) => f.label.asc())
+    .all();
+
+  return rows.map((r) => ({
+    id: r.id,
+    label: r.label,
+    productCount: r.products,
+  }));
+}
+
+/** Reference lists used to populate the relation pickers in the edit drawer. */
+export async function getAdminReferenceData(): Promise<AdminReferenceData> {
+  await assertAdmin();
+
+  const [lines, serviceTypes, places, products, amenities] = await Promise.all([
+    db.orm.public.ServiceLine.select("id", "label").orderBy((f) => f.sortOrder.asc()).all(),
+    db.orm.public.ServiceType.select("id", "name", "lineId").orderBy((f) => f.name.asc()).all(),
+    db.orm.public.Airport.select("id", "name", "iataCode", "kind").orderBy((f) => f.name.asc()).all(),
+    db.orm.public.Product.select("id", "title", "isAddOn").orderBy((f) => f.title.asc()).all(),
+    db.orm.public.Amenity.select("id", "label").orderBy((f) => f.label.asc()).all(),
+  ]);
+
+  const lineLabels = new Map(lines.map((l) => [l.id, l.label]));
+  const serviceTypeOptions: AdminOption[] = serviceTypes.map((t) => ({
+    value: t.id,
+    label: `${t.name} · ${lineLabels.get(t.lineId) ?? "—"}`,
+  }));
+  const placeOptions: AdminOption[] = places.map((p) => ({
+    value: p.id,
+    label: p.iataCode ? `${p.name} (${p.iataCode})` : p.name,
+  }));
+  const productOptions: AdminOption[] = products.map((p) => ({
+    value: p.id,
+    label: p.title,
+  }));
+  const addOnOptions: AdminOption[] = products
+    .filter((p) => p.isAddOn)
+    .map((p) => ({ value: p.id, label: p.title }));
+
+  return {
+    lines: lines.map((l) => ({ value: l.id, label: l.label })),
+    serviceTypes: serviceTypeOptions,
+    places: placeOptions,
+    products: productOptions,
+    amenities: amenities.map((a) => ({ value: a.id, label: a.label })),
+    addOns: addOnOptions,
+  };
+}
+
+/** Dashboard counters. */
+export async function getAdminStats(): Promise<AdminStats> {
+  await assertAdmin();
+
+  const [products, activeProducts, packages, serviceTypes, priceTiers, places, lines, amenities, productAmenities, productAddOns] =
+    await Promise.all([
+      db.orm.public.Product.aggregate((a) => ({ n: a.count() })),
+      db.orm.public.Product.where((f) => f.active.eq(true)).aggregate((a) => ({ n: a.count() })),
+      db.orm.public.ProductPackage.aggregate((a) => ({ n: a.count() })),
+      db.orm.public.ServiceType.aggregate((a) => ({ n: a.count() })),
+      db.orm.public.PriceTier.aggregate((a) => ({ n: a.count() })),
+      db.orm.public.Airport.aggregate((a) => ({ n: a.count() })),
+      db.orm.public.ServiceLine.aggregate((a) => ({ n: a.count() })),
+      db.orm.public.Amenity.aggregate((a) => ({ n: a.count() })),
+      db.orm.public.ProductAmenity.aggregate((a) => ({ n: a.count() })),
+      db.orm.public.ProductAddOn.aggregate((a) => ({ n: a.count() })),
+    ]);
+
+  return {
+    products: products.n,
+    activeProducts: activeProducts.n,
+    packages: packages.n,
+    serviceTypes: serviceTypes.n,
+    priceTiers: priceTiers.n,
+    places: places.n,
+    serviceLines: lines.n,
+    amenities: amenities.n,
+    productAmenities: productAmenities.n,
+    productAddOns: productAddOns.n,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Mutations — service lines, amenities, activation, ordering, relations
+// ---------------------------------------------------------------------------
+
+/** Create or update a service line. */
+export async function upsertServiceLine(input: {
+  id?: string;
+  slug: string;
+  label: string;
+  short: string;
+  badge?: string | null;
+  tone?: string;
+  imageUrl?: string | null;
+  sortOrder?: number;
+  active?: boolean;
+}): Promise<{ ok: true }> {
+  await assertAdmin();
+  assertNonEmptyString(input.slug, "slug");
+  assertNonEmptyString(input.label, "label");
+  assertNonEmptyString(input.short, "short");
+
+  const sortOrder = input.sortOrder ?? 0;
+  assertIntGte(sortOrder, "sortOrder");
+  const active = input.active ?? true;
+  assertBool(active, "active");
+
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
+    ? await db.orm.public.ServiceLine
+        .select("id")
+        .where({ id: input.id })
+        .first()
+    : undefined;
+
+  // The slug must stay unique.
+  const slugOwner = await db.orm.public.ServiceLine
+    .select("id")
+    .where({ slug: input.slug })
+    .first();
+  assertNaturalKeyFree(slugOwner, existing, "slug already used");
+
+  const payload = {
+    slug: input.slug,
+    label: input.label,
+    short: input.short,
+    badge: input.badge ?? null,
+    tone: input.tone ?? "from-sky-400 to-blue-600",
+    imageUrl: input.imageUrl ?? null,
+    sortOrder,
+    active,
+  };
+
+  if (existing) {
+    await db.orm.public.ServiceLine.where({ id: existing.id }).update(payload);
+  } else {
+    await db.orm.public.ServiceLine.create({
+      id: input.id ?? crypto.randomUUID(),
+      ...payload,
+    });
+  }
+
+  return { ok: true };
+}
+
+/** Create or update an amenity. */
+export async function upsertAmenity(input: {
+  id?: string;
+  label: string;
+}): Promise<{ ok: true }> {
+  await assertAdmin();
+  assertNonEmptyString(input.label, "label");
+
+  // Editing targets the supplied row; creating always makes a new one.
+  const existing = input.id
+    ? await db.orm.public.Amenity
+        .select("id")
+        .where({ id: input.id })
+        .first()
+    : undefined;
+
+  // The label must stay unique.
+  const labelOwner = await db.orm.public.Amenity
+    .select("id")
+    .where({ label: input.label })
+    .first();
+  assertNaturalKeyFree(labelOwner, existing, "label already used");
+
+  if (existing) {
+    await db.orm.public.Amenity.where({ id: existing.id }).update({ label: input.label });
+  } else {
+    await db.orm.public.Amenity.create({
+      id: input.id ?? crypto.randomUUID(),
+      label: input.label,
+    });
+  }
+
+  return { ok: true };
+}
+
+/**
+ * Toggle the `active` flag of a catalog row.
+ *
+ * `table` is a closed union so the write stays type-safe; soft delete is the
+ * default everywhere (rows stay in the database but disappear from the site).
+ */
+export async function setCatalogActive(input: {
+  table: "product" | "package" | "serviceType" | "priceTier" | "place" | "serviceLine";
+  id: string;
+  active: boolean;
+}): Promise<{ ok: true }> {
+  await assertAdmin();
+  assertNonEmptyString(input.id, "id");
+  assertBool(input.active, "active");
+
+  switch (input.table) {
+    case "product":
+      await db.orm.public.Product.where({ id: input.id }).update({ active: input.active });
+      break;
+    case "package":
+      await db.orm.public.ProductPackage.where({ id: input.id }).update({ active: input.active });
+      break;
+    case "serviceType":
+      await db.orm.public.ServiceType.where({ id: input.id }).update({ active: input.active });
+      break;
+    case "priceTier":
+      await db.orm.public.PriceTier.where({ id: input.id }).update({ active: input.active });
+      break;
+    case "place":
+      await db.orm.public.Airport.where({ id: input.id }).update({ active: input.active });
+      break;
+    case "serviceLine":
+      await db.orm.public.ServiceLine.where({ id: input.id }).update({ active: input.active });
+      break;
+    default:
+      throw new Error("unknown table");
+  }
+
+  return { ok: true };
+}
+
+/**
+ * Move a row up or down within its sort order.
+ *
+ * `direction` is "up" | "down"; the sibling is looked up inside the same
+ * scope (same line / same product) so the order never crosses groups.
+ */
+export async function reorderCatalog(input: {
+  table: "serviceType" | "priceTier" | "package" | "serviceLine";
+  id: string;
+  direction: "up" | "down";
+}): Promise<{ ok: true }> {
+  await assertAdmin();
+  assertNonEmptyString(input.id, "id");
+
+  if (input.table === "serviceLine") {
+    const rows = await db.orm.public.ServiceLine
+      .select("id", "sortOrder")
+      .orderBy((f) => f.sortOrder.asc())
+      .all();
+    await swapOrder(rows, input.id, input.direction, (id, sortOrder) =>
+      db.orm.public.ServiceLine.where({ id }).update({ sortOrder }),
+    );
+    return { ok: true };
+  }
+
+  if (input.table === "serviceType") {
+    const rows = await db.orm.public.ServiceType
+      .select("id", "lineId", "sortOrder")
+      .orderBy((f) => f.sortOrder.asc())
+      .all();
+    await swapOrder(rows, input.id, input.direction, (id, sortOrder) =>
+      db.orm.public.ServiceType.where({ id }).update({ sortOrder }),
+    );
+    return { ok: true };
+  }
+
+  if (input.table === "priceTier") {
+    const rows = await db.orm.public.PriceTier
+      .select("id", "lineId", "sortOrder")
+      .orderBy((f) => f.sortOrder.asc())
+      .all();
+    await swapOrder(rows, input.id, input.direction, (id, sortOrder) =>
+      db.orm.public.PriceTier.where({ id }).update({ sortOrder }),
+    );
+    return { ok: true };
+  }
+
+  const rows = await db.orm.public.ProductPackage
+    .select("id", "productId", "sortOrder")
+    .orderBy((f) => f.sortOrder.asc())
+    .all();
+  await swapOrder(rows, input.id, input.direction, (id, sortOrder) =>
+    db.orm.public.ProductPackage.where({ id }).update({ sortOrder }),
+  );
+  return { ok: true };
+}
+
+/**
+ * Swap the sort order of a row with its neighbour inside the same scope.
+ */
+async function swapOrder(
+  rows: { id: string; sortOrder: number; lineId?: string | null; productId?: string }[],
+  id: string,
+  direction: "up" | "down",
+  update: (id: string, sortOrder: number) => Promise<unknown>,
+): Promise<void> {
+  const index = rows.findIndex((r) => r.id === id);
+  if (index === -1) throw new Error("row not found");
+
+  const current = rows[index];
+  const scope = current.lineId ?? current.productId ?? null;
+  const siblings = rows.filter((r) => (r.lineId ?? r.productId ?? null) === scope);
+
+  const siblingIndex = siblings.findIndex((r) => r.id === id);
+  const target = siblings[siblingIndex + (direction === "up" ? -1 : 1)];
+  if (!target) return; // already at the edge of its group
+
+  await update(current.id, target.sortOrder);
+  await update(target.id, current.sortOrder);
+}
+
+/** Replace the amenities attached to a product. */
+export async function setProductAmenities(input: {
+  productId: string;
+  amenityIds: string[];
+}): Promise<{ ok: true }> {
+  await assertAdmin();
+  assertNonEmptyString(input.productId, "productId");
+
+  const product = await db.orm.public.Product
+    .select("id")
+    .where({ id: input.productId })
+    .first();
+  if (!product) throw new Error("product not found");
+
+  const existing = await db.orm.public.ProductAmenity
+    .select("id", "amenityId")
+    .where({ productId: input.productId })
+    .all();
+
+  const wanted = new Set(input.amenityIds);
+
+  for (const row of existing) {
+    if (!wanted.has(row.amenityId)) {
+      await db.orm.public.ProductAmenity.where({ id: row.id }).delete();
+    }
+  }
+
+  const already = new Set(existing.map((r) => r.amenityId));
+  for (const amenityId of wanted) {
+    if (already.has(amenityId)) continue;
+    await db.orm.public.ProductAmenity.create({
+      id: crypto.randomUUID(),
+      productId: input.productId,
+      amenityId,
+    });
+  }
+
+  return { ok: true };
+}
+
+/** Replace the add-ons offered by a product. */
+export async function setProductAddOns(input: {
+  productId: string;
+  addOnIds: string[];
+}): Promise<{ ok: true }> {
+  await assertAdmin();
+  assertNonEmptyString(input.productId, "productId");
+
+  const product = await db.orm.public.Product
+    .select("id")
+    .where({ id: input.productId })
+    .first();
+  if (!product) throw new Error("product not found");
+
+  const existing = await db.orm.public.ProductAddOn
+    .select("id", "addOnId")
+    .where({ productId: input.productId })
+    .all();
+
+  const wanted = new Set(input.addOnIds);
+
+  for (const row of existing) {
+    if (!wanted.has(row.addOnId)) {
+      await db.orm.public.ProductAddOn.where({ id: row.id }).delete();
+    }
+  }
+
+  const already = new Set(existing.map((r) => r.addOnId));
+  let sortOrder = existing.length;
+  for (const addOnId of wanted) {
+    if (already.has(addOnId)) continue;
+    await db.orm.public.ProductAddOn.create({
+      id: crypto.randomUUID(),
+      productId: input.productId,
+      addOnId,
+      sortOrder: sortOrder++,
+    });
+  }
+
+  return { ok: true };
+}
+
+/** Amenity and add-on ids currently attached to a product. */
+export async function getProductRelations(input: {
+  productId: string;
+}): Promise<{ amenityIds: string[]; addOnIds: string[] }> {
+  await assertAdmin();
+  assertNonEmptyString(input.productId, "productId");
+
+  const amenities = await db.orm.public.ProductAmenity
+    .select("amenityId")
+    .where({ productId: input.productId })
+    .all();
+  const addOns = await db.orm.public.ProductAddOn
+    .select("addOnId")
+    .where({ productId: input.productId })
+    .orderBy((f) => f.sortOrder.asc())
+    .all();
+
+  return {
+    amenityIds: amenities.map((a) => a.amenityId),
+    addOnIds: addOns.map((a) => a.addOnId),
+  };
 }

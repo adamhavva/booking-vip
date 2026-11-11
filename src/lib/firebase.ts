@@ -9,6 +9,9 @@ import { getFirestore } from "firebase-admin/firestore";
  *
  * All credentials come from server-only environment variables (no NEXT_PUBLIC_ prefix),
  * so nothing here is ever bundled into the browser.
+ *
+ * The app is initialised lazily: `next build` must not fail when the Firebase
+ * credentials are absent (they only exist in the deployed environment).
  */
 
 function readServiceAccount() {
@@ -32,7 +35,21 @@ function readServiceAccount() {
   };
 }
 
-export const firebaseApp: App = getApps()[0] ?? initializeApp({ credential: cert(readServiceAccount()) });
+let cachedApp: App | null = null;
 
-export const adminAuth = getAuth(firebaseApp);
-export const adminDb = getFirestore(firebaseApp);
+function getFirebaseApp(): App {
+  if (!cachedApp) {
+    cachedApp = getApps()[0] ?? initializeApp({ credential: cert(readServiceAccount()) });
+  }
+  return cachedApp;
+}
+
+/** The Firebase Auth instance (server side). */
+export function getAdminAuth() {
+  return getAuth(getFirebaseApp());
+}
+
+/** The Firestore instance (server side). */
+export function getAdminDb() {
+  return getFirestore(getFirebaseApp());
+}

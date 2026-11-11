@@ -8,6 +8,7 @@ import { utilityLinks } from "@/data/home";
 import Logo from "./Logo";
 import NavBar from "./NavBar";
 import LocaleMenu from "./LocaleMenu";
+import UserMenu from "./UserMenu";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 /**
@@ -71,14 +72,7 @@ export default function Header({
         </Link>
 
         <div className="flex flex-1 items-center justify-end gap-3">
-          <Link
-            href="#"
-            className={`hidden text-sm font-semibold lg:block ${
-              solid ? "text-ink hover:text-brand" : "text-white hover:text-white/80"
-            }`}
-          >
-            {t("header.signIn")}
-          </Link>
+          <UserMenu solid={solid} />
           <div className="text-xs lg:hidden">
             <LocaleMenu variant={solid ? "solid" : "overlay"} />
           </div>

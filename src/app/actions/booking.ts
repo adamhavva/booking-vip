@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/prisma/db";
+import { getUserSession } from "@/lib/user/session";
 import type {
   BookingLookupDTO,
   BookingLookupResult,
@@ -225,6 +226,9 @@ export async function createBooking(
 
     try {
       // 1. Booking
+      // Link the booking to the signed-in customer (null for guests).
+      const userSession = await getUserSession();
+
       await db.orm.public.Booking.create({
         id: bookingId,
         code,
@@ -238,6 +242,7 @@ export async function createBooking(
         totalUsdCents,
         currencyCode: input.currencyCode,
         fxRate: input.fxRate,
+        userId: userSession?.uid ?? null,
       });
 
       // 2. BookingItem
@@ -471,5 +476,55 @@ export async function getBookingByCode(
   } catch (error) {
     console.error("[booking] could not lookup booking", error);
     return { found: false, reason: "error" };
+  }
+}
+
+export type MyBookingDTO = {
+  code: string;
+  status: string;
+  serviceAt: string;
+  totalUsdCents: number;
+  adultCount: number;
+  childCount: number;
+  infantCount: number;
+};
+
+/**
+ * List the bookings of the signed-in customer.
+ *
+ * Returns an empty list for guests — the guest lookup by code + email keeps
+ * working exactly as before.
+ */
+export async function listMyBookings(): Promise<MyBookingDTO[]> {
+  const session = await getUserSession();
+  if (!session) return [];
+
+  try {
+    const rows = await db.orm.public.Booking
+      .select(
+        "code",
+        "status",
+        "serviceAt",
+        "totalUsdCents",
+        "adultCount",
+        "childCount",
+        "infantCount",
+      )
+      .where((f) => f.userId.eq(session.uid))
+      .orderBy((f) => f.createdAt.desc())
+      .all();
+
+    return rows.map((row) => ({
+      code: row.code,
+      status: row.status,
+      serviceAt: new Date(row.serviceAt).toISOString(),
+      totalUsdCents: row.totalUsdCents,
+      adultCount: row.adultCount,
+      childCount: row.childCount,
+      infantCount: row.infantCount,
+    }));
+  } catch (error) {
+    console.error("[booking] could not list customer bookings", error);
+    return [];
   }
 }

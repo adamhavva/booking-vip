@@ -29,6 +29,13 @@
 :root {
   --background: #ffffff;
   --foreground: #1a1a1a;
+
+  /* Admin area — deliberately separate from the public site tokens. */
+  --admin-line: #ebedf0;
+  --admin-ink: #101828;
+  --admin-muted: #667085;
+  --admin-accent: #101828;
+  --admin-hover: #f7f8f9;
 }
 
 html {

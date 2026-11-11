@@ -8,6 +8,24 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+/// Akun pengguna — identitas berasal dari Firebase Auth (`id` = Firebase UID).
+/// `role` adalah pembeda utama antara admin dan user biasa:
+///   - "ADMIN" → hanya boleh masuk lewat `/admin`
+///   - "USER"  → hanya boleh masuk lewat `/login` / `/register`
+model User {
+  id            String   @id
+  email         String   @unique
+  name          String?
+  phone         String?
+  /// "ADMIN" | "USER"
+  role          String   @default("USER")
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookings      Booking[]
+}
+
 /// Searches submitted from the home page form.
 /// Append-only history; `values` holds the entered form fields per service.
 model SearchLog {
@@ -205,6 +223,8 @@ model Booking {
   totalUsdCents   Int
   currencyCode    String    @default("USD")
   fxRate          Float     @default(1)
+  /// Firebase UID of the signed-in user (null for guest bookings).
+  userId          String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -214,8 +234,10 @@ model Booking {
   items           BookingItem[]
   addOns          BookingAddOn[]
   payments        Payment[]
+  user            User?     @relation(fields: [userId], references: [id])
 
   @@index([createdAt])
+  @@index([userId])
 }
 
 model BookingItem {
