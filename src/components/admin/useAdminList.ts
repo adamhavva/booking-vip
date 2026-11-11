@@ -92,6 +92,65 @@ export function useAdminValue<T>(
   return { data, loading, error, reload };
 }
 
+/**
+ * Load a single row of a catalog list.
+ *
+ * The admin pages never read the database during render — the list actions
+ * return the whole table and the row is picked from it. `id` is undefined in
+ * create mode, in which case nothing is loaded.
+ */
+export function useAdminRow<T>(
+  id: string | undefined,
+  load: () => Promise<T[]>,
+  getKey: (row: T) => string,
+): {
+  row: T | null;
+  loading: boolean;
+  error: string;
+  /** True when the row was requested but does not exist (anymore). */
+  missing: boolean;
+} {
+  const [row, setRow] = useState<T | null>(null);
+  const [loading, setLoading] = useState<boolean>(Boolean(id));
+  const [error, setError] = useState("");
+  const [missing, setMissing] = useState(false);
+
+  useEffect(() => {
+    if (!id) {
+      setRow(null);
+      setLoading(false);
+      setMissing(false);
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+    setError("");
+    setMissing(false);
+
+    load()
+      .then((rows) => {
+        if (cancelled) return;
+        const found = rows.find((item) => getKey(item) === id);
+        setRow(found ?? null);
+        setMissing(!found);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Gagal memuat data");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, load, getKey]);
+
+  return { row, loading, error, missing };
+}
+
 /** Run an async admin action and report failures as a message string. */
 export async function runAdminAction(
   action: () => Promise<unknown>,

@@ -1,14 +1,10 @@
 "use client";
 
 import { useCallback } from "react";
-import {
-  listServiceLines,
-  reorderCatalog,
-  setCatalogActive,
-  upsertServiceLine,
-} from "@/app/actions/admin";
+import { listServiceLines, reorderCatalog, setCatalogActive } from "@/app/actions/admin";
+import { deleteAdminEntity } from "@/app/actions/admin-crud";
 import type { AdminServiceLineRow } from "@/types/admin";
-import EntityManager, { type FieldSpec, type FieldValues } from "@/components/admin/EntityManager";
+import EntityManager from "@/components/admin/EntityManager";
 import StatusToggle from "@/components/admin/StatusToggle";
 import { ArrowDownIcon, ArrowUpIcon } from "@/components/icons";
 import { adminClass } from "@/components/admin/tokens";
@@ -18,43 +14,6 @@ import { useAdminList } from "@/components/admin/useAdminList";
 export default function ServiceLinesManager() {
   const load = useCallback(() => listServiceLines(), []);
   const { rows, loading, error, reload } = useAdminList<AdminServiceLineRow>(load);
-
-  const handleSave = async (values: FieldValues, row: AdminServiceLineRow | null) => {
-    await upsertServiceLine({
-      id: row?.id,
-      slug: String(values.slug ?? "").trim(),
-      label: String(values.label ?? "").trim(),
-      short: String(values.short ?? "").trim(),
-      badge: (values.badge as string | null) || null,
-      tone: String(values.tone ?? "from-sky-400 to-blue-600"),
-      imageUrl: (values.imageUrl as string | null) || null,
-      sortOrder: Number(values.sortOrder ?? 0),
-      active: values.active === true,
-    });
-    reload();
-  };
-
-  const fieldsFor = (_row: AdminServiceLineRow | null): FieldSpec[] => [
-    { name: "label", label: "Label", kind: "text" },
-    { name: "slug", label: "Slug", kind: "text", hint: "e.g. vip-service" },
-    { name: "short", label: "Short", kind: "text", hint: "2–3 huruf untuk ikon" },
-    { name: "badge", label: "Badge", kind: "text" },
-    { name: "tone", label: "Tone", kind: "text", hint: "Kelas Tailwind gradient" },
-    { name: "imageUrl", label: "URL Gambar", kind: "text", wide: true },
-    { name: "sortOrder", label: "Urutan", kind: "number" },
-    { name: "active", label: "Aktif", kind: "toggle" },
-  ];
-
-  const initialValuesFor = (row: AdminServiceLineRow | null): FieldValues => ({
-    label: row?.label ?? "",
-    slug: row?.slug ?? "",
-    short: row?.short ?? "",
-    badge: row?.badge ?? "",
-    tone: row?.tone ?? "from-sky-400 to-blue-600",
-    imageUrl: row?.imageUrl ?? "",
-    sortOrder: row?.sortOrder ?? 0,
-    active: row?.active ?? true,
-  });
 
   const columns = [
     {
@@ -138,9 +97,19 @@ export default function ServiceLinesManager() {
         rows={rows}
         columns={columns}
         getKey={(row) => row.id}
-        fieldsFor={fieldsFor}
-        initialValuesFor={initialValuesFor}
-        onSave={handleSave}
+        createHref="/admin/catalog/service-lines/new"
+        editHref={(row) => `/admin/catalog/service-lines/${row.id}`}
+        nameOf={(row) => row.label}
+        itemLabel="Service Line"
+        onDelete={async (row, typedName) => {
+          const result = await deleteAdminEntity({
+            table: "serviceLine",
+            id: row.id,
+            confirmName: typedName,
+          });
+          if (result.ok) reload();
+          return result;
+        }}
         createLabel="Tambah Service Line"
         editLabel="Edit Service Line"
         emptyTitle="Belum ada service line"

@@ -1,55 +1,19 @@
 "use client";
 
 import { useCallback } from "react";
-import {
-  getAdminReferenceData,
-  listServiceTypes,
-  reorderCatalog,
-  setCatalogActive,
-  upsertServiceType,
-} from "@/app/actions/admin";
-import type { AdminReferenceData, AdminServiceTypeRow } from "@/types/admin";
-import EntityManager, { type FieldSpec, type FieldValues } from "@/components/admin/EntityManager";
+import { listServiceTypes, reorderCatalog, setCatalogActive } from "@/app/actions/admin";
+import { deleteAdminEntity } from "@/app/actions/admin-crud";
+import type { AdminServiceTypeRow } from "@/types/admin";
+import EntityManager from "@/components/admin/EntityManager";
 import StatusToggle from "@/components/admin/StatusToggle";
 import { ArrowDownIcon, ArrowUpIcon } from "@/components/icons";
 import { adminClass } from "@/components/admin/tokens";
-import { useAdminList, useAdminValue } from "@/components/admin/useAdminList";
+import { useAdminList } from "@/components/admin/useAdminList";
 
 /** Service type catalog table — sub-categories inside a service line. */
 export default function ServiceTypesManager() {
   const load = useCallback(() => listServiceTypes(), []);
   const { rows, loading, error, reload } = useAdminList<AdminServiceTypeRow>(load);
-
-  const reference = useCallback(() => getAdminReferenceData(), []);
-  const { data: refs } = useAdminValue<AdminReferenceData>(reference);
-
-  const handleSave = async (values: FieldValues, row: AdminServiceTypeRow | null) => {
-    await upsertServiceType({
-      id: row?.id,
-      lineId: String(values.lineId ?? ""),
-      slug: String(values.slug ?? "").trim(),
-      name: String(values.name ?? "").trim(),
-      sortOrder: Number(values.sortOrder ?? 0),
-      active: values.active === true,
-    });
-    reload();
-  };
-
-  const fieldsFor = (_row: AdminServiceTypeRow | null): FieldSpec[] => [
-    { name: "name", label: "Nama", kind: "text" },
-    { name: "slug", label: "Slug", kind: "text", hint: "Unik per service line" },
-    { name: "lineId", label: "Service Line", kind: "select", options: refs?.lines ?? [] },
-    { name: "sortOrder", label: "Urutan", kind: "number" },
-    { name: "active", label: "Aktif", kind: "toggle" },
-  ];
-
-  const initialValuesFor = (row: AdminServiceTypeRow | null): FieldValues => ({
-    name: row?.name ?? "",
-    slug: row?.slug ?? "",
-    lineId: row?.lineId ?? refs?.lines[0]?.value ?? "",
-    sortOrder: row?.sortOrder ?? 0,
-    active: row?.active ?? true,
-  });
 
   const columns = [
     {
@@ -133,9 +97,19 @@ export default function ServiceTypesManager() {
         rows={rows}
         columns={columns}
         getKey={(row) => row.id}
-        fieldsFor={fieldsFor}
-        initialValuesFor={initialValuesFor}
-        onSave={handleSave}
+        createHref="/admin/catalog/service-types/new"
+        editHref={(row) => `/admin/catalog/service-types/${row.id}`}
+        nameOf={(row) => row.name}
+        itemLabel="Tipe Layanan"
+        onDelete={async (row, typedName) => {
+          const result = await deleteAdminEntity({
+            table: "serviceType",
+            id: row.id,
+            confirmName: typedName,
+          });
+          if (result.ok) reload();
+          return result;
+        }}
         createLabel="Tambah Tipe Layanan"
         editLabel="Edit Tipe Layanan"
         emptyTitle="Belum ada tipe layanan"

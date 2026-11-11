@@ -1,21 +1,22 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { listPlaces, setCatalogActive, upsertAirport } from "@/app/actions/admin";
+import { listPlaces, setCatalogActive } from "@/app/actions/admin";
+import { deleteAdminEntity } from "@/app/actions/admin-crud";
 import type { AdminPlaceRow } from "@/types/admin";
-import EntityManager, { type FieldSpec, type FieldValues } from "@/components/admin/EntityManager";
+import EntityManager from "@/components/admin/EntityManager";
 import StatusToggle from "@/components/admin/StatusToggle";
 import { adminClass } from "@/components/admin/tokens";
 import { useAdminList } from "@/components/admin/useAdminList";
-import { buildPlaceTree, descendantPlaceIds, flattenPlaceTree } from "@/lib/places";
+import { buildPlaceTree, flattenPlaceTree } from "@/lib/places";
 
 /**
  * Place table — airports and cities shared by the products.
  *
  * The places form a hierarchy: a place may point at a parent place (a city
  * parents the airports below it). The table renders that hierarchy indented,
- * and the drawer lets the operator pick a parent and the order inside the
- * group — which is exactly what the grouped dropdowns use.
+ * and the create/edit page lets the operator pick a parent and the order
+ * inside the group — which is exactly what the grouped dropdowns use.
  */
 export default function PlacesManager() {
   const load = useCallback(() => listPlaces(), []);
@@ -38,86 +39,6 @@ export default function PlacesManager() {
     () => new Map(ordered.map((entry) => [entry.row.id, entry.depth])),
     [ordered]
   );
-
-  /** The ids that may not become the parent of `rowId` (its own subtree). */
-  const blockedParents = useCallback(
-    (rowId: string | null) => {
-      if (!rowId) return new Set<string>();
-      return descendantPlaceIds(rows, rowId);
-    },
-    [rows]
-  );
-
-  const handleSave = async (values: FieldValues, row: AdminPlaceRow | null) => {
-    await upsertAirport({
-      id: row?.id,
-      kind: (String(values.kind ?? "airport") as "airport" | "city"),
-      iataCode: (values.iataCode as string | null) || null,
-      name: String(values.name ?? "").trim(),
-      city: String(values.city ?? "").trim(),
-      country: String(values.country ?? "Indonesia").trim(),
-      imageUrl: (values.imageUrl as string | null) || null,
-      active: values.active === true,
-      parentId: (values.parentId as string | null) || null,
-      sortOrder: typeof values.sortOrder === "number" ? values.sortOrder : 0,
-    });
-    reload();
-  };
-
-  const fieldsFor = (row: AdminPlaceRow | null): FieldSpec[] => {
-    const blocked = blockedParents(row?.id ?? null);
-    const parentOptions = ordered
-      .filter((entry) => !blocked.has(entry.row.id))
-      .map((entry) => ({
-        value: entry.row.id,
-        label: `${"— ".repeat(entry.depth)}${entry.row.name}${
-          entry.row.iataCode ? ` (${entry.row.iataCode})` : ""
-        }`,
-      }));
-
-    return [
-      { name: "name", label: "Nama", kind: "text" },
-      { name: "city", label: "Kota", kind: "text" },
-      {
-        name: "kind",
-        label: "Jenis",
-        kind: "select",
-        options: [
-          { value: "airport", label: "Airport" },
-          { value: "city", label: "City" },
-        ],
-      },
-      { name: "iataCode", label: "Kode IATA", kind: "text", hint: "Kosongkan untuk kota" },
-      { name: "country", label: "Negara", kind: "text" },
-      {
-        name: "parentId",
-        label: "Parent",
-        kind: "select",
-        options: parentOptions,
-        hint: "Kelompokkan place di bawah parent lain (mis. kota)",
-      },
-      {
-        name: "sortOrder",
-        label: "Urutan",
-        kind: "number",
-        hint: "Nomor lebih kecil tampil lebih dulu di dalam group",
-      },
-      { name: "imageUrl", label: "URL Gambar", kind: "text", wide: true },
-      { name: "active", label: "Aktif", kind: "toggle" },
-    ];
-  };
-
-  const initialValuesFor = (row: AdminPlaceRow | null): FieldValues => ({
-    name: row?.name ?? "",
-    city: row?.city ?? "",
-    kind: row?.kind ?? "airport",
-    iataCode: row?.iataCode ?? "",
-    country: row?.country ?? "Indonesia",
-    parentId: row?.parentId ?? "",
-    sortOrder: row?.sortOrder ?? 0,
-    imageUrl: row?.imageUrl ?? "",
-    active: row?.active ?? true,
-  });
 
   const columns = [
     {
@@ -211,9 +132,19 @@ export default function PlacesManager() {
         rows={ordered.map((entry) => entry.row)}
         columns={columns}
         getKey={(row) => row.id}
-        fieldsFor={fieldsFor}
-        initialValuesFor={initialValuesFor}
-        onSave={handleSave}
+        createHref="/admin/catalog/places/new"
+        editHref={(row) => `/admin/catalog/places/${row.id}`}
+        nameOf={(row) => row.name}
+        itemLabel="Place"
+        onDelete={async (row, typedName) => {
+          const result = await deleteAdminEntity({
+            table: "place",
+            id: row.id,
+            confirmName: typedName,
+          });
+          if (result.ok) reload();
+          return result;
+        }}
         createLabel="Tambah Place"
         editLabel="Edit Place"
         emptyTitle="Belum ada place"

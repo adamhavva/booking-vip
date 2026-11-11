@@ -1,5 +1,6 @@
 import AdminSidebar from "./AdminSidebar";
 import AdminTopbar from "./AdminTopbar";
+import { AdminToaster } from "./toast";
 
 /**
  * Admin shell — sidebar + topbar + content.
@@ -21,6 +22,7 @@ export default function AdminShell({
         <AdminTopbar email={email} />
         <main className="flex-1 px-8 py-7">{children}</main>
       </div>
+      <AdminToaster />
     </div>
   );
 }

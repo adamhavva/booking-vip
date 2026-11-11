@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback } from "react";
-import { listAmenities, upsertAmenity } from "@/app/actions/admin";
+import { listAmenities } from "@/app/actions/admin";
+import { deleteAdminEntity } from "@/app/actions/admin-crud";
 import type { AdminAmenityRow } from "@/types/admin";
-import EntityManager, { type FieldSpec, type FieldValues } from "@/components/admin/EntityManager";
+import EntityManager from "@/components/admin/EntityManager";
 import { adminClass } from "@/components/admin/tokens";
 import { useAdminList } from "@/components/admin/useAdminList";
 
@@ -11,22 +12,6 @@ import { useAdminList } from "@/components/admin/useAdminList";
 export default function AmenitiesManager() {
   const load = useCallback(() => listAmenities(), []);
   const { rows, loading, error, reload } = useAdminList<AdminAmenityRow>(load);
-
-  const handleSave = async (values: FieldValues, row: AdminAmenityRow | null) => {
-    await upsertAmenity({
-      id: row?.id,
-      label: String(values.label ?? "").trim(),
-    });
-    reload();
-  };
-
-  const fieldsFor = (_row: AdminAmenityRow | null): FieldSpec[] => [
-    { name: "label", label: "Label", kind: "text", wide: true, hint: "Contoh: With Driver" },
-  ];
-
-  const initialValuesFor = (row: AdminAmenityRow | null): FieldValues => ({
-    label: row?.label ?? "",
-  });
 
   const columns = [
     {
@@ -53,9 +38,19 @@ export default function AmenitiesManager() {
         rows={rows}
         columns={columns}
         getKey={(row) => row.id}
-        fieldsFor={fieldsFor}
-        initialValuesFor={initialValuesFor}
-        onSave={handleSave}
+        createHref="/admin/catalog/amenities/new"
+        editHref={(row) => `/admin/catalog/amenities/${row.id}`}
+        nameOf={(row) => row.label}
+        itemLabel="Amenity"
+        onDelete={async (row, typedName) => {
+          const result = await deleteAdminEntity({
+            table: "amenity",
+            id: row.id,
+            confirmName: typedName,
+          });
+          if (result.ok) reload();
+          return result;
+        }}
         createLabel="Tambah Amenity"
         editLabel="Edit Amenity"
         emptyTitle="Belum ada amenity"

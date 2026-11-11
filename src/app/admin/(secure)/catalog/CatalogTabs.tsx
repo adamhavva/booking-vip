@@ -21,7 +21,9 @@ export default function CatalogTabs() {
     <div className="mb-6 border-b border-[var(--admin-line)]">
       <nav className="-mb-px flex gap-6 overflow-x-auto">
         {TABS.map((tab) => {
-          const active = pathname === tab.href;
+          // The create and edit pages live below the module path, so the
+          // active tab is matched by prefix.
+          const active = pathname === tab.href || pathname.startsWith(`${tab.href}/`);
           return (
             <Link
               key={tab.href}
