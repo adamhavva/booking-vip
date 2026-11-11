@@ -1,0 +1,362 @@
+[
+  {
+    "id": "column.public.Booking.dropoffLabel",
+    "label": "Add column \"dropoffLabel\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "dropoffLabel",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"dropoffLabel\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "dropoffLabel"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"dropoffLabel\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"dropoffLabel\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"dropoffLabel\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"dropoffLabel\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "dropoffLabel"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"dropoffLabel\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"dropoffLabel\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "dropoffLabel",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.dropoffLat",
+    "label": "Add column \"dropoffLat\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "dropoffLat",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"dropoffLat\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "dropoffLat"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"dropoffLat\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"dropoffLat\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"dropoffLat\" float8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"dropoffLat\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "dropoffLat"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"dropoffLat\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"dropoffLat\" has type \"double precision\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "dropoffLat",
+          "double precision"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.dropoffLng",
+    "label": "Add column \"dropoffLng\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "dropoffLng",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"dropoffLng\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "dropoffLng"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"dropoffLng\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"dropoffLng\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"dropoffLng\" float8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"dropoffLng\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "dropoffLng"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"dropoffLng\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"dropoffLng\" has type \"double precision\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "dropoffLng",
+          "double precision"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.pickupLabel",
+    "label": "Add column \"pickupLabel\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "pickupLabel",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"pickupLabel\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "pickupLabel"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"pickupLabel\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"pickupLabel\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"pickupLabel\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"pickupLabel\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "pickupLabel"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"pickupLabel\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"pickupLabel\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "pickupLabel",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.pickupLat",
+    "label": "Add column \"pickupLat\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "pickupLat",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"pickupLat\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "pickupLat"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"pickupLat\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"pickupLat\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"pickupLat\" float8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"pickupLat\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "pickupLat"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"pickupLat\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"pickupLat\" has type \"double precision\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "pickupLat",
+          "double precision"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.pickupLng",
+    "label": "Add column \"pickupLng\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "pickupLng",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"pickupLng\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "pickupLng"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"pickupLng\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"pickupLng\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"pickupLng\" float8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"pickupLng\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "pickupLng"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"pickupLng\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"pickupLng\" has type \"double precision\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "pickupLng",
+          "double precision"
+        ]
+      }
+    ]
+  }
+]

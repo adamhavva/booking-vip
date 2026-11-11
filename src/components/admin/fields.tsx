@@ -23,7 +23,8 @@ export type FieldKind =
   | "select"
   | "toggle"
   | "tags"
-  | "multiselect";
+  | "multiselect"
+  | "datetime";
 
 export type FieldSpec = {
   name: string;
@@ -33,6 +34,10 @@ export type FieldSpec = {
   hint?: string;
   wide?: boolean;
   placeholder?: string;
+  /** Show this field only when another field has the given value. */
+  visibleWhen?: { name: string; equals: string };
+  /** Hide the "— Tidak ada —" placeholder of a select. */
+  allowEmpty?: boolean;
 };
 
 export type FieldValues = Record<string, unknown>;
@@ -70,13 +75,33 @@ export default function FieldControl({
         onChange={(e) => onChange(e.target.value)}
         className={adminClass.input}
       >
-        <option value="">— Tidak ada —</option>
+        {spec.allowEmpty === false ? null : (
+          <option value="">— Tidak ada —</option>
+        )}
         {(spec.options ?? []).map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}
           </option>
         ))}
       </select>
+    );
+  }
+
+  if (spec.kind === "datetime") {
+    const raw =
+      typeof value === "string"
+        ? value
+        : value instanceof Date
+          ? value.toISOString().slice(0, 16)
+          : "";
+    return (
+      <input
+        id={id}
+        type="datetime-local"
+        value={raw}
+        onChange={(e) => onChange(e.target.value)}
+        className={adminClass.input}
+      />
     );
   }
 

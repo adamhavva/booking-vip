@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getPaymentMethods } from "@/app/actions/catalog";
+import { validatePromoCode } from "@/app/actions/booking";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 type PaymentMethodDTO = {
@@ -10,10 +11,12 @@ type PaymentMethodDTO = {
 };
 
 type Props = {
-  onSubmit: () => void;
+  onSubmit: (promoCode?: string) => void;
   onBack: () => void;
   isSubmitting: boolean;
   error: string | null;
+  /** The subtotal in USD cents — the promo is checked against it. */
+  subtotalUsdCents: number;
 };
 
 export default function StepPayment({
@@ -21,11 +24,21 @@ export default function StepPayment({
   onBack,
   isSubmitting,
   error,
+  subtotalUsdCents,
 }: Props) {
   const { t } = useLocale();
 
   const [methods, setMethods] = useState<PaymentMethodDTO[]>([]);
   const [loaded, setLoaded] = useState(false);
+
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<{
+    code: string;
+    title: string;
+    discountUsdCents: number;
+  } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
 
   useEffect(() => {
     getPaymentMethods().then((m) => {
@@ -35,6 +48,30 @@ export default function StepPayment({
   }, []);
 
   const hasMethods = methods.length > 0;
+
+  /** Check the promo code — the discount is only applied once it is valid. */
+  const handleCheckPromo = async () => {
+    const code = promoInput.trim();
+    if (!code) {
+      setPromo(null);
+      setPromoError("Kode promo wajib diisi.");
+      return;
+    }
+
+    setChecking(true);
+    setPromoError(null);
+
+    const result = await validatePromoCode(code, subtotalUsdCents);
+    setChecking(false);
+
+    if (!result.ok) {
+      setPromo(null);
+      setPromoError(result.error);
+      return;
+    }
+
+    setPromo({ code: result.code, title: result.title, discountUsdCents: result.discountUsdCents });
+  };
 
   return (
     <div>
@@ -95,6 +132,47 @@ export default function StepPayment({
         </div>
       )}
 
+      {/* Promo code */}
+      <div className="mb-6 rounded-2xl border border-line bg-white p-5">
+        <h3 className="mb-3 text-base font-bold text-ink">Punya kode promo?</h3>
+
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <input
+            type="text"
+            value={promoInput}
+            onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+            placeholder="Masukkan kode promo"
+            className="h-11 flex-1 rounded-xl border border-line bg-white px-4 text-sm text-ink outline-none placeholder:text-muted focus:border-brand"
+          />
+          <button
+            type="button"
+            onClick={handleCheckPromo}
+            disabled={checking || isSubmitting}
+            className="h-11 rounded-xl border border-line bg-white px-5 text-sm font-semibold text-ink transition-colors hover:bg-canvas disabled:opacity-50"
+          >
+            {checking ? "Memeriksa…" : "Cek"}
+          </button>
+        </div>
+
+        {promoError ? (
+          <p className="mt-2 text-[13px] text-danger">{promoError}</p>
+        ) : null}
+
+        {promo ? (
+          <div className="mt-3 flex items-center justify-between gap-3 rounded-xl bg-brand-soft px-4 py-3">
+            <div>
+              <p className="text-[13px] font-semibold text-brand-dark">
+                {promo.code} diterapkan
+              </p>
+              <p className="text-[12px] text-brand-dark/70">{promo.title}</p>
+            </div>
+            <span className="text-[13px] font-bold text-brand-dark">
+              -${(promo.discountUsdCents / 100).toFixed(2)}
+            </span>
+          </div>
+        ) : null}
+      </div>
+
       <div className="mt-8 flex justify-between">
         <button
           onClick={onBack}
@@ -104,7 +182,7 @@ export default function StepPayment({
           {t("wizard.payment.back")}
         </button>
         <button
-          onClick={onSubmit}
+          onClick={() => onSubmit(promo?.code)}
           disabled={isSubmitting}
           className="rounded-xl bg-brand px-8 py-3 text-base font-bold text-white shadow-sm transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
         >

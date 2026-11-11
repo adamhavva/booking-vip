@@ -1,0 +1,1399 @@
+[
+  {
+    "id": "table.LoyaltyLevel",
+    "label": "Create table \"LoyaltyLevel\"",
+    "summary": "Creates table \"LoyaltyLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "LoyaltyLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"LoyaltyLevel\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LoyaltyLevel\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"LoyaltyLevel\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"LoyaltyLevel\"",
+        "sql": "CREATE TABLE \"public\".\"LoyaltyLevel\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"benefits\" jsonb DEFAULT '[]'::jsonb NOT NULL,\n  \"code\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"minPoints\" int4 DEFAULT 0 NOT NULL,\n  \"multiplier\" float8 DEFAULT 1 NOT NULL,\n  \"name\" text NOT NULL,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"LoyaltyLevel\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"LoyaltyLevel\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"LoyaltyLevel\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.PromoCode",
+    "label": "Create table \"PromoCode\"",
+    "summary": "Creates table \"PromoCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PromoCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PromoCode\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PromoCode\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"PromoCode\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PromoCode\"",
+        "sql": "CREATE TABLE \"public\".\"PromoCode\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"endsAt\" timestamp(3),\n  \"id\" text NOT NULL,\n  \"minTotalUsdCents\" int4 DEFAULT 0 NOT NULL,\n  \"startsAt\" timestamp(3),\n  \"title\" text NOT NULL,\n  \"type\" text DEFAULT 'percentage' NOT NULL,\n  \"usageLimit\" int4,\n  \"usedCount\" int4 DEFAULT 0 NOT NULL,\n  \"value\" int4 DEFAULT 0 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PromoCode\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"PromoCode\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"PromoCode\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.Review",
+    "label": "Create table \"Review\"",
+    "summary": "Creates table \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Review\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Review\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Review\"",
+        "sql": "CREATE TABLE \"public\".\"Review\" (\n  \"body\" text NOT NULL,\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"likes\" int4 DEFAULT 0 NOT NULL,\n  \"parentId\" text,\n  \"rating\" int4 DEFAULT 5 NOT NULL,\n  \"subjectId\" text NOT NULL,\n  \"subjectType\" text DEFAULT 'product' NOT NULL,\n  \"userId\" text NOT NULL,\n  \"views\" int4 DEFAULT 0 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Review\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Review\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Review\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.SavedCard",
+    "label": "Create table \"SavedCard\"",
+    "summary": "Creates table \"SavedCard\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SavedCard"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SavedCard\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SavedCard\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"SavedCard\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SavedCard\"",
+        "sql": "CREATE TABLE \"public\".\"SavedCard\" (\n  \"brand\" text DEFAULT 'card' NOT NULL,\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"encryptedNumber\" text NOT NULL,\n  \"expMonth\" int4 NOT NULL,\n  \"expYear\" int4 NOT NULL,\n  \"holderName\" text,\n  \"id\" text NOT NULL,\n  \"isDefault\" bool DEFAULT false NOT NULL,\n  \"last4\" text NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SavedCard\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"SavedCard\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"SavedCard\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.VisaApplication",
+    "label": "Create table \"VisaApplication\"",
+    "summary": "Creates table \"VisaApplication\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "VisaApplication"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"VisaApplication\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"VisaApplication\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"VisaApplication\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"VisaApplication\"",
+        "sql": "CREATE TABLE \"public\".\"VisaApplication\" (\n  \"arrivalDate\" timestamp(3) NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"dateOfBirth\" timestamp(3) NOT NULL,\n  \"email\" text NOT NULL,\n  \"fullName\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"nationality\" text NOT NULL,\n  \"note\" text,\n  \"passportNumber\" text NOT NULL,\n  \"phone\" text NOT NULL,\n  \"productId\" text,\n  \"status\" text DEFAULT 'submitted' NOT NULL,\n  \"totalUsdCents\" int4 DEFAULT 0 NOT NULL,\n  \"userId\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"VisaApplication\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"VisaApplication\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"VisaApplication\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.discountUsdCents",
+    "label": "Add column \"discountUsdCents\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "discountUsdCents",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"discountUsdCents\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "discountUsdCents"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"discountUsdCents\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"discountUsdCents\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"discountUsdCents\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"discountUsdCents\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "discountUsdCents"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"discountUsdCents\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"discountUsdCents\" has type \"integer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "discountUsdCents",
+          "integer"
+        ]
+      },
+      {
+        "description": "verify column \"discountUsdCents\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "discountUsdCents",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.invoiceNumber",
+    "label": "Add column \"invoiceNumber\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "invoiceNumber",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"invoiceNumber\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "invoiceNumber"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"invoiceNumber\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"invoiceNumber\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"invoiceNumber\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"invoiceNumber\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "invoiceNumber"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"invoiceNumber\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"invoiceNumber\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "invoiceNumber",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.promoCode",
+    "label": "Add column \"promoCode\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "promoCode",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"promoCode\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "promoCode"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"promoCode\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"promoCode\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"promoCode\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"promoCode\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "promoCode"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"promoCode\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"promoCode\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "promoCode",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.taxUsdCents",
+    "label": "Add column \"taxUsdCents\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "taxUsdCents",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"taxUsdCents\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "taxUsdCents"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"taxUsdCents\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"taxUsdCents\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"taxUsdCents\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"taxUsdCents\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "taxUsdCents"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"taxUsdCents\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"taxUsdCents\" has type \"integer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "taxUsdCents",
+          "integer"
+        ]
+      },
+      {
+        "description": "verify column \"taxUsdCents\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "taxUsdCents",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Booking.taxes",
+    "label": "Add column \"taxes\" to \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "taxes",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"taxes\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "taxes"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"taxes\" on \"Booking\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"taxes\"",
+        "sql": "ALTER TABLE \"public\".\"Booking\" ADD COLUMN \"taxes\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"taxes\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "taxes"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"taxes\" on \"Booking\""
+        }
+      },
+      {
+        "description": "verify column \"taxes\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "taxes",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"taxes\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Booking",
+          "taxes",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.User.levelId",
+    "label": "Add column \"levelId\" to \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "levelId",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"levelId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "levelId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"levelId\" on \"User\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"levelId\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD COLUMN \"levelId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"levelId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "levelId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"levelId\" on \"User\""
+        }
+      },
+      {
+        "description": "verify column \"levelId\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "levelId",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.User.points",
+    "label": "Add column \"points\" to \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "points",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"points\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "points"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"points\" on \"User\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"points\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD COLUMN \"points\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"points\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "points"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"points\" on \"User\""
+        }
+      },
+      {
+        "description": "verify column \"points\" has type \"integer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "points",
+          "integer"
+        ]
+      },
+      {
+        "description": "verify column \"points\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "points",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Booking.Booking_invoiceNumber_key",
+    "label": "Create index \"Booking_invoiceNumber_key\" on \"Booking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Booking_invoiceNumber_key",
+        "table": "Booking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Booking_invoiceNumber_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Booking_invoiceNumber_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Booking_invoiceNumber_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Booking_invoiceNumber_key\"",
+        "sql": "CREATE UNIQUE INDEX \"Booking_invoiceNumber_key\" ON \"public\".\"Booking\" (\"invoiceNumber\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Booking_invoiceNumber_key\" exists on \"Booking\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Booking_invoiceNumber_key\"",
+          "i",
+          "I",
+          "\"public\".\"Booking\"",
+          "btree",
+          "[\"invoiceNumber\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.LoyaltyLevel.LoyaltyLevel_code_key",
+    "label": "Create index \"LoyaltyLevel_code_key\" on \"LoyaltyLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "LoyaltyLevel_code_key",
+        "table": "LoyaltyLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"LoyaltyLevel_code_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LoyaltyLevel_code_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"LoyaltyLevel_code_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"LoyaltyLevel_code_key\"",
+        "sql": "CREATE UNIQUE INDEX \"LoyaltyLevel_code_key\" ON \"public\".\"LoyaltyLevel\" (\"code\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"LoyaltyLevel_code_key\" exists on \"LoyaltyLevel\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"LoyaltyLevel_code_key\"",
+          "i",
+          "I",
+          "\"public\".\"LoyaltyLevel\"",
+          "btree",
+          "[\"code\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PromoCode.PromoCode_active_idx",
+    "label": "Create index \"PromoCode_active_idx\" on \"PromoCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PromoCode_active_idx",
+        "table": "PromoCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PromoCode_active_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PromoCode_active_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"PromoCode_active_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PromoCode_active_idx\"",
+        "sql": "CREATE INDEX \"PromoCode_active_idx\" ON \"public\".\"PromoCode\" (\"active\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PromoCode_active_idx\" exists on \"PromoCode\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"PromoCode_active_idx\"",
+          "i",
+          "I",
+          "\"public\".\"PromoCode\"",
+          "btree",
+          "[\"active\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PromoCode.PromoCode_code_key",
+    "label": "Create index \"PromoCode_code_key\" on \"PromoCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PromoCode_code_key",
+        "table": "PromoCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PromoCode_code_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PromoCode_code_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"PromoCode_code_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PromoCode_code_key\"",
+        "sql": "CREATE UNIQUE INDEX \"PromoCode_code_key\" ON \"public\".\"PromoCode\" (\"code\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PromoCode_code_key\" exists on \"PromoCode\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"PromoCode_code_key\"",
+          "i",
+          "I",
+          "\"public\".\"PromoCode\"",
+          "btree",
+          "[\"code\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Review.Review_subjectType_subjectId_idx",
+    "label": "Create index \"Review_subjectType_subjectId_idx\" on \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Review_subjectType_subjectId_idx",
+        "table": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Review_subjectType_subjectId_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review_subjectType_subjectId_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Review_subjectType_subjectId_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Review_subjectType_subjectId_idx\"",
+        "sql": "CREATE INDEX \"Review_subjectType_subjectId_idx\" ON \"public\".\"Review\" (\"subjectType\", \"subjectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Review_subjectType_subjectId_idx\" exists on \"Review\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Review_subjectType_subjectId_idx\"",
+          "i",
+          "I",
+          "\"public\".\"Review\"",
+          "btree",
+          "[\"subjectType\",\"subjectId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Review.Review_userId_idx",
+    "label": "Create index \"Review_userId_idx\" on \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Review_userId_idx",
+        "table": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Review_userId_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review_userId_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Review_userId_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Review_userId_idx\"",
+        "sql": "CREATE INDEX \"Review_userId_idx\" ON \"public\".\"Review\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Review_userId_idx\" exists on \"Review\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Review_userId_idx\"",
+          "i",
+          "I",
+          "\"public\".\"Review\"",
+          "btree",
+          "[\"userId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SavedCard.SavedCard_userId_idx",
+    "label": "Create index \"SavedCard_userId_idx\" on \"SavedCard\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SavedCard_userId_idx",
+        "table": "SavedCard"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SavedCard_userId_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SavedCard_userId_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"SavedCard_userId_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SavedCard_userId_idx\"",
+        "sql": "CREATE INDEX \"SavedCard_userId_idx\" ON \"public\".\"SavedCard\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SavedCard_userId_idx\" exists on \"SavedCard\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"SavedCard_userId_idx\"",
+          "i",
+          "I",
+          "\"public\".\"SavedCard\"",
+          "btree",
+          "[\"userId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.VisaApplication.VisaApplication_code_key",
+    "label": "Create index \"VisaApplication_code_key\" on \"VisaApplication\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "VisaApplication_code_key",
+        "table": "VisaApplication"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"VisaApplication_code_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"VisaApplication_code_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"VisaApplication_code_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"VisaApplication_code_key\"",
+        "sql": "CREATE UNIQUE INDEX \"VisaApplication_code_key\" ON \"public\".\"VisaApplication\" (\"code\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"VisaApplication_code_key\" exists on \"VisaApplication\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"VisaApplication_code_key\"",
+          "i",
+          "I",
+          "\"public\".\"VisaApplication\"",
+          "btree",
+          "[\"code\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.VisaApplication.VisaApplication_userId_idx",
+    "label": "Create index \"VisaApplication_userId_idx\" on \"VisaApplication\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "VisaApplication_userId_idx",
+        "table": "VisaApplication"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"VisaApplication_userId_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"VisaApplication_userId_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"VisaApplication_userId_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"VisaApplication_userId_idx\"",
+        "sql": "CREATE INDEX \"VisaApplication_userId_idx\" ON \"public\".\"VisaApplication\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"VisaApplication_userId_idx\" exists on \"VisaApplication\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"VisaApplication_userId_idx\"",
+          "i",
+          "I",
+          "\"public\".\"VisaApplication\"",
+          "btree",
+          "[\"userId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Review.Review_userId_fkey",
+    "label": "Add foreign key \"Review_userId_fkey\" on \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Review_userId_fkey",
+        "table": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Review_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Review_userId_fkey",
+          "public",
+          "\"public\".\"Review\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"Review_userId_fkey\" on \"Review\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Review_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Review\"\nADD CONSTRAINT \"Review_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"User\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Review_userId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "Review_userId_fkey",
+          "public",
+          "\"public\".\"Review\"",
+          "f",
+          "[\"userId\"]",
+          "\"public\".\"User\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Review.Review_parentId_fkey",
+    "label": "Add foreign key \"Review_parentId_fkey\" on \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Review_parentId_fkey",
+        "table": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Review_parentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Review_parentId_fkey",
+          "public",
+          "\"public\".\"Review\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"Review_parentId_fkey\" on \"Review\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Review_parentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Review\"\nADD CONSTRAINT \"Review_parentId_fkey\"\nFOREIGN KEY (\"parentId\")\nREFERENCES \"public\".\"Review\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Review_parentId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "Review_parentId_fkey",
+          "public",
+          "\"public\".\"Review\"",
+          "f",
+          "[\"parentId\"]",
+          "\"public\".\"Review\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SavedCard.SavedCard_userId_fkey",
+    "label": "Add foreign key \"SavedCard_userId_fkey\" on \"SavedCard\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SavedCard_userId_fkey",
+        "table": "SavedCard"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SavedCard_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SavedCard_userId_fkey",
+          "public",
+          "\"public\".\"SavedCard\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"SavedCard_userId_fkey\" on \"SavedCard\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SavedCard_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SavedCard\"\nADD CONSTRAINT \"SavedCard_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"User\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SavedCard_userId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "SavedCard_userId_fkey",
+          "public",
+          "\"public\".\"SavedCard\"",
+          "f",
+          "[\"userId\"]",
+          "\"public\".\"User\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.User.User_levelId_fkey",
+    "label": "Add foreign key \"User_levelId_fkey\" on \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "User_levelId_fkey",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"User_levelId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_levelId_fkey",
+          "public",
+          "\"public\".\"User\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"User_levelId_fkey\" on \"User\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"User_levelId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"User\"\nADD CONSTRAINT \"User_levelId_fkey\"\nFOREIGN KEY (\"levelId\")\nREFERENCES \"public\".\"LoyaltyLevel\" (\"id\")\nON DELETE SET NULL\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"User_levelId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "User_levelId_fkey",
+          "public",
+          "\"public\".\"User\"",
+          "f",
+          "[\"levelId\"]",
+          "\"public\".\"LoyaltyLevel\"",
+          "[\"id\"]",
+          "n",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.VisaApplication.VisaApplication_userId_fkey",
+    "label": "Add foreign key \"VisaApplication_userId_fkey\" on \"VisaApplication\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "VisaApplication_userId_fkey",
+        "table": "VisaApplication"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"VisaApplication_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "VisaApplication_userId_fkey",
+          "public",
+          "\"public\".\"VisaApplication\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"VisaApplication_userId_fkey\" on \"VisaApplication\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"VisaApplication_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"VisaApplication\"\nADD CONSTRAINT \"VisaApplication_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"User\" (\"id\")\nON DELETE SET NULL\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"VisaApplication_userId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "VisaApplication_userId_fkey",
+          "public",
+          "\"public\".\"VisaApplication\"",
+          "f",
+          "[\"userId\"]",
+          "\"public\".\"User\"",
+          "[\"id\"]",
+          "n",
+          "c"
+        ]
+      }
+    ]
+  }
+]

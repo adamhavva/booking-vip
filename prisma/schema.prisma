@@ -20,10 +20,128 @@ model User {
   /// "ADMIN" | "USER"
   role          String   @default("USER")
   emailVerified Boolean  @default(false)
+  /// Loyalty points — the level is derived from the `LoyaltyLevel` table.
+  points        Int      @default(0)
+  levelId       String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   bookings      Booking[]
+  savedCards    SavedCard[]
+  reviews       Review[]
+  level         LoyaltyLevel? @relation(fields: [levelId], references: [id])
+  visaApplications VisaApplication[]
+}
+
+/// A loyalty tier — the thresholds live in the database, so they can be changed
+/// without a deploy. `minPoints` is the number of points needed to reach the tier.
+model LoyaltyLevel {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  minPoints   Int      @default(0)
+  /// Points multiplier used when a booking is paid for.
+  multiplier  Float    @default(1)
+  /// ["Discount 5%", "Priority support"] — a free-form benefit list.
+  benefits    Json     @default("[]")
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+
+  users       User[]
+}
+
+/// A saved payment card. The number is **encrypted** (AES-256-GCM) — only the last
+/// four digits are kept in clear. The CVV is never collected nor stored.
+model SavedCard {
+  id              String   @id @default(uuid())
+  userId          String
+  /// "visa" | "mastercard" | "jcb" | …
+  brand           String   @default("card")
+  /// The last four digits, in clear.
+  last4           String
+  /// The full card number, encrypted.
+  encryptedNumber String
+  expMonth        Int
+  expYear         Int
+  holderName      String?
+  isDefault       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// A customer review (comment) on a product or a service line.
+/// The replies form a parent → child → child tree through `parentId`.
+model Review {
+  id          String   @id @default(uuid())
+  userId      String
+  /// "product" | "serviceLine"
+  subjectType String   @default("product")
+  subjectId   String
+  rating      Int      @default(5)
+  body        String
+  /// How many times the review was seen.
+  views       Int      @default(0)
+  /// How many likes it got.
+  likes       Int      @default(0)
+  /// The parent review when this is a reply.
+  parentId    String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent      Review?  @relation("ReviewReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Review[] @relation("ReviewReplies")
+
+  @@index([userId])
+  @@index([subjectType, subjectId])
+}
+
+/// A visa application (the e-VOA service).
+model VisaApplication {
+  id             String   @id @default(uuid())
+  /// A human readable application number.
+  code           String   @unique
+  userId         String?
+  productId      String?
+  fullName       String
+  passportNumber String
+  nationality    String
+  dateOfBirth    DateTime
+  arrivalDate    DateTime
+  email          String
+  phone          String
+  /// "submitted" | "processing" | "approved" | "rejected"
+  status         String   @default("submitted")
+  note           String?
+  totalUsdCents  Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
+
+/// A promo code that cuts the price — either a fixed amount (USD cents) or a
+/// percentage of the subtotal.
+model PromoCode {
+  id               String    @id @default(uuid())
+  code             String    @unique
+  title            String
+  /// "fixed" | "percentage"
+  type             String    @default("percentage")
+  /// Fixed → USD cents. Percentage → 0-100.
+  value            Int       @default(0)
+  minTotalUsdCents Int       @default(0)
+  usageLimit       Int?
+  usedCount        Int       @default(0)
+  startsAt         DateTime?
+  endsAt           DateTime?
+  active           Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+
+  @@index([active])
 }
 
 /// Searches submitted from the home page form.
@@ -234,6 +352,23 @@ model Booking {
   fxRate          Float     @default(1)
   /// Firebase UID of the signed-in user (null for guest bookings).
   userId          String?
+  /// The invoice number — `#INV/YYYY/MM/DD/4DIGIT/2RANDOM`.
+  invoiceNumber   String?   @unique
+  /// The promo code that was applied.
+  promoCode       String?
+  /// The discount that was applied (USD cents).
+  discountUsdCents Int      @default(0)
+  /// The tax lines that were applied — [{ key, label, value }].
+  taxes           Json      @default("[]")
+  taxUsdCents     Int       @default(0)
+  /// The pickup point of a transport booking (address + coordinates).
+  pickupLabel     String?
+  pickupLat       Float?
+  pickupLng       Float?
+  /// The dropoff point of a transport booking (address + coordinates).
+  dropoffLabel    String?
+  dropoffLat      Float?
+  dropoffLng      Float?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

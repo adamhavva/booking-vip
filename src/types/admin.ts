@@ -106,6 +106,22 @@ export type AdminAmenityRow = {
   productCount: number;
 };
 
+export type AdminPromoCodeRow = {
+  id: string;
+  code: string;
+  title: string;
+  /** "fixed" | "percentage". */
+  type: string;
+  /** Fixed → USD cents. Percentage → 0-100. */
+  value: number;
+  minTotalUsdCents: number;
+  usageLimit: number | null;
+  usedCount: number;
+  startsAt: string | null;
+  endsAt: string | null;
+  active: boolean;
+};
+
 export type AdminStats = {
   products: number;
   activeProducts: number;

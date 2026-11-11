@@ -141,7 +141,7 @@ export default function BookingWizard() {
     });
   }, [selectedAddOns, product]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (promoCode?: string) => {
     if (!product || !selectedPackage) return;
 
     // Guard against missing/invalid date/time BEFORE constructing the ISO
@@ -176,6 +176,7 @@ export default function BookingWizard() {
       travelers,
       currencyCode: currency,
       fxRate,
+      promoCode,
     });
 
     setIsSubmitting(false);
@@ -250,6 +251,7 @@ export default function BookingWizard() {
               onBack={() => setStep("details")}
               isSubmitting={isSubmitting}
               error={submitError}
+              subtotalUsdCents={Math.round(total * 100)}
             />
           )}
           {step === "result" && bookingCode && (

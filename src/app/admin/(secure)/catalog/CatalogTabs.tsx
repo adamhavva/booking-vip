@@ -11,6 +11,7 @@ const TABS = [
   { href: "/admin/catalog/places", label: "Place" },
   { href: "/admin/catalog/service-lines", label: "Service Line" },
   { href: "/admin/catalog/amenities", label: "Amenity" },
+  { href: "/admin/catalog/promos", label: "Promo" },
 ];
 
 /** Tab navigation of the catalog section. */

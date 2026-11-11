@@ -470,6 +470,12 @@ const settingValues: Record<string, unknown> = {
     "22:00",
   ],
   "search.placeholders": { en: searchPlaceholders, id: searchPlaceholders },
+
+  // Taxes — key → value. A value ending with "%" is a percentage of the
+  // subtotal, a value starting with "$" is a fixed amount in USD.
+  "pph12": "11%",
+  "pph11": "9%",
+  "service_fee": "$1",
 };
 
 export async function seedSettings(counts: SeedCounts) {

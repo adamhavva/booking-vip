@@ -10,6 +10,7 @@ import {
   upsertPackage,
   upsertPriceTier,
   upsertProduct,
+  upsertPromoCode,
   upsertServiceLine,
   upsertServiceType,
 } from "./admin";
@@ -39,7 +40,8 @@ export type AdminEntityTable =
   | "priceTier"
   | "place"
   | "serviceLine"
-  | "amenity";
+  | "amenity"
+  | "promoCode";
 
 export type AdminSaveResult =
   | { ok: true; message: string }
@@ -57,6 +59,7 @@ const LABELS: Record<AdminEntityTable, string> = {
   place: "Place",
   serviceLine: "Service line",
   amenity: "Amenity",
+  promoCode: "Promo",
 };
 
 /**
@@ -101,6 +104,14 @@ function asStringArray(value: unknown): string[] {
   return value.map((item) => String(item).trim()).filter(Boolean);
 }
 
+/** Parse a `datetime-local` (or ISO) input into a Date — null when empty. */
+function parseDateInput(value: unknown): Date | null {
+  const text = asString(value);
+  if (!text) return null;
+  const date = new Date(text);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
 function fail(field: string, error: string): AdminSaveResult {
   return { ok: false, error, field };
 }
@@ -122,6 +133,9 @@ function explainError(message: string): { error: string; field?: string } {
   if (lower.includes("slug")) return { field: "slug", error: "Slug sudah dipakai data lain." };
   if (lower.includes("iata")) return { field: "iataCode", error: "Kode IATA sudah dipakai place lain." };
   if (lower.includes("label")) return { field: "label", error: "Label sudah dipakai data lain." };
+  if (lower.includes("code already used")) {
+    return { field: "code", error: "Kode promo sudah dipakai promo lain." };
+  }
   if (lower.includes("line not found")) return { field: "lineId", error: "Service line tidak ditemukan." };
   if (lower.includes("product not found")) return { field: "productId", error: "Produk tidak ditemukan." };
   if (lower.includes("parent place not found")) {
@@ -344,6 +358,40 @@ export async function saveAdminEntity(input: {
         return { ok: true, message: `Amenity berhasil disimpan.` };
       }
 
+      case "promoCode": {
+        const code = asString(values.code);
+        const title = asString(values.title);
+        const type = asString(values.type) === "fixed" ? "fixed" : "percentage";
+
+        if (!code) return fail("code", "Kode promo wajib diisi.");
+        if (!title) return fail("title", "Judul promo wajib diisi.");
+
+        // "fixed" → USD cents, "percentage" → 0-100.
+        const value =
+          type === "fixed"
+            ? asNumber(values.valueUsdCents) ?? 0
+            : asNumber(values.valuePercent) ?? 0;
+
+        if (type === "percentage" && (value < 0 || value > 100)) {
+          return fail("valuePercent", "Diskon persen harus antara 0 dan 100.");
+        }
+
+        await upsertPromoCode({
+          id,
+          code,
+          title,
+          type,
+          value: Math.trunc(value),
+          minTotalUsdCents: asNumber(values.minTotalUsdCents) ?? 0,
+          usageLimit: asNumber(values.usageLimit),
+          startsAt: parseDateInput(values.startsAt),
+          endsAt: parseDateInput(values.endsAt),
+          active: asBoolean(values.active),
+        });
+
+        return { ok: true, message: `Promo berhasil disimpan.` };
+      }
+
       default:
         return { ok: false, error: "Jenis data tidak dikenal." };
     }
@@ -393,6 +441,10 @@ export async function getAdminEntityName(input: {
     case "amenity": {
       const row = await db.orm.public.Amenity.select("label").where({ id: input.id }).first();
       return row?.label ?? null;
+    }
+    case "promoCode": {
+      const row = await db.orm.public.PromoCode.select("code").where({ id: input.id }).first();
+      return row?.code ?? null;
     }
     default:
       return null;
@@ -550,6 +602,13 @@ export async function deleteAdminEntity(input: {
       case "amenity": {
         await db.orm.public.ProductAmenity.where((f) => f.amenityId.eq(id)).deleteAll();
         await db.orm.public.Amenity.where((f) => f.id.eq(id)).deleteAll();
+        break;
+      }
+
+      case "promoCode": {
+        // Bookings only store the promo *code* as text, so nothing else
+        // has to be cleaned up.
+        await db.orm.public.PromoCode.where((f) => f.id.eq(id)).deleteAll();
         break;
       }
 

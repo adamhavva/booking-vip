@@ -24,6 +24,7 @@ const catalogItems: NavItem[] = [
   { href: "/admin/catalog/places", label: "Place", icon: <MapPinIcon width={16} height={16} /> },
   { href: "/admin/catalog/service-lines", label: "Service Line", icon: <LayersIcon width={16} height={16} /> },
   { href: "/admin/catalog/amenities", label: "Amenity", icon: <TagIcon width={16} height={16} /> },
+  { href: "/admin/catalog/promos", label: "Promo", icon: <TagIcon width={16} height={16} /> },
 ];
 
 function isActive(pathname: string, href: string) {

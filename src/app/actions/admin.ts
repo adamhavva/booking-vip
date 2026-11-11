@@ -10,6 +10,7 @@ import type {
   AdminPlaceRow,
   AdminPriceTierRow,
   AdminProductRow,
+  AdminPromoCodeRow,
   AdminReferenceData,
   AdminServiceLineRow,
   AdminServiceTypeRow,
@@ -1301,4 +1302,110 @@ export async function getProductRelations(input: {
     amenityIds: amenities.map((a) => a.amenityId),
     addOnIds: addOns.map((a) => a.addOnId),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Promo codes
+// ---------------------------------------------------------------------------
+
+/** All promo codes, newest first. */
+export async function listPromoCodes(): Promise<AdminPromoCodeRow[]> {
+  await assertAdmin();
+
+  const rows = await db.orm.public.PromoCode
+    .select(
+      "id",
+      "code",
+      "title",
+      "type",
+      "value",
+      "minTotalUsdCents",
+      "usageLimit",
+      "usedCount",
+      "startsAt",
+      "endsAt",
+      "active"
+    )
+    .orderBy((f) => f.createdAt.desc())
+    .all();
+
+  return rows.map((r) => ({
+    id: r.id,
+    code: r.code,
+    title: r.title,
+    type: r.type,
+    value: r.value,
+    minTotalUsdCents: r.minTotalUsdCents,
+    usageLimit: r.usageLimit ?? null,
+    usedCount: r.usedCount,
+    startsAt: r.startsAt ? new Date(r.startsAt).toISOString() : null,
+    endsAt: r.endsAt ? new Date(r.endsAt).toISOString() : null,
+    active: r.active,
+  }));
+}
+
+/**
+ * Create or update a promo code.
+ *
+ * `type` decides what `value` means: "fixed" → USD cents, "percentage" →
+ * 0-100.
+ */
+export async function upsertPromoCode(input: {
+  id?: string;
+  code: string;
+  title: string;
+  type: "fixed" | "percentage";
+  value: number;
+  minTotalUsdCents?: number;
+  usageLimit?: number | null;
+  startsAt?: Date | null;
+  endsAt?: Date | null;
+  active?: boolean;
+}): Promise<{ ok: true }> {
+  await assertAdmin();
+
+  const code = input.code.trim().toUpperCase();
+  const title = input.title.trim();
+
+  if (!code) throw new Error("code is required");
+  if (!title) throw new Error("title is required");
+  if (!/^[A-Z0-9_-]{3,32}$/.test(code)) {
+    throw new Error("code must be 3-32 characters (A-Z, 0-9, - or _)");
+  }
+  if (!Number.isInteger(input.value) || input.value < 0) {
+    throw new Error("value must be an integer >= 0");
+  }
+  if (input.type === "percentage" && input.value > 100) {
+    throw new Error("percentage value must be between 0 and 100");
+  }
+
+  const minTotalUsdCents = input.minTotalUsdCents ?? 0;
+  const usageLimit = input.usageLimit ?? null;
+
+  const existing = input.id
+    ? await db.orm.public.PromoCode.select("id").where({ id: input.id }).first()
+    : undefined;
+
+  const codeOwner = await db.orm.public.PromoCode.select("id").where({ code }).first();
+  assertNaturalKeyFree(codeOwner, existing, "code already used");
+
+  const data = {
+    code,
+    title,
+    type: input.type,
+    value: input.value,
+    minTotalUsdCents,
+    usageLimit,
+    startsAt: input.startsAt ?? null,
+    endsAt: input.endsAt ?? null,
+    active: input.active ?? true,
+  };
+
+  if (existing) {
+    await db.orm.public.PromoCode.where({ id: existing.id }).update(data);
+  } else {
+    await db.orm.public.PromoCode.create({ id: input.id ?? crypto.randomUUID(), ...data });
+  }
+
+  return { ok: true };
 }

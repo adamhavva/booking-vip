@@ -29,6 +29,8 @@ export type CreateBookingInput = {
   // Currency snapshot at time of booking
   currencyCode: string;
   fxRate: number;
+  /** The promo code the customer entered (optional). */
+  promoCode?: string;
 };
 
 export type CreateBookingResult =

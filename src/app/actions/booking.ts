@@ -2,6 +2,9 @@
 
 import { db } from "@/prisma/db";
 import { getUserSession } from "@/lib/user/session";
+import { checkPromo, markPromoUsed } from "@/lib/promo";
+import { computeTaxesFor } from "@/lib/tax";
+import { generateInvoiceNumber } from "@/lib/invoice";
 import type {
   BookingLookupDTO,
   BookingLookupResult,
@@ -37,6 +40,20 @@ async function generateUniqueCode(): Promise<string | null> {
     const code = generateBookingCode();
     const exists = await codeExists(code);
     if (!exists) return code;
+  }
+  return null;
+}
+
+/** Generate an invoice number that is not taken yet. */
+async function generateUniqueInvoiceNumber(): Promise<string | null> {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const number = generateInvoiceNumber();
+    const existing = await db.orm.public.Booking
+      .select("id")
+      .where((f) => f.invoiceNumber.eq(number))
+      .limit(1)
+      .all();
+    if (existing.length === 0) return number;
   }
   return null;
 }
@@ -213,12 +230,38 @@ export async function createBooking(
       }
     }
 
-    const totalUsdCents = subtotalUsdCents + addOnsUsdCents;
+    const grossUsdCents = subtotalUsdCents + addOnsUsdCents;
+
+    // Apply the promo code (if any). The discount can never exceed the total.
+    let discountUsdCents = 0;
+    let appliedPromoId: string | null = null;
+
+    const promoInput = input.promoCode?.trim();
+    if (promoInput) {
+      const check = await checkPromo(promoInput, grossUsdCents);
+      if (!check.ok) {
+        return { ok: false, error: check.error };
+      }
+      discountUsdCents = check.discountUsdCents;
+      appliedPromoId = check.promo.id;
+    }
+
+    // Taxes are computed on the discounted amount.
+    const taxableUsdCents = Math.max(0, grossUsdCents - discountUsdCents);
+    const taxes = await computeTaxesFor(taxableUsdCents);
+
+    const totalUsdCents = taxableUsdCents + taxes.totalUsdCents;
 
     // Generate unique code
     const code = await generateUniqueCode();
     if (!code) {
       return { ok: false, error: "Could not generate unique booking code. Please try again." };
+    }
+
+    // The invoice number — `#INV/YYYY/MM/DD/4DIGIT/2RANDOM`.
+    const invoiceNumber = await generateUniqueInvoiceNumber();
+    if (!invoiceNumber) {
+      return { ok: false, error: "Could not generate an invoice number. Please try again." };
     }
 
     // Sequential inserts with compensating deletes on failure
@@ -243,6 +286,11 @@ export async function createBooking(
         currencyCode: input.currencyCode,
         fxRate: input.fxRate,
         userId: userSession?.uid ?? null,
+        invoiceNumber,
+        promoCode: appliedPromoId ? promoInput!.toUpperCase() : null,
+        discountUsdCents,
+        taxes: taxes.lines as never,
+        taxUsdCents: taxes.totalUsdCents,
       });
 
       // 2. BookingItem
@@ -337,6 +385,15 @@ export async function createBooking(
         fxRate: input.fxRate,
       });
 
+      // 8. Count the promo usage
+      if (appliedPromoId) {
+        try {
+          await markPromoUsed(appliedPromoId);
+        } catch (usageError) {
+          console.error("[booking] could not count promo usage", usageError);
+        }
+      }
+
       return { ok: true, code };
     } catch (insertError) {
       // Compensating deletes
@@ -359,6 +416,33 @@ export async function createBooking(
     const message = error instanceof Error ? error.message : "Unknown error";
     return { ok: false, error: message };
   }
+}
+
+/**
+ * Check a promo code without booking anything.
+ *
+ * Used by the payment step so the customer sees the discount (and any
+ * problem with the code) before they confirm.
+ */
+export async function validatePromoCode(
+  code: string,
+  subtotalUsdCents: number,
+): Promise<
+  | { ok: true; code: string; title: string; discountUsdCents: number }
+  | { ok: false; error: string }
+> {
+  const trimmed = code.trim();
+  if (!trimmed) return { ok: false, error: "Kode promo wajib diisi." };
+
+  const check = await checkPromo(trimmed, subtotalUsdCents);
+  if (!check.ok) return { ok: false, error: check.error };
+
+  return {
+    ok: true,
+    code: check.promo.code,
+    title: check.promo.title,
+    discountUsdCents: check.discountUsdCents,
+  };
 }
 
 /**

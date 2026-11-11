@@ -60,6 +60,10 @@
       "model": "FlightDetails",
       "namespace": "public"
     },
+    "LoyaltyLevel": {
+      "model": "LoyaltyLevel",
+      "namespace": "public"
+    },
     "Media": {
       "model": "Media",
       "namespace": "public"
@@ -96,6 +100,18 @@
       "model": "Promo",
       "namespace": "public"
     },
+    "PromoCode": {
+      "model": "PromoCode",
+      "namespace": "public"
+    },
+    "Review": {
+      "model": "Review",
+      "namespace": "public"
+    },
+    "SavedCard": {
+      "model": "SavedCard",
+      "namespace": "public"
+    },
     "SearchField": {
       "model": "SearchField",
       "namespace": "public"
@@ -130,6 +146,10 @@
     },
     "User": {
       "model": "User",
+      "namespace": "public"
+    },
+    "VisaApplication": {
+      "model": "VisaApplication",
       "namespace": "public"
     }
   },
@@ -752,6 +772,34 @@
                   "kind": "scalar"
                 }
               },
+              "discountUsdCents": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "dropoffLabel": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "dropoffLat": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "dropoffLng": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
               "fxRate": {
                 "nullable": false,
                 "type": {
@@ -770,6 +818,41 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "invoiceNumber": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "pickupLabel": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "pickupLat": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "pickupLng": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "promoCode": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -794,6 +877,20 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxUsdCents": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/jsonb@1",
                   "kind": "scalar"
                 }
               },
@@ -952,6 +1049,18 @@
                 "currencyCode": {
                   "column": "currencyCode"
                 },
+                "discountUsdCents": {
+                  "column": "discountUsdCents"
+                },
+                "dropoffLabel": {
+                  "column": "dropoffLabel"
+                },
+                "dropoffLat": {
+                  "column": "dropoffLat"
+                },
+                "dropoffLng": {
+                  "column": "dropoffLng"
+                },
                 "fxRate": {
                   "column": "fxRate"
                 },
@@ -961,6 +1070,21 @@
                 "infantCount": {
                   "column": "infantCount"
                 },
+                "invoiceNumber": {
+                  "column": "invoiceNumber"
+                },
+                "pickupLabel": {
+                  "column": "pickupLabel"
+                },
+                "pickupLat": {
+                  "column": "pickupLat"
+                },
+                "pickupLng": {
+                  "column": "pickupLng"
+                },
+                "promoCode": {
+                  "column": "promoCode"
+                },
                 "serviceAt": {
                   "column": "serviceAt"
                 },
@@ -969,6 +1093,12 @@
                 },
                 "subtotalUsdCents": {
                   "column": "subtotalUsdCents"
+                },
+                "taxUsdCents": {
+                  "column": "taxUsdCents"
+                },
+                "taxes": {
+                  "column": "taxes"
                 },
                 "totalUsdCents": {
                   "column": "totalUsdCents"
@@ -1853,6 +1983,113 @@
               },
               "namespaceId": "public",
               "table": "FlightDetails"
+            }
+          },
+          "LoyaltyLevel": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "benefits": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "minPoints": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "multiplier": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sortOrder": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "users": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "levelId"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "benefits": {
+                  "column": "benefits"
+                },
+                "code": {
+                  "column": "code"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "minPoints": {
+                  "column": "minPoints"
+                },
+                "multiplier": {
+                  "column": "multiplier"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "sortOrder": {
+                  "column": "sortOrder"
+                }
+              },
+              "namespaceId": "public",
+              "table": "LoyaltyLevel"
             }
           },
           "Media": {
@@ -3166,6 +3403,439 @@
               "table": "Promo"
             }
           },
+          "PromoCode": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "endsAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "minTotalUsdCents": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "startsAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "title": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "usageLimit": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "usedCount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "value": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "code": {
+                  "column": "code"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "endsAt": {
+                  "column": "endsAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "minTotalUsdCents": {
+                  "column": "minTotalUsdCents"
+                },
+                "startsAt": {
+                  "column": "startsAt"
+                },
+                "title": {
+                  "column": "title"
+                },
+                "type": {
+                  "column": "type"
+                },
+                "usageLimit": {
+                  "column": "usageLimit"
+                },
+                "usedCount": {
+                  "column": "usedCount"
+                },
+                "value": {
+                  "column": "value"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PromoCode"
+            }
+          },
+          "Review": {
+            "fields": {
+              "body": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "likes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "parentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rating": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "subjectId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "subjectType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "views": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "parent": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "parentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Review",
+                  "namespace": "public"
+                }
+              },
+              "replies": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "parentId"
+                  ]
+                },
+                "to": {
+                  "model": "Review",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "body": {
+                  "column": "body"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "likes": {
+                  "column": "likes"
+                },
+                "parentId": {
+                  "column": "parentId"
+                },
+                "rating": {
+                  "column": "rating"
+                },
+                "subjectId": {
+                  "column": "subjectId"
+                },
+                "subjectType": {
+                  "column": "subjectType"
+                },
+                "userId": {
+                  "column": "userId"
+                },
+                "views": {
+                  "column": "views"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Review"
+            }
+          },
+          "SavedCard": {
+            "fields": {
+              "brand": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "encryptedNumber": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "expMonth": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "expYear": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "holderName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "isDefault": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "last4": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "brand": {
+                  "column": "brand"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "encryptedNumber": {
+                  "column": "encryptedNumber"
+                },
+                "expMonth": {
+                  "column": "expMonth"
+                },
+                "expYear": {
+                  "column": "expYear"
+                },
+                "holderName": {
+                  "column": "holderName"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "isDefault": {
+                  "column": "isDefault"
+                },
+                "last4": {
+                  "column": "last4"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "SavedCard"
+            }
+          },
           "SearchField": {
             "fields": {
               "active": {
@@ -4095,6 +4765,13 @@
                   "kind": "scalar"
                 }
               },
+              "levelId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "name": {
                 "nullable": true,
                 "type": {
@@ -4106,6 +4783,13 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "points": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -4142,6 +4826,67 @@
                   "model": "Booking",
                   "namespace": "public"
                 }
+              },
+              "level": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "levelId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "LoyaltyLevel",
+                  "namespace": "public"
+                }
+              },
+              "reviews": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "Review",
+                  "namespace": "public"
+                }
+              },
+              "savedCards": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "SavedCard",
+                  "namespace": "public"
+                }
+              },
+              "visaApplications": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "VisaApplication",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -4158,11 +4903,17 @@
                 "id": {
                   "column": "id"
                 },
+                "levelId": {
+                  "column": "levelId"
+                },
                 "name": {
                   "column": "name"
                 },
                 "phone": {
                   "column": "phone"
+                },
+                "points": {
+                  "column": "points"
                 },
                 "role": {
                   "column": "role"
@@ -4173,6 +4924,193 @@
               },
               "namespaceId": "public",
               "table": "User"
+            }
+          },
+          "VisaApplication": {
+            "fields": {
+              "arrivalDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "dateOfBirth": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "email": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fullName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nationality": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "passportNumber": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "phone": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "totalUsdCents": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "user": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "arrivalDate": {
+                  "column": "arrivalDate"
+                },
+                "code": {
+                  "column": "code"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "dateOfBirth": {
+                  "column": "dateOfBirth"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "fullName": {
+                  "column": "fullName"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "nationality": {
+                  "column": "nationality"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "passportNumber": {
+                  "column": "passportNumber"
+                },
+                "phone": {
+                  "column": "phone"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "totalUsdCents": {
+                  "column": "totalUsdCents"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "VisaApplication"
             }
           }
         }
@@ -4631,6 +5569,30 @@
                   },
                   "nullable": false
                 },
+                "discountUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                },
+                "dropoffLabel": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "dropoffLat": {
+                  "codecId": "pg/float8@1",
+                  "dataType": "pg/float8",
+                  "nullable": true
+                },
+                "dropoffLng": {
+                  "codecId": "pg/float8@1",
+                  "dataType": "pg/float8",
+                  "nullable": true
+                },
                 "fxRate": {
                   "codecId": "pg/float8@1",
                   "dataType": "pg/float8",
@@ -4654,6 +5616,31 @@
                   },
                   "nullable": false
                 },
+                "invoiceNumber": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "pickupLabel": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "pickupLat": {
+                  "codecId": "pg/float8@1",
+                  "dataType": "pg/float8",
+                  "nullable": true
+                },
+                "pickupLng": {
+                  "codecId": "pg/float8@1",
+                  "dataType": "pg/float8",
+                  "nullable": true
+                },
+                "promoCode": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "serviceAt": {
                   "codecId": "pg/timestamp-date@1",
                   "dataType": "pg/timestamp",
@@ -4674,6 +5661,24 @@
                 "subtotalUsdCents": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "taxUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                },
+                "taxes": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
                   "nullable": false
                 },
                 "totalUsdCents": {
@@ -4732,6 +5737,13 @@
                   ],
                   "name": "Booking_createdAt_idx",
                   "unique": false
+                },
+                {
+                  "columns": [
+                    "invoiceNumber"
+                  ],
+                  "name": "Booking_invoiceNumber_key",
+                  "unique": true
                 },
                 {
                   "columns": [
@@ -5390,6 +6402,86 @@
                     "bookingId"
                   ],
                   "name": "FlightDetails_bookingId_key",
+                  "unique": true
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "LoyaltyLevel": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "dataType": "pg/bool",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nullable": false
+                },
+                "benefits": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "nullable": false
+                },
+                "code": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "minPoints": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                },
+                "multiplier": {
+                  "codecId": "pg/float8@1",
+                  "dataType": "pg/float8",
+                  "default": {
+                    "kind": "literal",
+                    "value": 1
+                  },
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "sortOrder": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "code"
+                  ],
+                  "name": "LoyaltyLevel_code_key",
                   "unique": true
                 }
               ],
@@ -6373,6 +7465,374 @@
               },
               "uniques": []
             },
+            "PromoCode": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "dataType": "pg/bool",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nullable": false
+                },
+                "code": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "endsAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "minTotalUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                },
+                "startsAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "percentage"
+                  },
+                  "nullable": false
+                },
+                "usageLimit": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
+                },
+                "usedCount": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                },
+                "value": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "active"
+                  ],
+                  "name": "PromoCode_active_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "code"
+                  ],
+                  "name": "PromoCode_code_key",
+                  "unique": true
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Review": {
+              "columns": {
+                "body": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "likes": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                },
+                "parentId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "rating": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 5
+                  },
+                  "nullable": false
+                },
+                "subjectId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "subjectType": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "product"
+                  },
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "views": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "Review_userId_idx"
+                  },
+                  "onDelete": "cascade",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Review"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "parentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Review"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Review"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "subjectType",
+                    "subjectId"
+                  ],
+                  "name": "Review_subjectType_subjectId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "Review_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "SavedCard": {
+              "columns": {
+                "brand": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "card"
+                  },
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "encryptedNumber": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "expMonth": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "expYear": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "holderName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "isDefault": {
+                  "codecId": "pg/bool@1",
+                  "dataType": "pg/bool",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nullable": false
+                },
+                "last4": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "SavedCard_userId_idx"
+                  },
+                  "onDelete": "cascade",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SavedCard"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "SavedCard_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "SearchField": {
               "columns": {
                 "active": {
@@ -7043,6 +8503,11 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
+                "levelId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "name": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -7052,6 +8517,15 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
+                },
+                "points": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
                 },
                 "role": {
                   "codecId": "pg/text@1",
@@ -7071,7 +8545,26 @@
                   }
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "setNull",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "levelId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "LoyaltyLevel"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -7087,6 +8580,151 @@
                 ]
               },
               "uniques": []
+            },
+            "VisaApplication": {
+              "columns": {
+                "arrivalDate": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "code": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "dateOfBirth": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "fullName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "nationality": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "passportNumber": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "phone": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "submitted"
+                  },
+                  "nullable": false
+                },
+                "totalUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "VisaApplication_userId_idx"
+                  },
+                  "onDelete": "setNull",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "VisaApplication"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "code"
+                  ],
+                  "name": "VisaApplication_code_key",
+                  "unique": true
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "VisaApplication_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
             }
           }
         },
@@ -7094,10 +8732,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "fc159a72fe4bd77736ae5628abd5225f4a991590534c03b2c02ca6af7cd4d7ba"
+    "storageHash": "c126069b4daa98e6cc4ba6c3a8a249672ea57d8742f08fff0512ea631e0ef2bb"
   },
   "execution": {
-    "executionHash": "84d68abef1280b201acabdf3a15b71d59ada2f426317c13aef607b60ab004b4b",
+    "executionHash": "1e659c62b95e04d77e3556ba5e8735eb1bd10a675be63382e9cabc8cd7744c12",
     "mutations": {
       "defaults": [
         {
@@ -7283,6 +8921,17 @@
         },
         {
           "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "LoyaltyLevel",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
             "id": "timestampNow",
             "kind": "generator",
             "params": {
@@ -7445,6 +9094,81 @@
         },
         {
           "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "ref": {
+            "entry": "PromoCode",
+            "field": "createdAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PromoCode",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "ref": {
+            "entry": "Review",
+            "field": "createdAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Review",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "ref": {
+            "entry": "SavedCard",
+            "field": "createdAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "SavedCard",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
             "id": "uuidv4",
             "kind": "generator"
           },
@@ -7587,6 +9311,31 @@
           "ref": {
             "entry": "User",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "ref": {
+            "entry": "VisaApplication",
+            "field": "createdAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "VisaApplication",
+            "field": "id",
             "namespace": "public"
           }
         }

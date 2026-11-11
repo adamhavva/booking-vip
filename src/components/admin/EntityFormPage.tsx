@@ -201,7 +201,13 @@ function EntityForm({
 
       <div className={`${adminClass.panel} p-5 sm:p-6`}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {fields.map((f) => (
+          {fields
+            .filter(
+              (f) =>
+                !f.visibleWhen ||
+                values[f.visibleWhen.name] === f.visibleWhen.equals,
+            )
+            .map((f) => (
             <Field
               key={f.name}
               label={f.label}

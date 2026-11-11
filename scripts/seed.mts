@@ -816,6 +816,76 @@ async function seedCurrencies() {
   }
 }
 
+// ---------- LoyaltyLevel ----------
+const loyaltyLevels = [
+  {
+    code: "MEMBER",
+    name: "Member",
+    minPoints: 0,
+    multiplier: 1,
+    benefits: ["Akses promo member", "Pembaruan pesanan via WhatsApp"],
+    sortOrder: 0,
+  },
+  {
+    code: "SILVER",
+    name: "Silver",
+    minPoints: 1000,
+    multiplier: 1.05,
+    benefits: ["Diskon tambahan 2%", "Prioritas customer service"],
+    sortOrder: 1,
+  },
+  {
+    code: "GOLD",
+    name: "Gold",
+    minPoints: 5000,
+    multiplier: 1.1,
+    benefits: ["Diskon tambahan 5%", "Gratis upgrade kendaraan", "Priority support"],
+    sortOrder: 2,
+  },
+  {
+    code: "PLATINUM",
+    name: "Platinum",
+    minPoints: 15000,
+    multiplier: 1.2,
+    benefits: [
+      "Diskon tambahan 10%",
+      "Gratis upgrade kendaraan",
+      "Airport meet & greet premium",
+      "Priority support 24/7",
+    ],
+    sortOrder: 3,
+  },
+];
+
+async function seedLoyaltyLevels() {
+  for (const level of loyaltyLevels) {
+    const existing = await db.orm.public.LoyaltyLevel.select("id").where({ code: level.code }).first();
+    if (existing) {
+      await db.orm.public.LoyaltyLevel.where({ id: existing.id }).update({
+        name: level.name,
+        minPoints: level.minPoints,
+        multiplier: level.multiplier,
+        benefits: level.benefits as never,
+        sortOrder: level.sortOrder,
+        active: true,
+      });
+      bump("LoyaltyLevel", false);
+      continue;
+    }
+    await db.orm.public.LoyaltyLevel.create({
+      id: crypto.randomUUID(),
+      code: level.code,
+      name: level.name,
+      minPoints: level.minPoints,
+      multiplier: level.multiplier,
+      benefits: level.benefits as never,
+      sortOrder: level.sortOrder,
+      active: true,
+    });
+    bump("LoyaltyLevel", true);
+  }
+}
+
 // ---------- main ----------
 async function main() {
   console.log("Seeding booking domain…");
@@ -830,6 +900,7 @@ async function main() {
   await seedAirlines();
   await seedCountries();
   await seedCurrencies();
+  await seedLoyaltyLevels();
 
   console.log("Seeding content…");
   await seedContent(counts, lineIds);
