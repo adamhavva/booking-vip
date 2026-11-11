@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'be6a383c1f98b0c03819fddce1614736301c29225a14dcbef8f026ea0c6de197'>;
+  StorageHashBase<'fc159a72fe4bd77736ae5628abd5225f4a991590534c03b2c02ca6af7cd4d7ba'>;
 export type ExecutionHash =
   ExecutionHashBase<'84d68abef1280b201acabdf3a15b71d59ada2f426317c13aef607b60ab004b4b'>;
 export type ProfileHash =
@@ -326,8 +326,12 @@ export namespace Models {
     imageUrl: FieldOutputTypes['public']['Airport']['imageUrl'];
     kind: FieldOutputTypes['public']['Airport']['kind'];
     name: FieldOutputTypes['public']['Airport']['name'];
+    parentId: FieldOutputTypes['public']['Airport']['parentId'];
+    sortOrder: FieldOutputTypes['public']['Airport']['sortOrder'];
+    children: public_Airport[];
+    parent: public_Airport | null;
     products: public_Product[];
-    readonly [RelationKeys]?: 'products';
+    readonly [RelationKeys]?: 'children' | 'parent' | 'products';
   };
   export type public_Amenity = {
     id: FieldOutputTypes['public']['Amenity']['id'];
@@ -913,6 +917,22 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: false;
                 };
+                readonly parentId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly sortOrder: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                  readonly many: false;
+                };
               };
               primaryKey: { readonly columns: readonly ['id'] };
               uniques: readonly [];
@@ -923,7 +943,20 @@ type ContractBase = Omit<
                   readonly unique: true;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Airport';
+                    readonly columns: readonly ['parentId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Airport';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly Amenity: {
               columns: {
@@ -3707,8 +3740,39 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly parentId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly sortOrder: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
             };
             readonly relations: {
+              readonly children: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Airport';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['parentId'];
+                };
+              };
+              readonly parent: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Airport';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['parentId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
               readonly products: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -3734,6 +3798,8 @@ type ContractBase = Omit<
                 readonly imageUrl: { readonly column: 'imageUrl' };
                 readonly kind: { readonly column: 'kind' };
                 readonly name: { readonly column: 'name' };
+                readonly parentId: { readonly column: 'parentId' };
+                readonly sortOrder: { readonly column: 'sortOrder' };
               };
             };
           };

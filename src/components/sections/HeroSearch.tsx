@@ -27,7 +27,9 @@ import { categories } from "@/data/home";
 import { serviceNav, serviceSearchFields } from "@/data/services";
 import { loadDraft, rememberSearch } from "@/lib/searchDraft";
 import { logSearch } from "@/app/actions/search";
-import { getOptions } from "@/app/actions/catalog";
+import { getOptions, getPlaceOptions } from "@/app/actions/catalog";
+import PlaceOptionList from "@/components/ui/PlaceOptionList";
+import { hasPlaceMatch, type PlaceNode } from "@/lib/places";
 import { useHomeContent, useSearchFields, useServiceLines, useTimeSlots } from "@/lib/useContent";
 import { copyText } from "@/lib/content";
 import type { Category, OptionDTO, SearchFieldIcon, ServiceSearchField } from "@/types";
@@ -88,6 +90,7 @@ function SelectField({
   icon,
   value,
   options,
+  tree,
   onChange,
   searchable,
 }: {
@@ -95,6 +98,8 @@ function SelectField({
   icon: ReactNode;
   value: string;
   options: OptionDTO[];
+  /** The place hierarchy — when present the list is rendered in groups. */
+  tree?: PlaceNode[];
   onChange: (v: string) => void;
   /** Show a search box above the list (used for the long airport list). */
   searchable?: boolean;
@@ -111,6 +116,10 @@ function SelectField({
         o.value.toLowerCase().includes(q)
     );
   }, [options, query]);
+
+  // The grouped list is used for the place dropdowns (airport / city).
+  const hasTree = Boolean(tree && tree.length > 0);
+  const treeEmpty = hasTree && !hasPlaceMatch(tree ?? [], query);
 
   return (
     <FieldShell icon={icon} label={field.label}>
@@ -149,34 +158,53 @@ function SelectField({
               </div>
             )}
 
-            <ul className="max-h-60 overflow-y-auto">
-              {list.map((opt) => (
-                <li key={opt.value}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onChange(opt.label);
-                      close();
-                    }}
-                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-canvas ${
-                      value === opt.label
-                        ? "bg-brand-soft font-semibold text-brand"
-                        : "text-ink"
-                    }`}
-                  >
-                    <span className="truncate">{opt.label}</span>
-                    {value === opt.label && (
-                      <span className="text-xs font-bold text-brand">✓</span>
-                    )}
-                  </button>
-                </li>
-              ))}
-              {list.length === 0 && (
-                <li className="px-3 py-6 text-center text-xs text-muted">
-                  {t("search.noResults")}
-                </li>
-              )}
-            </ul>
+            {hasTree ? (
+              <>
+                <PlaceOptionList
+                  nodes={tree ?? []}
+                  query={query}
+                  selected={value}
+                  onSelect={(v) => {
+                    onChange(v);
+                    close();
+                  }}
+                />
+                {treeEmpty && (
+                  <p className="px-3 py-6 text-center text-xs text-muted">
+                    {t("search.noResults")}
+                  </p>
+                )}
+              </>
+            ) : (
+              <ul className="max-h-60 overflow-y-auto">
+                {list.map((opt) => (
+                  <li key={opt.value}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onChange(opt.label);
+                        close();
+                      }}
+                      className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-canvas ${
+                        value === opt.label
+                          ? "bg-brand-soft font-semibold text-brand"
+                          : "text-ink"
+                      }`}
+                    >
+                      <span className="truncate">{opt.label}</span>
+                      {value === opt.label && (
+                        <span className="text-xs font-bold text-brand">✓</span>
+                      )}
+                    </button>
+                  </li>
+                ))}
+                {list.length === 0 && (
+                  <li className="px-3 py-6 text-center text-xs text-muted">
+                    {t("search.noResults")}
+                  </li>
+                )}
+              </ul>
+            )}
           </div>
         )}
       </Popover>
@@ -233,6 +261,8 @@ export default function HeroSearch() {
     null
   );
   const [options, setOptions] = useState<Record<string, OptionDTO[]>>({});
+  // The place hierarchies (airport / city) — grouped dropdowns.
+  const [placeTrees, setPlaceTrees] = useState<Record<string, PlaceNode[]>>({});
 
   // The service tabs and the fields come from the database; the static copy
   // is the fallback while it loads.
@@ -295,6 +325,22 @@ export default function HeroSearch() {
       }
     }
   }, [fields, lineSlug]);
+
+  // Fetch the place hierarchy for the grouped airport / city dropdowns.
+  useEffect(() => {
+    const kinds = new Set<"airport" | "city">();
+    for (const f of fields) {
+      if (f.kind === "select-airport") kinds.add("airport");
+      else if (f.kind === "select-city") kinds.add("city");
+    }
+
+    for (const kind of kinds) {
+      if (placeTrees[kind]) continue;
+      getPlaceOptions(kind).then((tree) => {
+        setPlaceTrees((prev) => ({ ...prev, [kind]: tree }));
+      });
+    }
+  }, [fields, placeTrees]);
 
   // Restore the last submitted search (persisted on this device).
   useEffect(() => {
@@ -364,9 +410,14 @@ export default function HeroSearch() {
       case "select-service-type":
       case "select-country": {
         let fieldOptions: OptionDTO[] = [];
-        if (f.kind === "select-airport") fieldOptions = options.airport ?? [];
-        else if (f.kind === "select-city") fieldOptions = options.city ?? [];
-        else if (f.kind === "select-country") fieldOptions = options.country ?? [];
+        let tree: PlaceNode[] | undefined;
+        if (f.kind === "select-airport") {
+          fieldOptions = options.airport ?? [];
+          tree = placeTrees.airport;
+        } else if (f.kind === "select-city") {
+          fieldOptions = options.city ?? [];
+          tree = placeTrees.city;
+        } else if (f.kind === "select-country") fieldOptions = options.country ?? [];
         else {
           fieldOptions = options[`serviceType:${lineSlug}`] ?? [];
         }
@@ -378,6 +429,7 @@ export default function HeroSearch() {
             icon={icon}
             value={value}
             options={fieldOptions}
+            tree={tree}
             onChange={(v) => setField(f.key, v)}
             searchable={f.kind === "select-airport"}
           />

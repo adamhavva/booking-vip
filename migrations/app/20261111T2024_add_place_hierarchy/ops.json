@@ -1,0 +1,184 @@
+[
+  {
+    "id": "column.public.Airport.parentId",
+    "label": "Add column \"parentId\" to \"Airport\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "parentId",
+        "table": "Airport"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"parentId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "parentId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"parentId\" on \"Airport\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"parentId\"",
+        "sql": "ALTER TABLE \"public\".\"Airport\" ADD COLUMN \"parentId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"parentId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "parentId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"parentId\" on \"Airport\""
+        }
+      },
+      {
+        "description": "verify column \"parentId\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "parentId",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Airport.sortOrder",
+    "label": "Add column \"sortOrder\" to \"Airport\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sortOrder",
+        "table": "Airport"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sortOrder\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "sortOrder"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"sortOrder\" on \"Airport\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sortOrder\"",
+        "sql": "ALTER TABLE \"public\".\"Airport\" ADD COLUMN \"sortOrder\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sortOrder\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "sortOrder"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"sortOrder\" on \"Airport\""
+        }
+      },
+      {
+        "description": "verify column \"sortOrder\" has type \"integer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "sortOrder",
+          "integer"
+        ]
+      },
+      {
+        "description": "verify column \"sortOrder\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "sortOrder",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Airport.Airport_parentId_fkey",
+    "label": "Add foreign key \"Airport_parentId_fkey\" on \"Airport\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Airport_parentId_fkey",
+        "table": "Airport"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Airport_parentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Airport_parentId_fkey",
+          "public",
+          "\"public\".\"Airport\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"Airport_parentId_fkey\" on \"Airport\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Airport_parentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Airport\"\nADD CONSTRAINT \"Airport_parentId_fkey\"\nFOREIGN KEY (\"parentId\")\nREFERENCES \"public\".\"Airport\" (\"id\")\nON DELETE SET NULL\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Airport_parentId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "Airport_parentId_fkey",
+          "public",
+          "\"public\".\"Airport\"",
+          "f",
+          "[\"parentId\"]",
+          "\"public\".\"Airport\"",
+          "[\"id\"]",
+          "n",
+          "c"
+        ]
+      }
+    ]
+  }
+]

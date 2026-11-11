@@ -78,6 +78,12 @@ export type AdminPlaceRow = {
   country: string;
   imageUrl: string | null;
   active: boolean;
+  /** The parent place (null for a root of the hierarchy). */
+  parentId: string | null;
+  /** The name of the parent place, for display. */
+  parentName: string | null;
+  /** Sort order inside the parent group. */
+  sortOrder: number;
   productCount: number;
 };
 

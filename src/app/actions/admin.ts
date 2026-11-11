@@ -2,6 +2,7 @@
 
 import { db } from "@/prisma/db";
 import { getAdminSession } from "@/lib/admin/session";
+import { descendantPlaceIds } from "@/lib/places";
 import type {
   AdminAmenityRow,
   AdminOption,
@@ -145,6 +146,10 @@ export async function upsertAirport(input: {
   country?: string;
   imageUrl?: string | null;
   active?: boolean;
+  /** The parent place — `null` makes the place a root of the hierarchy. */
+  parentId?: string | null;
+  /** Sort order inside the parent group (lower comes first). */
+  sortOrder?: number;
 }): Promise<{ ok: true }> {
   await assertAdmin();
   assertNonEmptyString(input.name, "name");
@@ -158,6 +163,9 @@ export async function upsertAirport(input: {
   assertNonEmptyString(country, "country");
   const active = input.active ?? true;
   assertBool(active, "active");
+
+  const sortOrder = input.sortOrder ?? 0;
+  assertIntGte(sortOrder, "sortOrder", 0);
 
   // Editing targets the supplied row; creating always makes a new one.
   const existing = input.id
@@ -176,6 +184,28 @@ export async function upsertAirport(input: {
     assertNaturalKeyFree(iataOwner, existing, "iata code already used");
   }
 
+  const parentId = input.parentId ?? null;
+  if (parentId) {
+    if (existing && parentId === existing.id) {
+      throw new Error("a place cannot be its own parent");
+    }
+    const parent = await db.orm.public.Airport
+      .select("id")
+      .where({ id: parentId })
+      .first();
+    if (!parent) throw new Error("parent place not found");
+    // The parent may not sit below the place being edited.
+    if (existing) {
+      const all = await db.orm.public.Airport
+        .select("id", "parentId")
+        .all();
+      const descendants = descendantPlaceIds(all, existing.id);
+      if (descendants.has(parentId)) {
+        throw new Error("a place cannot be moved below one of its own children");
+      }
+    }
+  }
+
   if (existing) {
     await db.orm.public.Airport
       .where({ id: existing.id })
@@ -187,6 +217,8 @@ export async function upsertAirport(input: {
         country,
         imageUrl: input.imageUrl ?? null,
         active,
+        parentId,
+        sortOrder,
       });
   } else {
     await db.orm.public.Airport.create({
@@ -198,6 +230,8 @@ export async function upsertAirport(input: {
       country,
       imageUrl: input.imageUrl ?? null,
       active,
+      parentId,
+      sortOrder,
     });
   }
 
@@ -797,10 +831,23 @@ export async function listPlaces(): Promise<AdminPlaceRow[]> {
   await assertAdmin();
 
   const rows = await db.orm.public.Airport
-    .select("id", "kind", "iataCode", "name", "city", "country", "imageUrl", "active")
+    .select(
+      "id",
+      "kind",
+      "iataCode",
+      "name",
+      "city",
+      "country",
+      "imageUrl",
+      "active",
+      "parentId",
+      "sortOrder"
+    )
     .include("products", (p) => p.count())
-    .orderBy((f) => f.name.asc())
+    .orderBy((f) => f.sortOrder.asc())
     .all();
+
+  const names = new Map(rows.map((r) => [r.id, r.name]));
 
   return rows.map((r) => ({
     id: r.id,
@@ -811,6 +858,9 @@ export async function listPlaces(): Promise<AdminPlaceRow[]> {
     country: r.country,
     imageUrl: r.imageUrl,
     active: r.active,
+    parentId: r.parentId,
+    parentName: r.parentId ? (names.get(r.parentId) ?? null) : null,
+    sortOrder: r.sortOrder,
     productCount: r.products,
   }));
 }

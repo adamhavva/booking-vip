@@ -252,9 +252,54 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "parentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sortOrder": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
+              "children": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "parentId"
+                  ]
+                },
+                "to": {
+                  "model": "Airport",
+                  "namespace": "public"
+                }
+              },
+              "parent": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "parentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Airport",
+                  "namespace": "public"
+                }
+              },
               "products": {
                 "cardinality": "1:N",
                 "on": {
@@ -299,6 +344,12 @@
                 },
                 "name": {
                   "column": "name"
+                },
+                "parentId": {
+                  "column": "parentId"
+                },
+                "sortOrder": {
+                  "column": "sortOrder"
                 }
               },
               "namespaceId": "public",
@@ -4235,9 +4286,42 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "parentId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "sortOrder": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "setNull",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "parentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Airport"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Airport"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -7010,7 +7094,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "be6a383c1f98b0c03819fddce1614736301c29225a14dcbef8f026ea0c6de197"
+    "storageHash": "fc159a72fe4bd77736ae5628abd5225f4a991590534c03b2c02ca6af7cd4d7ba"
   },
   "execution": {
     "executionHash": "84d68abef1280b201acabdf3a15b71d59ada2f426317c13aef607b60ab004b4b",

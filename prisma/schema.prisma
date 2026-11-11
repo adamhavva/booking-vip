@@ -87,18 +87,27 @@ model ServiceType {
 }
 
 /// Airport or city reference (used by Products for geographic scope).
+/// Places form a hierarchy: a row may point at a parent row through
+/// `parentId` (a city parents the airports below it). The tree is generic —
+/// any place may parent any other place — and drives the grouped dropdowns.
 model Airport {
-  id         String    @id @default(uuid())
+  id          String    @id @default(uuid())
   /// "airport" | "city"
-  kind       String    @default("airport")
-  iataCode   String?   @unique
-  name       String
-  city       String
-  country    String    @default("Indonesia")
-  imageUrl   String?
+  kind        String    @default("airport")
+  iataCode    String?   @unique
+  name        String
+  city        String
+  country     String    @default("Indonesia")
+  imageUrl    String?
   imageCredit String?
-  active     Boolean   @default(true)
-  products   Product[]
+  active      Boolean   @default(true)
+  /// Optional parent place (self relation).
+  parentId    String?
+  parent      Airport?  @relation("PlaceHierarchy", fields: [parentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  children    Airport[] @relation("PlaceHierarchy")
+  /// Sort order inside the parent group (lower comes first).
+  sortOrder   Int       @default(0)
+  products    Product[]
 }
 
 /// A bookable product (VIP service, vehicle, tour package, eVOA plan).

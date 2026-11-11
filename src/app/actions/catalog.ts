@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/prisma/db";
+import { buildPlaceTree, filterPlaceTree, type PlaceNode } from "@/lib/places";
 import type {
   CatalogDTO,
   OptionDTO,
@@ -360,6 +361,30 @@ export async function getOptions(
     return [];
   } catch (error) {
     console.error("[catalog] could not load options", error);
+    return [];
+  }
+}
+
+/**
+ * The place hierarchy, grouped by parent.
+ *
+ * Returns the tree of active places pruned to the requested kind: the
+ * airports grouped under their city, the cities grouped under their parent
+ * (if any). A place without a parent is returned as a root.
+ */
+export async function getPlaceOptions(
+  kind: "airport" | "city",
+): Promise<PlaceNode[]> {
+  try {
+    const rows = await db.orm.public.Airport
+      .select("id", "kind", "iataCode", "name", "city", "country", "parentId", "sortOrder")
+      .where((f) => f.active.eq(true))
+      .orderBy((f) => f.sortOrder.asc())
+      .all();
+
+    return filterPlaceTree(buildPlaceTree(rows), kind);
+  } catch (error) {
+    console.error("[catalog] could not load places", error);
     return [];
   }
 }
