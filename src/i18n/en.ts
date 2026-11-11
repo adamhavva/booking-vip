@@ -28,6 +28,18 @@ export const en = {
   // Recent searches
   "recentSearches.title": "Last searches 🕘",
 
+  // Search form fields
+  "search.airportSearch": "Type to search airports",
+  "search.noResults": "No matches found",
+  "search.date": "Date",
+  "search.time": "Time",
+  "search.done": "Done",
+  "search.selectDateTime": "Select date & time",
+
+  // Passenger counter
+  "pax.title": "Passengers",
+  "pax.done": "Done",
+
   // Service search section (category pages)
   "serviceSearch.yourSearch": "Your search",
   "serviceSearch.lastSaved": "Last saved search",

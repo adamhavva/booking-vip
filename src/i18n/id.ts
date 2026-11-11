@@ -30,6 +30,18 @@ export const id: Record<DictKey, string> = {
   // Recent searches
   "recentSearches.title": "Pencarian terakhir 🕘",
 
+  // Search form fields
+  "search.airportSearch": "Ketik untuk mencari bandara",
+  "search.noResults": "Tidak ada yang cocok",
+  "search.date": "Tanggal",
+  "search.time": "Waktu",
+  "search.done": "Selesai",
+  "search.selectDateTime": "Pilih tanggal & waktu",
+
+  // Passenger counter
+  "pax.title": "Penumpang",
+  "pax.done": "Selesai",
+
   // Service search section
   "serviceSearch.yourSearch": "Pencarian Anda",
   "serviceSearch.lastSaved": "Pencarian terakhir tersimpan",

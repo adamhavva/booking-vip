@@ -13,6 +13,21 @@ export type {
   ProductCardDTO,
   ProductDetailDTO,
 } from "./catalog";
+export type {
+  ArticleDTO,
+  BannerDTO,
+  CopyDTO,
+  CopySectionDTO,
+  DestinationDTO,
+  HomeContentDTO,
+  HomeSectionDTO,
+  PromoDTO,
+  SearchFieldDTO,
+  SeoBlockDTO,
+  SeoLinkDTO,
+  ServiceLineDTO,
+  SettingsDTO,
+} from "./content";
 export type { FooterColumns, LinkItem } from "./common";
 export type { Destination } from "./destination";
 export type { EvoaPlan } from "./evoa";
@@ -26,6 +41,7 @@ export type {
   ServicePage,
   ServicePageSection,
   ServiceSearchField,
+  ServiceSearchFieldKind,
 } from "./service";
 export type { Tour } from "./tour";
 export type { Transport } from "./transport";

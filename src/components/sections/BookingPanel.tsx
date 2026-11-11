@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CheckIcon } from "@/components/icons";
 import type { ServicePage } from "@/types";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { formatDateLabel, localeFor } from "@/lib/format";
 
 /**
  * Sidebar booking panel for the service pages.
@@ -16,9 +17,22 @@ export default function BookingPanel({
   service: ServicePage;
   initial?: Record<string, string>;
 }) {
-  const { t } = useLocale();
+  const { t, lang } = useLocale();
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState(false);
+
+  // The date of the search, with its hour when the form carried one.
+  const rawDate =
+    initial.date ?? initial.startDate ?? initial.arrivalDate ?? initial.datetime ?? "";
+  const rawTime =
+    initial.dateTime ??
+    initial.datetimeTime ??
+    initial.startDateTime ??
+    initial.arrivalDateTime ??
+    "";
+  const dateValue = /^\d{4}-\d{2}-\d{2}/.test(rawDate)
+    ? [formatDateLabel(rawDate, localeFor(lang)), rawTime].filter(Boolean).join(", ")
+    : rawDate;
 
   if (done) {
     return (
@@ -96,9 +110,7 @@ export default function BookingPanel({
           required
           type="text"
           placeholder={t("bookingPanel.date")}
-          defaultValue={
-            initial.date ?? initial.startDate ?? initial.arrivalDate ?? initial.datetime ?? ""
-          }
+          defaultValue={dateValue}
           className="h-10 w-full rounded-lg border border-line bg-white px-3 text-sm text-ink outline-none focus:border-brand"
         />
         <input

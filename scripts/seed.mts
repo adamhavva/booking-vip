@@ -15,6 +15,7 @@ import {
   evoaPlans,
 } from "../src/data/home.ts";
 import { serviceNav } from "../src/data/services.ts";
+import { seedContent } from "./seed-content.mts";
 
 // ---------- tiny helpers ----------
 const counts: Record<string, { created: number; existing: number }> = {};
@@ -38,17 +39,24 @@ async function seedServiceLines(): Promise<Record<string, string>> {
       .select("id")
       .where({ slug })
       .first();
+    const cat = categories[i];
     if (existing) {
       map[slug] = existing.id;
+      // Keep the rail badge in sync with the static copy.
+      if (cat?.badge) {
+        await db.orm.public.ServiceLine
+          .where({ id: existing.id })
+          .update({ badge: cat.badge });
+      }
       bump("ServiceLine", false);
       continue;
     }
-    const cat = categories[i];
     const created = await db.orm.public.ServiceLine.create({
       id: crypto.randomUUID(),
       slug,
       label: s.label,
       short: s.short,
+      badge: cat?.badge ?? null,
       tone: cat?.tone ?? s.tone,
       sortOrder: i,
     });
@@ -822,6 +830,9 @@ async function main() {
   await seedAirlines();
   await seedCountries();
   await seedCurrencies();
+
+  console.log("Seeding content…");
+  await seedContent(counts, lineIds);
 
   console.log("\nCounts (table → created / already-present):");
   for (const [table, c] of Object.entries(counts)) {

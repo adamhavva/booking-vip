@@ -5,7 +5,7 @@ import { PinIcon } from "@/components/icons";
 import Badge from "@/components/ui/Badge";
 import PriceBlock from "@/components/ui/PriceBlock";
 import Rating from "@/components/ui/Rating";
-import Thumb from "@/components/ui/Thumb";
+import CardImage from "@/components/ui/CardImage";
 import { cardShell } from "@/lib/styles";
 import type { ProductCardDTO } from "@/types";
 import { useLocale } from "@/components/providers/LocaleProvider";
@@ -26,7 +26,12 @@ export default function ProductCard({
     <Link href={href} className="block transition-shadow hover:shadow-lg">
       <div className={cardShell}>
         <div className="relative">
-          <Thumb tone={product.tone} className="h-32 w-full" />
+          <CardImage
+            src={product.imageUrl}
+            tone={product.tone}
+            alt={product.title}
+            className="h-32 w-full"
+          />
           {product.ribbon && (
             <Badge variant="danger" className="absolute left-2 top-2">
               {product.ribbon}

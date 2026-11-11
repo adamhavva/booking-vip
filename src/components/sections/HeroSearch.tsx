@@ -6,10 +6,20 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
 import Badge from "@/components/ui/Badge";
+import Popover from "@/components/ui/Popover";
+import FieldShell from "@/components/ui/FieldShell";
+import PaxPopover, {
+  DEFAULT_PAX,
+  formatPaxSummary,
+  type PaxCounts,
+} from "@/components/ui/PaxPopover";
+import DateTimePopover from "@/components/ui/DateTimePopover";
 import {
   CalendarIcon,
+  ChevronDown,
   PinIcon,
   PlaneIcon,
+  SearchIcon,
   StarIcon,
   UsersIcon,
 } from "@/components/icons";
@@ -18,6 +28,8 @@ import { serviceNav, serviceSearchFields } from "@/data/services";
 import { loadDraft, rememberSearch } from "@/lib/searchDraft";
 import { logSearch } from "@/app/actions/search";
 import { getOptions } from "@/app/actions/catalog";
+import { useHomeContent, useSearchFields, useServiceLines, useTimeSlots } from "@/lib/useContent";
+import { copyText } from "@/lib/content";
 import type { Category, OptionDTO, SearchFieldIcon, ServiceSearchField } from "@/types";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
@@ -33,71 +45,158 @@ const SERVICE_ROUTES = Object.fromEntries(
   serviceNav.map((s) => [s.label, s.href])
 );
 
+/** A search field with its copy already resolved to the active language. */
+type ResolvedField = {
+  key: string;
+  label: string;
+  placeholder?: string;
+  icon: SearchFieldIcon;
+  kind: ServiceSearchField["kind"];
+};
+
+/** Values of one service — a flat map of query-string keys. */
 type Values = Record<string, Record<string, string>>;
 
-function Field({
+/** The draft keys that hold the passenger counts of a `pax` field. */
+function paxKeys(key: string) {
+  return {
+    adults: `${key}Adults`,
+    children: `${key}Children`,
+    infants: `${key}Infants`,
+  };
+}
+
+/** Read the passenger counts of a `pax` field out of the value map. */
+function readPax(values: Record<string, string>, key: string): PaxCounts {
+  const k = paxKeys(key);
+  const num = (raw?: string) => {
+    const n = Number(raw);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  };
+  return {
+    adults: num(values[k.adults]) || DEFAULT_PAX.adults,
+    children: num(values[k.children]),
+    infants: num(values[k.infants]),
+  };
+}
+
+/**
+ * A dropdown field — a trigger that opens a searchable list of options.
+ */
+function SelectField({
   field,
   icon,
   value,
-  onChange,
   options,
+  onChange,
+  searchable,
 }: {
-  field: ServiceSearchField;
+  field: ResolvedField;
   icon: ReactNode;
   value: string;
+  options: OptionDTO[];
   onChange: (v: string) => void;
-  options?: OptionDTO[];
+  /** Show a search box above the list (used for the long airport list). */
+  searchable?: boolean;
 }) {
-  const isSelect = field.kind.startsWith("select-");
-  const isDate = field.kind === "date";
+  const { t } = useLocale();
+  const [query, setQuery] = useState("");
+
+  const list = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return options;
+    return options.filter(
+      (o) =>
+        o.label.toLowerCase().includes(q) ||
+        o.value.toLowerCase().includes(q)
+    );
+  }, [options, query]);
 
   return (
-    <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl bg-canvas px-4 py-2.5">
-      <span className="text-muted">{icon}</span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[11px] text-muted">{field.label}</span>
-        {isSelect && options ? (
-          <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            aria-label={field.label}
-            className="w-full appearance-none bg-transparent pr-6 text-sm font-semibold text-ink outline-none"
+    <FieldShell icon={icon} label={field.label}>
+      <Popover
+        ariaLabel={field.label}
+        panelClassName="w-[min(20rem,calc(100vw-2rem))]"
+        trigger={
+          <span
+            className={`flex items-center gap-1 text-sm font-semibold ${
+              value ? "text-ink" : "text-muted"
+            }`}
           >
-            <option value="">{field.defaultValue}</option>
-            {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        ) : isDate ? (
-          <input
-            type="date"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            aria-label={field.label}
-            className="w-full bg-transparent text-sm font-semibold text-ink outline-none placeholder:text-muted"
-          />
-        ) : (
-          <input
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            aria-label={field.label}
-            className="w-full bg-transparent text-sm font-semibold text-ink outline-none placeholder:text-muted"
-          />
+            <span className="truncate">
+              {value || field.placeholder || field.label}
+            </span>
+            <ChevronDown width={16} height={16} className="shrink-0 text-muted" />
+          </span>
+        }
+      >
+        {({ close }) => (
+          <div>
+            {searchable && (
+              <div className="relative mb-2">
+                <SearchIcon
+                  width={16}
+                  height={16}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+                />
+                <input
+                  autoFocus
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t("search.airportSearch")}
+                  className="w-full rounded-xl border border-line bg-canvas py-2 pl-9 pr-3 text-sm text-ink outline-none focus:border-brand"
+                />
+              </div>
+            )}
+
+            <ul className="max-h-60 overflow-y-auto">
+              {list.map((opt) => (
+                <li key={opt.value}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onChange(opt.label);
+                      close();
+                    }}
+                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-canvas ${
+                      value === opt.label
+                        ? "bg-brand-soft font-semibold text-brand"
+                        : "text-ink"
+                    }`}
+                  >
+                    <span className="truncate">{opt.label}</span>
+                    {value === opt.label && (
+                      <span className="text-xs font-bold text-brand">✓</span>
+                    )}
+                  </button>
+                </li>
+              ))}
+              {list.length === 0 && (
+                <li className="px-3 py-6 text-center text-xs text-muted">
+                  {t("search.noResults")}
+                </li>
+              )}
+            </ul>
+          </div>
         )}
-      </span>
-    </div>
+      </Popover>
+    </FieldShell>
   );
 }
 
 /** Rail entry — picks the service whose form is shown below. */
 function ServiceTab({
-  category,
+  label,
+  short,
+  tone,
+  badge,
   active,
   onClick,
 }: {
-  category: Category;
+  label: string;
+  short: string;
+  tone: string;
+  badge: string | null;
   active: boolean;
   onClick: () => void;
 }) {
@@ -109,25 +208,25 @@ function ServiceTab({
       }`}
     >
       <span
-        className={`flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br ${category.tone} text-[11px] font-bold text-white shadow-sm`}
+        className={`flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br ${tone} text-[11px] font-bold text-white shadow-sm`}
       >
-        {category.short}
+        {short}
       </span>
       <span
         className={`whitespace-nowrap text-sm font-bold ${
           active ? "text-brand" : "text-ink"
         }`}
       >
-        {category.label}
+        {label}
       </span>
-      {category.badge && <Badge variant="pill">{category.badge}</Badge>}
+      {badge && <Badge variant="pill">{badge}</Badge>}
     </button>
   );
 }
 
 export default function HeroSearch() {
   const router = useRouter();
-  const { t } = useLocale();
+  const { t, lang } = useLocale();
   const [service, setService] = useState(categories[0].label);
   const [values, setValues] = useState<Values>({});
   const [resume, setResume] = useState<{ href: string; label: string } | null>(
@@ -135,7 +234,43 @@ export default function HeroSearch() {
   );
   const [options, setOptions] = useState<Record<string, OptionDTO[]>>({});
 
-  const fields = serviceSearchFields[service] ?? [];
+  // The service tabs and the fields come from the database; the static copy
+  // is the fallback while it loads.
+  const lines = useServiceLines();
+  const timeSlots = useTimeSlots();
+  const home = useHomeContent();
+
+  // The hero copy lives in the database as well.
+  const heroCopy = useMemo(() => {
+    const raw = home?.settings["hero.copy"];
+    const picked =
+      raw && typeof raw === "object" && !Array.isArray(raw)
+        ? ((raw as Record<string, unknown>)[lang === "id" ? "id" : "en"] ??
+          (raw as Record<string, unknown>).en)
+        : null;
+    return (picked ?? {}) as Record<string, string>;
+  }, [home, lang]);
+
+  // The slug of the selected line — the search fields are scoped to it.
+  const lineSlug = useMemo(
+    () => (SERVICE_ROUTES[service] ?? "/").replace(/^\//, ""),
+    [service]
+  );
+
+  const dbFields = useSearchFields(lineSlug);
+
+  /** The fields of the selected service, with their copy resolved. */
+  const fields = useMemo<ResolvedField[]>(
+    () =>
+      dbFields.map((f) => ({
+        key: f.key,
+        label: copyText(f.label, lang),
+        placeholder: f.placeholder ? copyText(f.placeholder, lang) : undefined,
+        icon: f.icon,
+        kind: f.kind,
+      })),
+    [dbFields, lang]
+  );
 
   // Fetch options for select fields
   useEffect(() => {
@@ -146,10 +281,6 @@ export default function HeroSearch() {
       else if (f.kind === "select-service-type") kinds.add("serviceType");
       else if (f.kind === "select-country") kinds.add("country");
     }
-
-    // Derive lineSlug from the selected service's route (e.g., "/transport" -> "transport")
-    const href = SERVICE_ROUTES[service] ?? "/";
-    const lineSlug = href.replace(/^\//, "");
 
     for (const kind of kinds) {
       const key = kind as "airport" | "city" | "serviceType" | "country";
@@ -163,7 +294,7 @@ export default function HeroSearch() {
         });
       }
     }
-  }, [fields, service]);
+  }, [fields, lineSlug]);
 
   // Restore the last submitted search (persisted on this device).
   useEffect(() => {
@@ -176,13 +307,7 @@ export default function HeroSearch() {
     }
   }, []);
 
-  const currentValues = useMemo(() => {
-    const stored = values[service];
-    if (stored) return stored;
-    return Object.fromEntries(
-      (serviceSearchFields[service] ?? []).map((f) => [f.key, f.defaultValue])
-    );
-  }, [service, values]);
+  const currentValues = useMemo(() => values[service] ?? {}, [service, values]);
 
   const setField = (key: string, value: string) =>
     setValues((v) => ({
@@ -190,12 +315,28 @@ export default function HeroSearch() {
       [service]: { ...currentValues, [key]: value },
     }));
 
+  /** Store the passenger counts plus the readable summary of a `pax` field. */
+  const setPax = (key: string, counts: PaxCounts) => {
+    const k = paxKeys(key);
+    setValues((v) => ({
+      ...v,
+      [service]: {
+        ...currentValues,
+        [key]: formatPaxSummary(counts, t),
+        [k.adults]: String(counts.adults),
+        [k.children]: String(counts.children),
+        [k.infants]: String(counts.infants),
+      },
+    }));
+  };
+
   const submit = () => {
     const href = SERVICE_ROUTES[service] ?? "/";
     const params = new URLSearchParams();
-    for (const f of fields) {
-      const v = currentValues[f.key];
-      if (v) params.set(f.key, v);
+
+    // Every value the user filled in travels to the service page.
+    for (const [key, value] of Object.entries(currentValues)) {
+      if (value) params.set(key, value);
     }
     params.set("service", service);
 
@@ -213,18 +354,92 @@ export default function HeroSearch() {
     router.push(`${href}?${params.toString()}`);
   };
 
+  const renderField = (f: ResolvedField) => {
+    const icon = ICONS[f.icon];
+    const value = currentValues[f.key] ?? "";
+
+    switch (f.kind) {
+      case "select-airport":
+      case "select-city":
+      case "select-service-type":
+      case "select-country": {
+        let fieldOptions: OptionDTO[] = [];
+        if (f.kind === "select-airport") fieldOptions = options.airport ?? [];
+        else if (f.kind === "select-city") fieldOptions = options.city ?? [];
+        else if (f.kind === "select-country") fieldOptions = options.country ?? [];
+        else {
+          fieldOptions = options[`serviceType:${lineSlug}`] ?? [];
+        }
+
+        return (
+          <SelectField
+            key={f.key}
+            field={f}
+            icon={icon}
+            value={value}
+            options={fieldOptions}
+            onChange={(v) => setField(f.key, v)}
+            searchable={f.kind === "select-airport"}
+          />
+        );
+      }
+
+      case "datetime":
+        return (
+          <DateTimePopover
+            key={f.key}
+            label={f.label}
+            placeholder={f.placeholder}
+            icon={icon}
+            date={value}
+            time={currentValues[`${f.key}Time`] ?? ""}
+            onDate={(v) => setField(f.key, v)}
+            onTime={(v) => setField(`${f.key}Time`, v)}
+            timeSlots={timeSlots}
+          />
+        );
+
+      case "pax":
+        return (
+          <PaxPopover
+            key={f.key}
+            label={f.label}
+            placeholder={f.placeholder}
+            value={readPax(currentValues, f.key)}
+            onChange={(counts) => setPax(f.key, counts)}
+            align="right"
+          />
+        );
+
+      default:
+        return (
+          <FieldShell key={f.key} icon={icon} label={f.label}>
+            <input
+              value={value}
+              onChange={(e) => setField(f.key, e.target.value)}
+              placeholder={f.placeholder}
+              aria-label={f.label}
+              className="w-full bg-transparent text-sm font-semibold text-ink outline-none placeholder:text-muted"
+            />
+          </FieldShell>
+        );
+    }
+  };
+
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-hero-from via-hero-via to-hero-to pb-10 pt-44 md:pt-44">
+    <section className="relative bg-gradient-to-b from-hero-from via-hero-via to-hero-to pb-10 pt-44 md:pt-44">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/20 to-transparent" />
       <Container className="relative">
         {/* Heading */}
         <div className="hidden py-6 text-center md:block">
           <h1 className="text-[34px] font-normal text-white">
-            {t("hero.heading1")}
-            <span className="font-extrabold">{t("hero.heading2")}</span>
+            {heroCopy.heading1 ?? t("hero.heading1")}
+            <span className="font-extrabold">
+              {heroCopy.heading2 ?? t("hero.heading2")}
+            </span>
           </h1>
           <p className="mt-2 text-sm text-white/85">
-            {t("hero.subtitle")}
+            {heroCopy.subtitle ?? t("hero.subtitle")}
           </p>
         </div>
 
@@ -232,12 +447,15 @@ export default function HeroSearch() {
         <div className="relative mx-auto max-w-[1120px]">
           {/* Service selector tabs */}
           <div className="no-scrollbar relative z-10 mx-auto -mb-5 flex w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full bg-white px-2 py-2 shadow-lg">
-            {categories.map((c) => (
+            {lines.map((l) => (
               <ServiceTab
-                key={c.label}
-                category={c}
-                active={c.label === service}
-                onClick={() => setService(c.label)}
+                key={l.slug}
+                label={l.label}
+                short={l.short}
+                tone={l.tone}
+                badge={l.badge}
+                active={l.label === service}
+                onClick={() => setService(l.label)}
               />
             ))}
           </div>
@@ -246,29 +464,7 @@ export default function HeroSearch() {
           <div className="relative rounded-2xl bg-white p-4 shadow-xl md:p-6 md:pt-10">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
               <div className="grid flex-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {fields.map((f) => {
-                  let fieldOptions: OptionDTO[] | undefined;
-                  if (f.kind === "select-airport") fieldOptions = options.airport;
-                  else if (f.kind === "select-city") fieldOptions = options.city;
-                  else if (f.kind === "select-service-type") {
-                    // Use lineSlug-specific cache key
-                    const href = SERVICE_ROUTES[service] ?? "/";
-                    const lineSlug = href.replace(/^\//, "");
-                    fieldOptions = options[`serviceType:${lineSlug}`];
-                  }
-                  else if (f.kind === "select-country") fieldOptions = options.country;
-
-                  return (
-                    <Field
-                      key={f.key}
-                      field={f}
-                      icon={ICONS[f.icon]}
-                      value={currentValues[f.key] ?? ""}
-                      onChange={(v) => setField(f.key, v)}
-                      options={fieldOptions}
-                    />
-                  );
-                })}
+                {fields.map(renderField)}
               </div>
               <button
                 onClick={submit}
@@ -296,9 +492,9 @@ export default function HeroSearch() {
             {/* Promo strip */}
             <div className="mt-4 flex flex-wrap items-center gap-1 border-t border-line pt-4 text-sm text-ink">
               <span className="mr-1">🏷️</span>
-              {t("hero.promo")}
+              {heroCopy.promo ?? t("hero.promo")}
               <a href="#" className="font-semibold text-brand">
-                {t("hero.promoCta")}
+                {heroCopy.promoCta ?? t("hero.promoCta")}
               </a>
             </div>
           </div>

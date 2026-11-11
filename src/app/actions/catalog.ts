@@ -69,7 +69,8 @@ export async function getCatalog(lineSlug: string): Promise<CatalogDTO | null> {
         "durationLabel",
         "fromPriceUsdCents",
         "serviceTypeId",
-        "airportId"
+        "airportId",
+        "imageUrl"
       )
       .where((f) => f.lineId.eq(line.id))
       .where((f) => f.active.eq(true))
@@ -117,6 +118,7 @@ export async function getCatalog(lineSlug: string): Promise<CatalogDTO | null> {
       fromUsd: centsToUsd(p.fromPriceUsdCents),
       ribbon: p.ribbon ?? undefined,
       tone: p.tone,
+      imageUrl: p.imageUrl ?? null,
       serviceTypeName: p.serviceTypeId ? serviceTypeMap.get(p.serviceTypeId) : undefined,
       placeName: p.airportId ? placeMap.get(p.airportId) : undefined,
       rating: p.rating ?? undefined,

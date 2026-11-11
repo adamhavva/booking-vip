@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import BookingPanel from "@/components/sections/BookingPanel";
 import { serviceSearchFields } from "@/data/services";
 import { loadDraft } from "@/lib/searchDraft";
+import { formatDateLabel, localeFor } from "@/lib/format";
 import type { ServicePage } from "@/types";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
@@ -20,7 +21,7 @@ export default function ServiceSearchSection({
   service: ServicePage;
 }) {
   const params = useSearchParams();
-  const { t } = useLocale();
+  const { t, lang } = useLocale();
   const [saved, setSaved] = useState<Record<string, string> | null>(null);
 
   const fields = serviceSearchFields[service.eyebrow] ?? [];
@@ -38,6 +39,11 @@ export default function ServiceSearchSection({
     for (const f of fields) {
       const v = params.get(f.key);
       if (v) fromUrl[f.key] = v;
+      // A date field keeps its hour in a sibling key (`date` → `dateTime`).
+      if (f.kind === "datetime") {
+        const time = params.get(`${f.key}Time`);
+        if (time) fromUrl[`${f.key}Time`] = time;
+      }
     }
     if (Object.keys(fromUrl).length > 0) return { values: fromUrl, source: "url" as const };
     if (saved && Object.keys(saved).length > 0)
@@ -46,8 +52,24 @@ export default function ServiceSearchSection({
   }, [fields, params, saved]);
 
   const entries = fields
-    .map((f) => [f.label, values.values[f.key]] as const)
-    .filter(([, v]) => Boolean(v));
+    .map((f) => {
+      // A date field carries its hour in a sibling key — show them together.
+      if (f.kind === "datetime") {
+        const date = values.values[f.key];
+        const time = values.values[`${f.key}Time`];
+        if (!date && !time) return null;
+        return [
+          f.label,
+          [formatDateLabel(date, localeFor(lang)), time].filter(Boolean).join(", "),
+        ] as const;
+      }
+
+      const value = values.values[f.key];
+      if (!value) return null;
+      if (f.kind === "date") return [f.label, formatDateLabel(value, localeFor(lang))] as const;
+      return [f.label, value] as const;
+    })
+    .filter((entry): entry is readonly [string, string] => entry !== null);
 
   return (
     <div className="space-y-4">

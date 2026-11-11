@@ -1,0 +1,1524 @@
+[
+  {
+    "id": "table.Article",
+    "label": "Create table \"Article\"",
+    "summary": "Creates table \"Article\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Article\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Article\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Article\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Article\"",
+        "sql": "CREATE TABLE \"public\".\"Article\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"categoryEn\" text,\n  \"categoryId\" text,\n  \"excerptEn\" text,\n  \"excerptId\" text,\n  \"id\" text NOT NULL,\n  \"imageCredit\" text,\n  \"imageUrl\" text,\n  \"slug\" text NOT NULL,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  \"titleEn\" text NOT NULL,\n  \"titleId\" text,\n  \"tone\" text DEFAULT 'from-sky-400 to-blue-600' NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Article\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Article\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Article\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.Banner",
+    "label": "Create table \"Banner\"",
+    "summary": "Creates table \"Banner\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Banner"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Banner\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Banner\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Banner\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Banner\"",
+        "sql": "CREATE TABLE \"public\".\"Banner\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"ctaEn\" text,\n  \"ctaHref\" text,\n  \"ctaId\" text,\n  \"id\" text NOT NULL,\n  \"imageCredit\" text,\n  \"imageUrl\" text,\n  \"placement\" text DEFAULT 'home' NOT NULL,\n  \"slug\" text NOT NULL,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  \"subtitleEn\" text,\n  \"subtitleId\" text,\n  \"titleEn\" text NOT NULL,\n  \"titleId\" text,\n  \"tone\" text DEFAULT 'from-blue-600 to-indigo-800' NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Banner\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Banner\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Banner\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.Destination",
+    "label": "Create table \"Destination\"",
+    "summary": "Creates table \"Destination\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Destination"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Destination\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Destination\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Destination\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Destination\"",
+        "sql": "CREATE TABLE \"public\".\"Destination\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"countryEn\" text,\n  \"countryId\" text,\n  \"id\" text NOT NULL,\n  \"imageCredit\" text,\n  \"imageUrl\" text,\n  \"nameEn\" text NOT NULL,\n  \"nameId\" text,\n  \"slug\" text NOT NULL,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  \"tone\" text DEFAULT 'from-rose-400 to-red-600' NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Destination\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Destination\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Destination\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.Promo",
+    "label": "Create table \"Promo\"",
+    "summary": "Creates table \"Promo\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Promo"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Promo\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Promo\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Promo\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Promo\"",
+        "sql": "CREATE TABLE \"public\".\"Promo\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"id\" text NOT NULL,\n  \"imageCredit\" text,\n  \"imageUrl\" text,\n  \"lineId\" text,\n  \"slug\" text NOT NULL,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  \"subtitleEn\" text,\n  \"subtitleId\" text,\n  \"titleEn\" text NOT NULL,\n  \"titleId\" text,\n  \"tone\" text DEFAULT 'from-blue-500 to-indigo-700' NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Promo\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Promo\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Promo\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.SearchField",
+    "label": "Create table \"SearchField\"",
+    "summary": "Creates table \"SearchField\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SearchField"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SearchField\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SearchField\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"SearchField\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SearchField\"",
+        "sql": "CREATE TABLE \"public\".\"SearchField\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"icon\" text DEFAULT 'pin' NOT NULL,\n  \"id\" text NOT NULL,\n  \"key\" text NOT NULL,\n  \"kind\" text DEFAULT 'text' NOT NULL,\n  \"labelEn\" text NOT NULL,\n  \"labelId\" text,\n  \"lineId\" text NOT NULL,\n  \"placeholderEn\" text,\n  \"placeholderId\" text,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SearchField\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"SearchField\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"SearchField\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.SeoBlock",
+    "label": "Create table \"SeoBlock\"",
+    "summary": "Creates table \"SeoBlock\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SeoBlock"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SeoBlock\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SeoBlock\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"SeoBlock\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SeoBlock\"",
+        "sql": "CREATE TABLE \"public\".\"SeoBlock\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"id\" text NOT NULL,\n  \"sections\" jsonb DEFAULT '[]'::jsonb NOT NULL,\n  \"slug\" text NOT NULL,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  \"titleEn\" text NOT NULL,\n  \"titleId\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SeoBlock\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"SeoBlock\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"SeoBlock\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.SeoLink",
+    "label": "Create table \"SeoLink\"",
+    "summary": "Creates table \"SeoLink\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SeoLink"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SeoLink\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SeoLink\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"SeoLink\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SeoLink\"",
+        "sql": "CREATE TABLE \"public\".\"SeoLink\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"group\" text DEFAULT 'recommendations' NOT NULL,\n  \"href\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"labelEn\" text NOT NULL,\n  \"labelId\" text,\n  \"slug\" text NOT NULL,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  \"tags\" jsonb DEFAULT '[]'::jsonb NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SeoLink\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"SeoLink\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"SeoLink\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.Setting",
+    "label": "Create table \"Setting\"",
+    "summary": "Creates table \"Setting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Setting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Setting\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Setting\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Setting\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Setting\"",
+        "sql": "CREATE TABLE \"public\".\"Setting\" (\n  \"key\" text NOT NULL,\n  \"updatedAt\" timestamp(3) NOT NULL,\n  \"value\" jsonb NOT NULL,\n  PRIMARY KEY (\"key\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Setting\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Setting\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Setting\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "column.public.Airport.imageCredit",
+    "label": "Add column \"imageCredit\" to \"Airport\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "imageCredit",
+        "table": "Airport"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"imageCredit\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "imageCredit"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"imageCredit\" on \"Airport\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"imageCredit\"",
+        "sql": "ALTER TABLE \"public\".\"Airport\" ADD COLUMN \"imageCredit\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"imageCredit\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "imageCredit"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"imageCredit\" on \"Airport\""
+        }
+      },
+      {
+        "description": "verify column \"imageCredit\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "imageCredit",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Airport.imageUrl",
+    "label": "Add column \"imageUrl\" to \"Airport\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "imageUrl",
+        "table": "Airport"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"imageUrl\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "imageUrl"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"imageUrl\" on \"Airport\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"imageUrl\"",
+        "sql": "ALTER TABLE \"public\".\"Airport\" ADD COLUMN \"imageUrl\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"imageUrl\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "imageUrl"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"imageUrl\" on \"Airport\""
+        }
+      },
+      {
+        "description": "verify column \"imageUrl\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "imageUrl",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.imageCredit",
+    "label": "Add column \"imageCredit\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "imageCredit",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"imageCredit\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "imageCredit"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"imageCredit\" on \"Product\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"imageCredit\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"imageCredit\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"imageCredit\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "imageCredit"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"imageCredit\" on \"Product\""
+        }
+      },
+      {
+        "description": "verify column \"imageCredit\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "imageCredit",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.badge",
+    "label": "Add column \"badge\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "badge",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"badge\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "badge"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"badge\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"badge\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"badge\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"badge\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "badge"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"badge\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"badge\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "badge",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.highlights",
+    "label": "Add column \"highlights\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "highlights",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"highlights\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "highlights"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"highlights\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"highlights\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"highlights\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"highlights\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "highlights"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"highlights\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"highlights\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "highlights",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"highlights\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "highlights",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.imageCredit",
+    "label": "Add column \"imageCredit\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "imageCredit",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"imageCredit\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "imageCredit"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"imageCredit\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"imageCredit\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"imageCredit\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"imageCredit\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "imageCredit"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"imageCredit\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"imageCredit\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "imageCredit",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.imageUrl",
+    "label": "Add column \"imageUrl\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "imageUrl",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"imageUrl\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "imageUrl"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"imageUrl\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"imageUrl\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"imageUrl\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"imageUrl\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "imageUrl"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"imageUrl\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"imageUrl\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "imageUrl",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.introEn",
+    "label": "Add column \"introEn\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "introEn",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"introEn\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "introEn"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"introEn\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"introEn\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"introEn\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"introEn\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "introEn"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"introEn\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"introEn\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "introEn",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.introId",
+    "label": "Add column \"introId\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "introId",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"introId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "introId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"introId\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"introId\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"introId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"introId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "introId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"introId\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"introId\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "introId",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.sections",
+    "label": "Add column \"sections\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sections",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sections\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "sections"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"sections\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sections\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"sections\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sections\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "sections"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"sections\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"sections\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "sections",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"sections\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "sections",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.tabs",
+    "label": "Add column \"tabs\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "tabs",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"tabs\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "tabs"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"tabs\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"tabs\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"tabs\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"tabs\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "tabs"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"tabs\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"tabs\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "tabs",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"tabs\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "tabs",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Article.Article_slug_key",
+    "label": "Create index \"Article_slug_key\" on \"Article\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Article_slug_key",
+        "table": "Article"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Article_slug_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Article_slug_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Article_slug_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Article_slug_key\"",
+        "sql": "CREATE UNIQUE INDEX \"Article_slug_key\" ON \"public\".\"Article\" (\"slug\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Article_slug_key\" exists on \"Article\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Article_slug_key\"",
+          "i",
+          "I",
+          "\"public\".\"Article\"",
+          "btree",
+          "[\"slug\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Banner.Banner_slug_key",
+    "label": "Create index \"Banner_slug_key\" on \"Banner\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Banner_slug_key",
+        "table": "Banner"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Banner_slug_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Banner_slug_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Banner_slug_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Banner_slug_key\"",
+        "sql": "CREATE UNIQUE INDEX \"Banner_slug_key\" ON \"public\".\"Banner\" (\"slug\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Banner_slug_key\" exists on \"Banner\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Banner_slug_key\"",
+          "i",
+          "I",
+          "\"public\".\"Banner\"",
+          "btree",
+          "[\"slug\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Destination.Destination_slug_key",
+    "label": "Create index \"Destination_slug_key\" on \"Destination\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Destination_slug_key",
+        "table": "Destination"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Destination_slug_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Destination_slug_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Destination_slug_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Destination_slug_key\"",
+        "sql": "CREATE UNIQUE INDEX \"Destination_slug_key\" ON \"public\".\"Destination\" (\"slug\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Destination_slug_key\" exists on \"Destination\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Destination_slug_key\"",
+          "i",
+          "I",
+          "\"public\".\"Destination\"",
+          "btree",
+          "[\"slug\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Promo.Promo_slug_key",
+    "label": "Create index \"Promo_slug_key\" on \"Promo\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Promo_slug_key",
+        "table": "Promo"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Promo_slug_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Promo_slug_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Promo_slug_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Promo_slug_key\"",
+        "sql": "CREATE UNIQUE INDEX \"Promo_slug_key\" ON \"public\".\"Promo\" (\"slug\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Promo_slug_key\" exists on \"Promo\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Promo_slug_key\"",
+          "i",
+          "I",
+          "\"public\".\"Promo\"",
+          "btree",
+          "[\"slug\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SearchField.SearchField_lineId_key_key",
+    "label": "Create index \"SearchField_lineId_key_key\" on \"SearchField\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SearchField_lineId_key_key",
+        "table": "SearchField"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SearchField_lineId_key_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SearchField_lineId_key_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"SearchField_lineId_key_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SearchField_lineId_key_key\"",
+        "sql": "CREATE UNIQUE INDEX \"SearchField_lineId_key_key\" ON \"public\".\"SearchField\" (\"lineId\", \"key\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SearchField_lineId_key_key\" exists on \"SearchField\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"SearchField_lineId_key_key\"",
+          "i",
+          "I",
+          "\"public\".\"SearchField\"",
+          "btree",
+          "[\"lineId\",\"key\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SeoBlock.SeoBlock_slug_key",
+    "label": "Create index \"SeoBlock_slug_key\" on \"SeoBlock\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SeoBlock_slug_key",
+        "table": "SeoBlock"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SeoBlock_slug_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SeoBlock_slug_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"SeoBlock_slug_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SeoBlock_slug_key\"",
+        "sql": "CREATE UNIQUE INDEX \"SeoBlock_slug_key\" ON \"public\".\"SeoBlock\" (\"slug\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SeoBlock_slug_key\" exists on \"SeoBlock\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"SeoBlock_slug_key\"",
+          "i",
+          "I",
+          "\"public\".\"SeoBlock\"",
+          "btree",
+          "[\"slug\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SeoLink.SeoLink_slug_key",
+    "label": "Create index \"SeoLink_slug_key\" on \"SeoLink\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SeoLink_slug_key",
+        "table": "SeoLink"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SeoLink_slug_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SeoLink_slug_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"SeoLink_slug_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SeoLink_slug_key\"",
+        "sql": "CREATE UNIQUE INDEX \"SeoLink_slug_key\" ON \"public\".\"SeoLink\" (\"slug\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SeoLink_slug_key\" exists on \"SeoLink\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"SeoLink_slug_key\"",
+          "i",
+          "I",
+          "\"public\".\"SeoLink\"",
+          "btree",
+          "[\"slug\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Promo.Promo_lineId_fkey",
+    "label": "Add foreign key \"Promo_lineId_fkey\" on \"Promo\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Promo_lineId_fkey",
+        "table": "Promo"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Promo_lineId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Promo_lineId_fkey",
+          "public",
+          "\"public\".\"Promo\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"Promo_lineId_fkey\" on \"Promo\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Promo_lineId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Promo\"\nADD CONSTRAINT \"Promo_lineId_fkey\"\nFOREIGN KEY (\"lineId\")\nREFERENCES \"public\".\"ServiceLine\" (\"id\")\nON DELETE SET NULL\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Promo_lineId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "Promo_lineId_fkey",
+          "public",
+          "\"public\".\"Promo\"",
+          "f",
+          "[\"lineId\"]",
+          "\"public\".\"ServiceLine\"",
+          "[\"id\"]",
+          "n",
+          "c"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SearchField.SearchField_lineId_fkey",
+    "label": "Add foreign key \"SearchField_lineId_fkey\" on \"SearchField\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SearchField_lineId_fkey",
+        "table": "SearchField"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SearchField_lineId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SearchField_lineId_fkey",
+          "public",
+          "\"public\".\"SearchField\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"SearchField_lineId_fkey\" on \"SearchField\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SearchField_lineId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SearchField\"\nADD CONSTRAINT \"SearchField_lineId_fkey\"\nFOREIGN KEY (\"lineId\")\nREFERENCES \"public\".\"ServiceLine\" (\"id\")\nON DELETE RESTRICT\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SearchField_lineId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "SearchField_lineId_fkey",
+          "public",
+          "\"public\".\"SearchField\"",
+          "f",
+          "[\"lineId\"]",
+          "\"public\".\"ServiceLine\"",
+          "[\"id\"]",
+          "r",
+          "c"
+        ]
+      }
+    ]
+  }
+]

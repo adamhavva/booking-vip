@@ -9,6 +9,7 @@ export type ProductCardDTO = {
   unit?: string;
   ribbon?: string;
   tone: string;
+  imageUrl?: string | null;
   serviceTypeName?: string;
   placeName?: string;
   rating?: number;

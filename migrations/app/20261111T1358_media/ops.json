@@ -1,0 +1,147 @@
+[
+  {
+    "id": "table.Media",
+    "label": "Create table \"Media\"",
+    "summary": "Creates table \"Media\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Media"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Media\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Media\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Media\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Media\"",
+        "sql": "CREATE TABLE \"public\".\"Media\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"alt\" text,\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"credit\" text,\n  \"height\" int4,\n  \"id\" text NOT NULL,\n  \"key\" text NOT NULL,\n  \"ownerId\" text NOT NULL,\n  \"ownerType\" text NOT NULL,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  \"url\" text NOT NULL,\n  \"width\" int4,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Media\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Media\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Media\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "index.Media.Media_key_idx",
+    "label": "Create index \"Media_key_idx\" on \"Media\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Media_key_idx",
+        "table": "Media"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Media_key_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Media_key_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Media_key_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Media_key_idx\"",
+        "sql": "CREATE INDEX \"Media_key_idx\" ON \"public\".\"Media\" (\"key\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Media_key_idx\" exists on \"Media\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Media_key_idx\"",
+          "i",
+          "I",
+          "\"public\".\"Media\"",
+          "btree",
+          "[\"key\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Media.Media_ownerType_ownerId_idx",
+    "label": "Create index \"Media_ownerType_ownerId_idx\" on \"Media\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Media_ownerType_ownerId_idx",
+        "table": "Media"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Media_ownerType_ownerId_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Media_ownerType_ownerId_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Media_ownerType_ownerId_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Media_ownerType_ownerId_idx\"",
+        "sql": "CREATE INDEX \"Media_ownerType_ownerId_idx\" ON \"public\".\"Media\" (\"ownerType\", \"ownerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Media_ownerType_ownerId_idx\" exists on \"Media\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Media_ownerType_ownerId_idx\"",
+          "i",
+          "I",
+          "\"public\".\"Media\"",
+          "btree",
+          "[\"ownerType\",\"ownerId\"]"
+        ]
+      }
+    ]
+  }
+]

@@ -26,12 +26,32 @@ model ServiceLine {
   slug      String        @unique
   label     String
   short     String
+  badge     String?
   tone      String
+  /// Copy of the service page (hero intro + body sections).
+  introEn   String?
+  introId   String?
+  /// [{ heading, body }]
+  sections  Json          @default("[]")
+  /// [{ heading, body }] — Indonesian copy.
+  sectionsId Json         @default("[]")
+  /// Short feature list shown next to the booking panel.
+  highlights Json         @default("[]")
+  /// Short feature list — Indonesian.
+  highlightsId Json       @default("[]")
+  /// Filter tabs of the line catalog.
+  tabs      Json          @default("[]")
+  /// Filter tabs — Indonesian.
+  tabsId    Json          @default("[]")
+  imageUrl  String?
+  imageCredit String?
   sortOrder Int           @default(0)
   active    Boolean       @default(true)
   types     ServiceType[]
   products  Product[]
   priceTiers PriceTier[]
+  promos    Promo[]
+  searchFields SearchField[]
 }
 
 /// Sub-category within a line (e.g. Meet & Greet, Sedan, Tourist eVOA).
@@ -57,6 +77,8 @@ model Airport {
   name       String
   city       String
   country    String    @default("Indonesia")
+  imageUrl   String?
+  imageCredit String?
   active     Boolean   @default(true)
   products   Product[]
 }
@@ -81,6 +103,7 @@ model Product {
   requirements     Json      @default("[]")
   isAddOn          Boolean   @default(false)
   imageUrl         String?
+  imageCredit      String?
   tone             String    @default("from-sky-400 to-blue-600")
   ribbon           String?
   rating           Float?
@@ -320,4 +343,163 @@ model Country {
   name     String
   dialCode String
   active   Boolean @default(true)
+}
+
+/// A file stored in Cloudflare R2 (S3-compatible object storage).
+///
+/// One row per object. `ownerType`/`ownerId` point at the content the file
+/// belongs to, so a single content row can carry several images (a gallery).
+model Media {
+  id         String   @id @default(uuid())
+  /// The content model that owns the file — "Product", "Airport", "Banner",
+  /// "Promo", "Article", "Destination" or "ServiceLine".
+  ownerType  String
+  /// The id of the owning row.
+  ownerId    String
+  /// The object key inside the bucket, e.g. "products/meet-greet.jpg".
+  key        String
+  /// The URL the browser loads. Either the public R2/CDN URL or the app's
+  /// own `/media/<key>` proxy — both are stable, never signed.
+  url        String
+  /// Alternative text for the image.
+  alt        String?
+  /// Attribution line — author + licence + source page.
+  credit     String?
+  /// Pixel size, so the layout does not shift while the image loads.
+  width      Int?
+  height     Int?
+  /// Position of the file inside its gallery.
+  sortOrder  Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@index([ownerType, ownerId])
+  @@index([key])
+}
+
+/// A promo card on the home page.
+model Promo {
+  id          String  @id @default(uuid())
+  slug        String  @unique
+  titleEn     String
+  titleId     String?
+  subtitleEn  String?
+  subtitleId  String?
+  imageUrl    String?
+  imageCredit String?
+  tone        String  @default("from-blue-500 to-indigo-700")
+  lineId      String?
+  sortOrder   Int     @default(0)
+  active      Boolean @default(true)
+  line        ServiceLine? @relation(fields: [lineId], references: [id])
+}
+
+/// A full-width promotional strip.
+model Banner {
+  id          String  @id @default(uuid())
+  slug        String  @unique
+  titleEn     String
+  titleId     String?
+  subtitleEn  String?
+  subtitleId  String?
+  ctaEn       String?
+  ctaId       String?
+  ctaHref     String?
+  /// Where the banner is shown, e.g. "home".
+  placement   String  @default("home")
+  imageUrl    String?
+  imageCredit String?
+  tone        String  @default("from-blue-600 to-indigo-800")
+  sortOrder   Int     @default(0)
+  active      Boolean @default(true)
+}
+
+/// A travel guide / article.
+model Article {
+  id          String  @id @default(uuid())
+  slug        String  @unique
+  titleEn     String
+  titleId     String?
+  categoryEn  String?
+  categoryId  String?
+  excerptEn   String?
+  excerptId   String?
+  imageUrl    String?
+  imageCredit String?
+  tone        String  @default("from-sky-400 to-blue-600")
+  sortOrder   Int     @default(0)
+  active      Boolean @default(true)
+}
+
+/// A destination tile on the home page.
+model Destination {
+  id          String  @id @default(uuid())
+  slug        String  @unique
+  nameEn      String
+  nameId      String?
+  countryEn   String?
+  countryId   String?
+  imageUrl    String?
+  imageCredit String?
+  tone        String  @default("from-rose-400 to-red-600")
+  sortOrder   Int     @default(0)
+  active      Boolean @default(true)
+}
+
+/// A link in one of the home SEO link grids.
+model SeoLink {
+  id        String  @id @default(uuid())
+  slug      String  @unique
+  labelEn   String
+  labelId   String?
+  href      String
+  /// The service this link points at ("Airport VIP Service", "Transport", …).
+  service   String?
+  /// "recommendations" | "services"
+  group     String  @default("recommendations")
+  /// Extra filter keys (e.g. a destination).
+  tags      Json    @default("[]")
+  sortOrder Int     @default(0)
+  active    Boolean @default(true)
+}
+
+/// A block of SEO copy on the home page.
+model SeoBlock {
+  id        String  @id @default(uuid())
+  slug      String  @unique
+  titleEn   String
+  titleId   String?
+  /// [{ heading, body }]
+  sections  Json    @default("[]")
+  /// [{ heading, body }] — Indonesian copy.
+  sectionsId Json   @default("[]")
+  sortOrder Int     @default(0)
+  active    Boolean @default(true)
+}
+
+/// A field of the home search form, scoped to a service line.
+model SearchField {
+  id            String  @id @default(uuid())
+  lineId        String
+  key           String
+  labelEn       String
+  labelId       String?
+  placeholderEn String?
+  placeholderId String?
+  /// Icon slot: "plane" | "pin" | "cal" | "users" | "star"
+  icon          String  @default("pin")
+  /// Field kind — decides how the field renders.
+  kind          String  @default("text")
+  sortOrder     Int     @default(0)
+  active        Boolean @default(true)
+  line          ServiceLine @relation(fields: [lineId], references: [id])
+
+  @@unique([lineId, key])
+}
+
+/// A key/value setting — hero copy, footer, tabs, quick time slots, …
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
 }

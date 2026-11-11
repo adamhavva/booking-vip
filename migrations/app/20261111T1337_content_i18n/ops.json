@@ -1,0 +1,342 @@
+[
+  {
+    "id": "column.public.SeoBlock.sectionsId",
+    "label": "Add column \"sectionsId\" to \"SeoBlock\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sectionsId",
+        "table": "SeoBlock"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sectionsId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "SeoBlock",
+          "sectionsId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"sectionsId\" on \"SeoBlock\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sectionsId\"",
+        "sql": "ALTER TABLE \"public\".\"SeoBlock\" ADD COLUMN \"sectionsId\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sectionsId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "SeoBlock",
+          "sectionsId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"sectionsId\" on \"SeoBlock\""
+        }
+      },
+      {
+        "description": "verify column \"sectionsId\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "SeoBlock",
+          "sectionsId",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"sectionsId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "SeoBlock",
+          "sectionsId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.SeoLink.service",
+    "label": "Add column \"service\" to \"SeoLink\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "service",
+        "table": "SeoLink"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"service\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "SeoLink",
+          "service"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"service\" on \"SeoLink\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"service\"",
+        "sql": "ALTER TABLE \"public\".\"SeoLink\" ADD COLUMN \"service\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"service\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "SeoLink",
+          "service"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"service\" on \"SeoLink\""
+        }
+      },
+      {
+        "description": "verify column \"service\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "SeoLink",
+          "service",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.highlightsId",
+    "label": "Add column \"highlightsId\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "highlightsId",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"highlightsId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "highlightsId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"highlightsId\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"highlightsId\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"highlightsId\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"highlightsId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "highlightsId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"highlightsId\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"highlightsId\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "highlightsId",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"highlightsId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "highlightsId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.sectionsId",
+    "label": "Add column \"sectionsId\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sectionsId",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sectionsId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "sectionsId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"sectionsId\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sectionsId\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"sectionsId\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sectionsId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "sectionsId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"sectionsId\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"sectionsId\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "sectionsId",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"sectionsId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "sectionsId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ServiceLine.tabsId",
+    "label": "Add column \"tabsId\" to \"ServiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "tabsId",
+        "table": "ServiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"tabsId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "tabsId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"tabsId\" on \"ServiceLine\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"tabsId\"",
+        "sql": "ALTER TABLE \"public\".\"ServiceLine\" ADD COLUMN \"tabsId\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"tabsId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "tabsId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"tabsId\" on \"ServiceLine\""
+        }
+      },
+      {
+        "description": "verify column \"tabsId\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "tabsId",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"tabsId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "ServiceLine",
+          "tabsId",
+          "NO"
+        ]
+      }
+    ]
+  }
+]

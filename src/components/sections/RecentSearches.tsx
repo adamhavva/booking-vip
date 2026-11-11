@@ -6,6 +6,7 @@ import Container from "@/components/ui/Container";
 import { getRecentSearches, type StoredSearch } from "@/app/actions/search";
 import { serviceSearchFields } from "@/data/services";
 import { loadRecent } from "@/lib/searchDraft";
+import { formatDateLabel } from "@/lib/format";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 type Entry = {
@@ -21,6 +22,11 @@ function searchHref(service: string, href: string, values: Record<string, string
   for (const field of serviceSearchFields[service] ?? []) {
     const v = values[field.key];
     if (v) params.set(field.key, v);
+    // A date field keeps its hour in a sibling key (`date` → `dateTime`).
+    if (field.kind === "datetime") {
+      const time = values[`${field.key}Time`];
+      if (time) params.set(`${field.key}Time`, time);
+    }
   }
   params.set("service", service);
   return `${href}?${params.toString()}`;
@@ -29,7 +35,18 @@ function searchHref(service: string, href: string, values: Record<string, string
 function summarize(service: string, values: Record<string, string>) {
   const fields = serviceSearchFields[service] ?? [];
   const parts = fields
-    .map((f) => values[f.key])
+    .map((f) => {
+      if (f.kind === "datetime") {
+        const date = values[f.key];
+        const time = values[`${f.key}Time`];
+        if (!date && !time) return "";
+        return [formatDateLabel(date), time].filter(Boolean).join(" ");
+      }
+      const value = values[f.key];
+      if (!value) return "";
+      if (f.kind === "date") return formatDateLabel(value);
+      return value;
+    })
     .filter(Boolean)
     .slice(0, 3);
   return parts.length > 0 ? parts.join(" · ") : service;

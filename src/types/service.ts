@@ -20,6 +20,10 @@ export type SearchFieldIcon = "plane" | "pin" | "cal" | "users" | "star";
 export type ServiceSearchFieldKind =
   | "text"
   | "date"
+  /** Date + time (the time is stored under `<key>Time`). */
+  | "datetime"
+  /** Passenger counter (adults / children / infants). */
+  | "pax"
   | "select-airport"
   | "select-city"
   | "select-service-type"
@@ -29,7 +33,8 @@ export type ServiceSearchField = {
   /** Query-string key, also the key of the persisted draft value. */
   key: string;
   label: string;
-  defaultValue: string;
+  /** Shown while nothing is selected yet. */
+  placeholder?: string;
   icon: SearchFieldIcon;
   /** Field kind — determines how the field renders. */
   kind: ServiceSearchFieldKind;
