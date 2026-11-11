@@ -38,7 +38,7 @@ export default function LoginPage({
   );
 }
 
-/** Sends an already-authenticated customer straight to their bookings. */
+/** Sends an already-authenticated customer straight to the home page. */
 async function AlreadySignedIn() {
   // Reading the session verifies a Firebase token, which reads the clock —
   // only allowed once a real request arrived.
@@ -46,7 +46,7 @@ async function AlreadySignedIn() {
 
   const session = await getUserSession();
   if (session) {
-    redirect("/my-booking");
+    redirect("/");
   }
   return null;
 }

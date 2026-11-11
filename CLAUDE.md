@@ -12,6 +12,7 @@ npm run build   # next build — also type-checks
 npm run start   # next start
 npx tsc --noEmit  # faster standalone type-check
 npm run db:seed # idempotent seeder (scripts/seed.mts) — inserts only missing rows
+npm run db:seed-admin <email> <password>  # seed an ADMIN account (Firebase identity + `User` row with role ADMIN)
 
 # Prisma 8 (Supabase Postgres) — see "Database" section below
 npx prisma contract emit    # recompile schema → src/prisma/contract.{json,d.ts} (alias: npm run contract:emit)
@@ -110,6 +111,18 @@ Marketing + booking concierge site (Booking VIP, a tiket.com-style educational c
 - **Pages** — `/login` and `/register` use the **split-screen** `AuthShell` (`src/components/auth/`): a dark-blue brand panel on the left (hidden below `lg`), the form on a white canvas on the right. **These two pages deliberately render without `Header` / `Footer`.** `AuthField` renders the labelled inputs and the password eye toggle; `GoogleButton` renders the popup flow. The email input is **controlled** — React resets uncontrolled form fields after a form action completes, which would otherwise wipe the address on a failed attempt.
 - **`/account`** — the signed-in customer's page (email, name, role badge, "Pesanan saya" list from `listMyBookings()`) plus a `SignOutButton`. The header swaps "Masuk" for an account menu (`UserMenu`), and the mobile drawer gained an "Akun" entry.
 
+### Bot protection — Cloudflare Turnstile
+
+The customer password forms (`/login`, `/register`) are gated by a **Cloudflare Turnstile** widget. The Google sign-in popup is *not* gated (it never posts a form to the server).
+
+- **Flow (canonical Turnstile)** — the browser renders the widget and produces a token; the token travels with the form; the **server** redeems it against `https://challenges.cloudflare.com/turnstile/v0/siteverify`. The secret key is never sent to the browser and siteverify is never called from the browser.
+- **`src/lib/turnstile.ts`** (server-only) — `verifyTurnstileToken(token, expectedAction)` posts the token to siteverify and returns `true` only when the answer is `success: true`, the `action` matches the surface, and the `hostname` is in `TURNSTILE_HOSTNAMES` (an empty allowlist skips the hostname check and logs a warning). Every failure returns `false` and only a generic message reaches the browser.
+- **`src/components/auth/TurnstileWidget.tsx`** (client) — renders the widget **explicitly** (`next/script` for `…/turnstile/v0/api.js` + `window.turnstile.render(...)`) into a `.cf-turnstile` container. The widget writes its token into the hidden `cf-turnstile-response` input, so the surrounding `useActionState` form submits it unchanged. Turnstile tokens are **single-use**, so the form bumps `resetSignal` whenever the server action returns an error and the widget calls `turnstile.reset()`.
+- **Gated actions** — `signInUser` (action `login`) and `registerUser` (action `register`) in `src/app/actions/user-auth.ts` run the check **before** anything else; on failure they return `TURNSTILE_ERROR` ("Verifikasi keamanan gagal…"). The rest of each handler is unchanged — the widget only *gates* the flow.
+- **Env** (`src/lib/turnstile.ts` reads them; documented in `env.example`) — `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (public), `TURNSTILE_SECRET` (server only, `.env` is gitignored), `TURNSTILE_HOSTNAMES` (comma-separated allowlist). The `action` string must match on both sides (`data-action` on the widget = the expected action server-side).
+- **Before going live** — register the production domain on the Turnstile widget (Cloudflare's dashboard) *and* list it in `TURNSTILE_HOSTNAMES`; `localhost` must never appear in a production allowlist. The admin area (`/admin/login`) is not covered by the widget.
+- **Local notes** — headless Chromium is flagged by Cloudflare and the widget stays on "Checking your Browser…" without a token; use a headed browser to test. The widget itself sets no CSP: the app sends no `Content-Security-Policy` header, and the `connect-src` policy seen in the console belongs to Cloudflare's own iframe.
+
 **Folder layout:**
 
 - `src/components/ui/` — shared primitives: `Container` (page gutter/max-width), `TabPills`, `Badge`, `PriceBlock` ("use client" — reads currency from `useLocale`), `Rating`, `Thumb`, `SectionHeading`, `Carousel`.
@@ -117,9 +130,9 @@ Marketing + booking concierge site (Booking VIP, a tiket.com-style educational c
 - `src/components/sections/` — page-level sections (`HeroSearch`, `SectionBand`, `SeoLinkGrid`, `Footer` (client — i18n), `ServiceLayout`, `ServiceCatalog`, `ServiceSearchSection`, `BookingPanel`, `SearchResults`, `ProductDetail` (client), `RecentSearches`, `BannerStrip` (client), …).
 - `src/components/booking/` — wizard + my-booking widgets: `BookingBox` (entry point on product detail), `BookingWizard`, `StepDetails`, `StepAddOns`, `StepPayment`, `StepResult`, `BookingSummary`, `PaxStepper`, `WizardStepper`, `MyBookingLookup`. All client components.
 - `src/components/layout/` — `Header`, `NavBar`, `LocaleMenu`, `Logo`, `UserMenu` (session-aware account link).
-- `src/components/auth/` — `AuthShell` (the split-screen layout for `/login` + `/register`), `AuthField` (labelled input + password eye toggle), `GoogleButton` (Firebase Web SDK popup).
+- `src/components/auth/` — `AuthShell` (the split-screen layout for `/login` + `/register`), `AuthField` (labelled input + password eye toggle), `GoogleButton` (Firebase Web SDK popup), `TurnstileWidget` (Cloudflare Turnstile widget for the password forms).
 - `src/components/providers/` — `LocaleProvider` (root-mounted; see Locale + currency).
-- `src/lib/` — `format.ts` (legacy `usd()` formatter), `currency.ts` (FX fetch + `formatMoneyWith`), `styles.ts` (card shell), `searchDraft.ts` (client-side search persistence), `accounts.ts` (the `User` role layer), `identity.ts` (server-side Firebase Identity Toolkit helpers), `firebase.ts` (server-only Firebase Admin), `firebase-client.ts` (browser-only Firebase Web SDK), `admin/session.ts` (`admin_session`), `user/session.ts` (`user_session`).
+- `src/lib/` — `format.ts` (legacy `usd()` formatter), `currency.ts` (FX fetch + `formatMoneyWith`), `styles.ts` (card shell), `searchDraft.ts` (client-side search persistence), `accounts.ts` (the `User` role layer), `identity.ts` (server-side Firebase Identity Toolkit helpers), `firebase.ts` (server-only Firebase Admin), `firebase-client.ts` (browser-only Firebase Web SDK), `turnstile.ts` (server-only Turnstile siteverify), `admin/session.ts` (`admin_session`), `user/session.ts` (`user_session`).
 - `src/i18n/` — `en.ts`, `id.ts` (dictionaries — keys exported as `DictKey`), `index.ts` (`t()`, `makeTranslator()`).
 - `src/types/` — all shared data types, exported from `src/types/index.ts` (includes catalog/booking DTOs).
 - `src/components/icons.tsx` — the single icon module.

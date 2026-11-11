@@ -10,6 +10,7 @@ import {
   signInWithPassword,
 } from "@/lib/identity";
 import { ADMIN_ROLE, syncAccount } from "@/lib/accounts";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 import {
   USER_SESSION_COOKIE,
   USER_SESSION_TTL_REMEMBER_SECONDS,
@@ -36,6 +37,8 @@ export type UserAuthState = {
 const GENERIC_ERROR = "Email atau password salah.";
 const ADMIN_ONLY_ERROR =
   "Akun ini terdaftar sebagai admin. Silakan masuk lewat halaman admin.";
+const TURNSTILE_ERROR =
+  "Verifikasi keamanan gagal. Muat ulang halaman lalu coba lagi.";
 
 async function issueUserSession(
   idToken: string,
@@ -61,6 +64,16 @@ export async function signInUser(
 ): Promise<UserAuthState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+
+  // Bot check first: the Turnstile token is redeemed before the credentials
+  // are even looked at.
+  const turnstileOk = await verifyTurnstileToken(
+    String(formData.get("cf-turnstile-response") ?? ""),
+    "login",
+  );
+  if (!turnstileOk) {
+    return { error: TURNSTILE_ERROR };
+  }
 
   if (!email || !password) {
     return { error: GENERIC_ERROR };
@@ -99,7 +112,7 @@ export async function signInUser(
   }
 
   await issueUserSession(signIn.idToken, formData.get("remember") === "1");
-  redirect("/my-booking");
+  redirect("/");
 }
 
 /**
@@ -129,6 +142,16 @@ export async function registerUser(
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
+
+  // Bot check first: the Turnstile token is redeemed before the account is
+  // created.
+  const turnstileOk = await verifyTurnstileToken(
+    String(formData.get("cf-turnstile-response") ?? ""),
+    "register",
+  );
+  if (!turnstileOk) {
+    return { error: TURNSTILE_ERROR };
+  }
 
   if (formData.get("terms") !== "1") {
     return { error: "Kamu harus menyetujui Syarat & Ketentuan." };
@@ -221,7 +244,7 @@ export async function signInUserWithGoogle(idToken: string): Promise<void> {
   }
 
   await issueUserSession(idToken);
-  redirect("/my-booking");
+  redirect("/");
 }
 
 /** Server action that drops the customer session. */

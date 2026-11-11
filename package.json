@@ -8,6 +8,7 @@
     "start": "next start",
     "contract:emit": "prisma contract emit",
     "db:seed": "node --experimental-strip-types scripts/seed.mts",
+    "db:seed-admin": "node --experimental-strip-types scripts/seed-admin.mts",
     "images": "node --experimental-strip-types scripts/fetch-images.mts",
     "images:upload": "node --experimental-strip-types scripts/upload-images.mts",
     "images:prune": "node --experimental-strip-types scripts/upload-images.mts prune"
