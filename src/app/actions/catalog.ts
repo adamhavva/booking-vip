@@ -390,6 +390,70 @@ export async function getPlaceOptions(
 }
 
 /**
+ * The vehicles of the transport line.
+ *
+ * Every active product of the `transport` service line with its active
+ * packages — the customer picks the vehicle on the transport booking form.
+ */
+export type TransportVehicleDTO = {
+  productSlug: string;
+  title: string;
+  description: string | null;
+  imageUrl: string | null;
+  tone: string | null;
+  packageId: string;
+  packageLabel: string;
+  unitKind: string;
+  /** The price of one unit in USD cents. */
+  unitUsdCents: number;
+};
+
+export async function getTransportVehicles(): Promise<TransportVehicleDTO[]> {
+  try {
+    const line = await getLineBySlug("transport");
+    if (!line) return [];
+
+    const products = await db.orm.public.Product
+      .select("id", "slug", "title", "description", "imageUrl", "tone")
+      .where((f) => f.lineId.eq(line.id))
+      .where((f) => f.active.eq(true))
+      .where((f) => f.isAddOn.eq(false))
+      .orderBy((f) => f.title.asc())
+      .all();
+
+    const vehicles: TransportVehicleDTO[] = [];
+
+    for (const product of products) {
+      const packages = await db.orm.public.ProductPackage
+        .select("id", "label", "unitKind", "unitUsdCents", "adultUsdCents")
+        .where((f) => f.productId.eq(product.id))
+        .where((f) => f.active.eq(true))
+        .orderBy((f) => f.sortOrder.asc())
+        .all();
+
+      for (const pkg of packages) {
+        vehicles.push({
+          productSlug: product.slug,
+          title: product.title,
+          description: product.description ?? null,
+          imageUrl: product.imageUrl ?? null,
+          tone: product.tone ?? null,
+          packageId: pkg.id,
+          packageLabel: pkg.label,
+          unitKind: pkg.unitKind,
+          unitUsdCents: pkg.unitUsdCents ?? pkg.adultUsdCents ?? 0,
+        });
+      }
+    }
+
+    return vehicles;
+  } catch (error) {
+    console.error("[catalog] could not load transport vehicles", error);
+    return [];
+  }
+}
+
+/**
  * Fetch active payment methods.
  * Returns an empty array on error.
  */

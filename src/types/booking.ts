@@ -25,7 +25,25 @@ export type CreateBookingInput = {
     flightCode?: string;
     direction?: string;
   };
-  travelers: { fullName: string; kind: string }[];
+  /**
+   * The passenger names.
+   *
+   * Optional: the transport flow only asks for the number of passengers, so
+   * the names can be omitted — the booking is then stored without travellers.
+   */
+  travelers?: { fullName: string; kind: string }[];
+  /** The pickup point of a transport booking. */
+  pickup?: {
+    label: string;
+    lat: number;
+    lng: number;
+  };
+  /** The dropoff point of a transport booking. */
+  dropoff?: {
+    label: string;
+    lat: number;
+    lng: number;
+  };
   // Currency snapshot at time of booking
   currencyCode: string;
   fxRate: number;

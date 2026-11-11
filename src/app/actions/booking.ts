@@ -158,10 +158,14 @@ export async function createBooking(
       return { ok: false, error: "Quantity must be between 1 and 99" };
     }
 
-    // Validate travelers count matches adult + child
-    const expectedTravelers = input.adult + input.child;
-    if (input.travelers.length !== expectedTravelers) {
-      return { ok: false, error: `Expected ${expectedTravelers} traveler(s), got ${input.travelers.length}` };
+    // Validate travelers count matches adult + child — only when the names
+    // were given (the transport flow only asks for the number of passengers).
+    const travelers = input.travelers ?? [];
+    if (travelers.length > 0) {
+      const expectedTravelers = input.adult + input.child;
+      if (travelers.length !== expectedTravelers) {
+        return { ok: false, error: `Expected ${expectedTravelers} traveler(s), got ${travelers.length}` };
+      }
     }
 
     // Validate fxRate is positive and finite
@@ -291,6 +295,12 @@ export async function createBooking(
         discountUsdCents,
         taxes: taxes.lines as never,
         taxUsdCents: taxes.totalUsdCents,
+        pickupLabel: input.pickup?.label ?? null,
+        pickupLat: input.pickup?.lat ?? null,
+        pickupLng: input.pickup?.lng ?? null,
+        dropoffLabel: input.dropoff?.label ?? null,
+        dropoffLat: input.dropoff?.lat ?? null,
+        dropoffLng: input.dropoff?.lng ?? null,
       });
 
       // 2. BookingItem
@@ -347,8 +357,8 @@ export async function createBooking(
       });
 
       // 5. Traveler* (normalize names)
-      for (let i = 0; i < input.travelers.length; i++) {
-        const traveler = input.travelers[i];
+      for (let i = 0; i < travelers.length; i++) {
+        const traveler = travelers[i];
         if (traveler) {
           const travelerId = crypto.randomUUID();
           await db.orm.public.Traveler.create({

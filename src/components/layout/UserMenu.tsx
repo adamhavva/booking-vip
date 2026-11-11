@@ -46,8 +46,15 @@ export default function UserMenu({ solid }: { solid: boolean }) {
   }
 
   return (
-    <Link href="/login" className={className}>
-      Masuk
-    </Link>
+<div className="flex items-center justify-center gap-3 text-sm">
+  <Link href="/login" className={className}>
+    Masuk
+  </Link>
+  <span className="text-gray-300">|</span>
+  <Link href="/register" className={className}>
+    Daftar
+  </Link>
+</div>
+
   );
 }
