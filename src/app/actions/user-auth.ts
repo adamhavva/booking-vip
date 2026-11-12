@@ -253,10 +253,15 @@ export async function signInUserWithGoogle(idToken: string): Promise<void> {
   redirect("/");
 }
 
-/** Server action that drops the customer session. */
+/**
+ * Server action that drops the customer session.
+ *
+ * It deliberately does not redirect: the caller sends the browser to "/"
+ * with a full page load, so the header re-reads the session instead of
+ * keeping the signed-in state of the component that is already mounted.
+ */
 export async function signOutUser(): Promise<void> {
   await clearUserSessionCookie();
-  redirect("/");
 }
 
 /**
