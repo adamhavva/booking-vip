@@ -29,6 +29,7 @@ const catalogItems: NavItem[] = [
 
 const settingsItems: NavItem[] = [
   { href: "/admin/settings/popup", label: "Popup Homepage", icon: <ListIcon width={16} height={16} /> },
+  { href: "/admin/settings/tax", label: "Pajak", icon: <TagIcon width={16} height={16} /> },
 ];
 
 function isActive(pathname: string, href: string) {

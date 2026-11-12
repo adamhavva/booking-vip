@@ -8,6 +8,10 @@ import Container from "@/components/ui/Container";
 import { Toaster } from "@/components/ui/toast";
 import { getUserSession } from "@/lib/user/session";
 
+// The gate reads the session cookie and redirects guests — a request read
+// that can't be part of a static shell, so the area blocks on the server.
+export const instant = false;
+
 /**
  * The account shell.
  *
