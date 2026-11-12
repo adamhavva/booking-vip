@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import AccountPageHeader from "@/components/account/AccountPageHeader";
-import { getAccountOverview, getLoyaltyLevels, type AccountOverviewDTO } from "@/app/actions/account";
+import { getLoyaltyLevels } from "@/app/actions/account";
+import { useAccountOverview } from "@/components/providers/AccountProvider";
 import type { LoyaltyLevelDTO } from "@/lib/loyalty";
 
 /**
@@ -13,13 +14,11 @@ import type { LoyaltyLevelDTO } from "@/lib/loyalty";
  * from the next tier.
  */
 export default function LoyaltyPanel() {
-  const [overview, setOverview] = useState<AccountOverviewDTO | null>(null);
+  const { overview } = useAccountOverview();
   const [levels, setLevels] = useState<LoyaltyLevelDTO[]>([]);
 
   const load = useCallback(async () => {
-    const [data, tierList] = await Promise.all([getAccountOverview(), getLoyaltyLevels()]);
-    setOverview(data);
-    setLevels(tierList);
+    setLevels(await getLoyaltyLevels());
   }, []);
 
   useEffect(() => {

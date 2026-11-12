@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
+import { AccountProvider } from "@/components/providers/AccountProvider";
 import { LocaleProvider } from "@/components/providers/LocaleProvider";
 import "./globals.css";
 
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${figtree.variable} h-full`}>
       <body className="min-h-full bg-white text-ink antialiased">
-        <LocaleProvider>{children}</LocaleProvider>
+        <LocaleProvider>
+          <AccountProvider>{children}</AccountProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

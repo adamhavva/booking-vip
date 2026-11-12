@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/sections/Footer";
 import Container from "@/components/ui/Container";
+import AccountShell from "@/components/account/AccountShell";
 import { Toaster } from "@/components/ui/toast";
 import { getUserSession } from "@/lib/user/session";
 
@@ -28,7 +29,9 @@ export default async function AccountLayout({ children }: { children: ReactNode 
       <main className="min-h-screen bg-white">
         <Container className="py-8 md:py-12">
           <Suspense fallback={null}>
-            <AccountGate>{children}</AccountGate>
+            <AccountGate>
+              <AccountShell>{children}</AccountShell>
+            </AccountGate>
           </Suspense>
         </Container>
       </main>

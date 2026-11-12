@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   BellIcon,
@@ -12,7 +11,7 @@ import {
   TagIcon,
   UserIcon,
 } from "@/components/icons";
-import { getAccountOverview, type AccountOverviewDTO } from "@/app/actions/account";
+import { useAccountOverview } from "@/components/providers/AccountProvider";
 import SignOutButton from "@/components/account/SignOutButton";
 
 /**
@@ -70,21 +69,7 @@ const MENUS: MenuItem[] = [
 ];
 
 export default function AccountHub() {
-  const [overview, setOverview] = useState<AccountOverviewDTO | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const load = useCallback(async () => {
-    try {
-      const data = await getAccountOverview();
-      setOverview(data);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const { overview, loading } = useAccountOverview();
 
   const firstName = (overview?.name ?? "").split(" ")[0] || "Kamu";
   const level = overview?.level;

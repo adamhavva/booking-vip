@@ -1,15 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AccountPageHeader from "@/components/account/AccountPageHeader";
 import EmailVerificationBanner from "@/components/account/EmailVerificationBanner";
 import { showToast } from "@/components/ui/toast";
 import {
   changeAccountPassword,
-  getAccountOverview,
   updateAccountProfile,
-  type AccountOverviewDTO,
 } from "@/app/actions/account";
+import { useAccountOverview } from "@/components/providers/AccountProvider";
 
 /**
  * The profile page.
@@ -19,7 +18,7 @@ import {
  * read-only because it is the Firebase identity.
  */
 export default function ProfilePanel() {
-  const [overview, setOverview] = useState<AccountOverviewDTO | null>(null);
+  const { overview, refresh } = useAccountOverview();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
 
@@ -34,18 +33,13 @@ export default function ProfilePanel() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordField, setPasswordField] = useState<string | undefined>(undefined);
 
-  const load = useCallback(async () => {
-    const data = await getAccountOverview();
-    setOverview(data);
-    if (data) {
-      setName(data.name ?? "");
-      setPhone(data.phone ?? "");
-    }
-  }, []);
-
+  // The forms start from whatever the shared overview holds, and follow it
+  // when the row arrives or is refreshed after a save.
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (!overview) return;
+    setName(overview.name ?? "");
+    setPhone(overview.phone ?? "");
+  }, [overview]);
 
   const submitProfile = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,7 +55,7 @@ export default function ProfilePanel() {
       setProfileField(result.field);
     } else {
       showToast("Profil berhasil disimpan.");
-      void load();
+      void refresh();
     }
     setSavingProfile(false);
   };

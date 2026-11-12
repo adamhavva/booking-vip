@@ -2,41 +2,25 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { getAccountOverview, type AccountOverviewDTO } from "@/app/actions/account";
+import type { AccountOverviewDTO } from "@/app/actions/account";
 import { signOutUser } from "@/app/actions/user-auth";
+import { useAccountOverview } from "@/components/providers/AccountProvider";
 
 /**
  * The account control in the header.
  *
- * The session cookie is HttpOnly, so the header asks the server (through a
- * server action) who is signed in — once, after mount. That keeps every
- * public page statically renderable.
+ * The session cookie is HttpOnly, so who is signed in comes from the root
+ * `AccountProvider`, which asks the server once after mount. That keeps
+ * every public page statically renderable.
  *
  * Signed out it offers "Masuk / Daftar"; signed in it shows the initials of
  * the account and opens the account menu, so the sign-in links are never
  * shown to somebody who is already signed in.
  */
 export default function UserMenu({ solid }: { solid: boolean }) {
-  const [account, setAccount] = useState<AccountOverviewDTO | null>(null);
-  const [ready, setReady] = useState(false);
+  const { overview: account, loading } = useAccountOverview();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let active = true;
-    getAccountOverview()
-      .then((result) => {
-        if (!active) return;
-        setAccount(result);
-        setReady(true);
-      })
-      .catch(() => {
-        if (active) setReady(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
 
   // Close on an outside click or Escape — the same behaviour as Popover.
   useEffect(() => {
@@ -63,7 +47,7 @@ export default function UserMenu({ solid }: { solid: boolean }) {
 
   // Nothing is rendered until the session is known, so the signed-in header
   // never flashes the sign-in links.
-  if (!ready) {
+  if (loading) {
     return <div className="hidden h-9 w-9 rounded-full bg-white/20 lg:block" />;
   }
 
