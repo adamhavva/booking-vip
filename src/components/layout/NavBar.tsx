@@ -96,6 +96,20 @@ export default function NavBar({
           })}
           <li>
             <Link
+              href="/airport-vip"
+              className={`block whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
+                pathname === "/airport-vip"
+                  ? "bg-brand-soft text-brand"
+                  : solid
+                    ? "text-ink hover:bg-canvas"
+                    : "text-white/90 hover:bg-white/10"
+              }`}
+            >
+              Fast Track
+            </Link>
+          </li>
+          <li>
+            <Link
               href="/my-booking"
               className={`block whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
                 pathname === "/my-booking"
@@ -160,6 +174,20 @@ export default function NavBar({
                   </li>
                 );
               })}
+              <li>
+                <Link
+                  href="/airport-vip"
+                  className={`flex items-center gap-2 rounded-lg px-2 py-2.5 text-sm font-semibold ${
+                    pathname === "/airport-vip"
+                      ? "bg-brand-soft text-brand"
+                      : solid
+                        ? "text-ink"
+                        : "text-white/90"
+                  }`}
+                >
+                  Fast Track
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/my-booking"

@@ -435,7 +435,7 @@ const homeSections = [
   },
 ];
 
-const settingValues: Record<string, unknown> = {
+export const settingValues: Record<string, unknown> = {
   "hero.copy": {
     en: {
       heading1: en["hero.heading1"],
@@ -474,6 +474,63 @@ const settingValues: Record<string, unknown> = {
 
   // The three "how it works" steps of the e-VOA application form.
   "evoa.howItWorks": evoaHowItWorks,
+
+  // The booking rules of the airport VIP tool. One JSON key rather than one
+  // row per rule: `seedSettings` deletes every key it does not know about, and
+  // an object value can never be mistaken for a tax by `listTaxSettings`.
+  "booking.rules": {
+    minLeadHours: 24,
+    shortNoticePercent: 0,
+    overnightPercent: 30,
+    overnightFrom: "22:00",
+    overnightTo: "06:00",
+    weekendPercent: 0,
+    holidayPercent: 0,
+    infantDiscountPercent: 0,
+    childDiscountPercent: 0,
+  },
+
+  // What the greeter does, per airport. This belongs in `Product.included`,
+  // but that column is empty for every VIP product and writes to `Product`
+  // are blocked by the pending migration — the reader prefers the column the
+  // moment it is filled.
+  "vip.serviceInfo": {
+    default: {
+      steps: [
+        "Greeter menyambut kamu di ujung garbarata",
+        "Bantuan pengurusan Visa on Arrival bila diperlukan",
+        "Jalur khusus melewati imigrasi",
+        "Pengambilan seluruh bagasi tercatat",
+        "Pendampingan melewati bea cukai beserta porter",
+        "Pengantaran ke penjemput, sopir, atau area kedatangan",
+      ],
+      note: "Data paspor setiap penumpang mungkin diminta sebelum konfirmasi akhir. Pengambilan foto dan video dilarang di area imigrasi, bea cukai, dan pengambilan bagasi — ini aturan otoritas bandara.",
+    },
+    CGK: {
+      steps: [
+        "Greeter menyambut kamu di ujung garbarata",
+        "Bantuan pengurusan Visa on Arrival bila diperlukan",
+        "Jalur khusus melewati imigrasi",
+        "Pengambilan seluruh bagasi tercatat",
+        "Pendampingan melewati bea cukai beserta porter",
+        "Pengantaran ke penjemput hotel, sopir, atau penyambut",
+        "Pendampingan menunggu kendaraan tiba",
+        "Bantuan memuat bagasi ke kendaraan",
+      ],
+      note: "Buggy listrik tidak tersedia di CGK. Greeter membantu bagasi berukuran normal dalam jumlah wajar; porter tambahan dapat diatur dengan biaya terpisah. Penumpang penerbangan internasional wajib mengisi deklarasi bea cukai online di https://ecd.beacukai.go.id/ sebelum terbang dan menunjukkan QR code-nya kepada petugas.",
+    },
+    DPS: {
+      steps: [
+        "Greeter menyambut kamu di ujung garbarata",
+        "Bantuan pengurusan Visa on Arrival bila diperlukan",
+        "Jalur khusus melewati imigrasi",
+        "Pengambilan seluruh bagasi tercatat",
+        "Pendampingan melewati bea cukai beserta porter",
+        "Pengantaran ke area penjemputan",
+      ],
+      note: "Penumpang penerbangan internasional wajib mengisi deklarasi bea cukai online sebelum terbang. Buggy listrik tersedia terbatas dan tidak dijamin.",
+    },
+  },
 
   // Taxes — key → value. A value ending with "%" is a percentage of the
   // subtotal, a value starting with "$" is a fixed amount in USD.

@@ -7,8 +7,11 @@ import BottomTabBar from "@/components/sections/BottomTabBar";
 import Container from "@/components/ui/Container";
 import AirportVipWizard from "@/components/airport-vip/AirportVipWizard";
 import {
+  getBookingRules,
+  getServiceInfo,
   listWizardAirports,
   listWizardAirlines,
+  listWizardCountries,
   listWizardServices,
 } from "@/lib/airport-vip";
 
@@ -21,8 +24,9 @@ export const metadata: Metadata = {
 /**
  * The airport VIP booking tool.
  *
- * The flow mirrors the Asia Fast Track booking tool (airport → schedule →
- * flight → service → passenger → confirm), but the layout is our own.
+ * The flow mirrors the Asia Fast Track booking tool (country → airport →
+ * schedule → flight → service → passenger → confirm), but the layout is our
+ * own. The country narrows the airports, exactly as it does there.
  */
 export default function AirportVipPage() {
   return (
@@ -41,8 +45,8 @@ export default function AirportVipPage() {
               Booking Airport VIP Service
             </h1>
             <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-muted">
-              Enam langkah singkat: pilih bandara, jadwal, penerbangan, layanan,
-              data penumpang, lalu konfirmasi.
+              Tujuh langkah singkat: pilih negara, bandara, jadwal, penerbangan,
+              layanan, data penumpang, lalu konfirmasi.
             </p>
           </div>
 
@@ -65,17 +69,24 @@ export default function AirportVipPage() {
 async function AirportVipSection() {
   await connection();
 
-  const [airports, airlines, services] = await Promise.all([
-    listWizardAirports(),
-    listWizardAirlines(),
-    listWizardServices(),
-  ]);
+  const [countries, airports, airlines, services, rules, serviceInfo] =
+    await Promise.all([
+      listWizardCountries(),
+      listWizardAirports(),
+      listWizardAirlines(),
+      listWizardServices(),
+      getBookingRules(),
+      getServiceInfo(),
+    ]);
 
   return (
     <AirportVipWizard
+      countries={countries}
       airports={airports}
       airlines={airlines}
       services={services}
+      rules={rules}
+      serviceInfo={serviceInfo}
     />
   );
 }

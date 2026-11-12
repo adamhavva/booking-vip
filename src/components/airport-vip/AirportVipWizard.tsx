@@ -3,21 +3,42 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { createBooking } from "@/app/actions/booking";
+import PaxStepper from "@/components/booking/PaxStepper";
+import { useLocale } from "@/components/providers/LocaleProvider";
+import {
+  bookingRuleRows,
+  resolveServiceSteps,
+  type BookingRules,
+  type ServiceInfoMap,
+} from "@/lib/bookingRules";
 import type {
   AirportOption,
   AirportServiceOption,
   AirlineOption,
+  CountryOption,
 } from "@/lib/airport-vip";
 
 type Props = {
+  countries: CountryOption[];
   airports: AirportOption[];
   airlines: AirlineOption[];
   services: AirportServiceOption[];
+  rules: BookingRules;
+  /** The service steps and notes, keyed by IATA code plus "default". */
+  serviceInfo: ServiceInfoMap;
 };
 
-type Step = "airport" | "datetime" | "flight" | "service" | "passenger" | "confirm";
+type Step =
+  | "country"
+  | "airport"
+  | "datetime"
+  | "flight"
+  | "service"
+  | "passenger"
+  | "confirm";
 
 const STEPS: { key: Step; label: string }[] = [
+  { key: "country", label: "Negara" },
   { key: "airport", label: "Bandara" },
   { key: "datetime", label: "Jadwal" },
   { key: "flight", label: "Penerbangan" },
@@ -62,44 +83,123 @@ function Row({ label, value }: { label: string; value: string }) {
  * style. The prices come from the database (the lists are passed in by the
  * server component).
  */
-export default function AirportVipWizard({ airports, airlines, services }: Props) {
+export default function AirportVipWizard({
+  countries,
+  airports,
+  airlines,
+  services,
+  rules,
+  serviceInfo,
+}: Props) {
   const dates = useMemo(() => upcomingDates(90), []);
+  const { formatMoney } = useLocale();
 
-  const [step, setStep] = useState<Step>("airport");
+  // With a single country there is nothing to choose, so the wizard opens on
+  // the airport instead of a dead step. The pill stays in the rail and stays
+  // clickable, and the step works in full as soon as a second country exists.
+  const [country, setCountry] = useState(
+    countries.length === 1 ? countries[0].name : "",
+  );
+  const [step, setStep] = useState<Step>(
+    countries.length === 1 ? "airport" : "country",
+  );
   const [airportId, setAirportId] = useState("");
   const [direction, setDirection] = useState<"arrival" | "departure">("arrival");
   const [date, setDate] = useState(dates[0] ?? "");
   const [time, setTime] = useState("09:00");
   const [airlineCode, setAirlineCode] = useState("");
   const [flightCode, setFlightCode] = useState("");
-  const [serviceKey, setServiceKey] = useState(
-    services[0] ? `${services[0].slug}::${services[0].packageId}` : "",
-  );
+  const [serviceKey, setServiceKey] = useState("");
   const [adult, setAdult] = useState(1);
   const [child, setChild] = useState(0);
   const [leadName, setLeadName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
+  /** Add-on slug → quantity. Only entries with a quantity above 0 are kept. */
+  const [addOnQty, setAddOnQty] = useState<Record<string, number>>({});
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState<string | null>(null);
+
+  const visibleAirports = useMemo(
+    () => airports.filter((a) => a.country === country),
+    [airports, country],
+  );
+
+  /** Picking another airport invalidates the service and its add-ons. */
+  const chooseAirport = (id: string) => {
+    setAirportId(id);
+    setServiceKey("");
+    setAddOnQty({});
+  };
 
   const airport = airports.find((a) => a.id === airportId) ?? null;
   const airline = airlines.find((a) => a.code === airlineCode) ?? null;
   const service =
     services.find((s) => `${s.slug}::${s.packageId}` === serviceKey) ?? null;
 
+  const visibleServices = useMemo(
+    () => (airportId ? services.filter((s) => s.airportId === airportId) : []),
+    [services, airportId],
+  );
+
+  /** The services of this airport, grouped under their service type. */
+  const serviceGroups = useMemo(() => {
+    const groups = new Map<string, AirportServiceOption[]>();
+    for (const option of visibleServices) {
+      const bucket = groups.get(option.categoryName);
+      if (bucket) bucket.push(option);
+      else groups.set(option.categoryName, [option]);
+    }
+    return [...groups.entries()];
+  }, [visibleServices]);
+
+  const selectedAddOns = service
+    ? service.addOns.flatMap((a) => {
+        const qty = addOnQty[a.slug] ?? 0;
+        return qty > 0 ? [{ ...a, qty }] : [];
+      })
+    : [];
+
+  const addOnsUsdCents = selectedAddOns.reduce(
+    (sum, a) => sum + a.unitUsdCents * a.qty,
+    0,
+  );
+
   const totalUsdCents = service
-    ? service.adultUsdCents * adult + service.childUsdCents * child
+    ? service.adultUsdCents * adult + service.childUsdCents * child + addOnsUsdCents
     : 0;
+
+  const ruleRows = bookingRuleRows(
+    rules,
+    service ? { hours: service.leadTimeHours, days: service.leadTimeDays } : undefined,
+  );
+
+  const serviceSteps = service
+    ? resolveServiceSteps(serviceInfo, service.included, airport?.iataCode ?? null)
+    : [];
+
+  const airportNote = airport?.iataCode
+    ? (serviceInfo[airport.iataCode]?.note ?? serviceInfo.default?.note)
+    : serviceInfo.default?.note;
+
+  /** Changing the country drops an airport that no longer belongs to it. */
+  const chooseCountry = (name: string) => {
+    setCountry(name);
+    if (airportId && !airports.some((a) => a.id === airportId && a.country === name)) {
+      chooseAirport("");
+    }
+  };
 
   const stepIndex = STEPS.findIndex((s) => s.key === step);
 
   /** Can the customer leave the current step? */
   const canContinue = (): boolean => {
     switch (step) {
+      case "country":
+        return Boolean(country);
       case "airport":
         return Boolean(airportId);
       case "datetime":
@@ -146,7 +246,7 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
       adult,
       child,
       infant: 0,
-      addOns: [],
+      addOns: selectedAddOns.map((a) => ({ slug: a.slug, qty: a.qty })),
       contact: {
         firstName: leadName.trim(),
         lastName: "",
@@ -261,7 +361,47 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="rounded-2xl border border-line bg-white p-6">
-          {/* Step 1 — Airport */}
+          {/* Step 1 — Country */}
+          {step === "country" ? (
+            <div>
+              <h2 className="text-[17px] font-bold tracking-[-0.01em] text-ink">
+                Negara tujuan
+              </h2>
+              <p className="mt-1.5 text-[13px] text-muted">
+                Pilih negara, lalu kami tampilkan bandara yang kami layani di sana.
+              </p>
+
+              {countries.length === 0 ? (
+                <p className="mt-5 rounded-xl border border-line bg-canvas px-4 py-3 text-[13px] text-muted">
+                  Belum ada bandara yang aktif. Hubungi kami untuk permintaan khusus.
+                </p>
+              ) : (
+                <div className="mt-5 space-y-2">
+                  {countries.map((c) => (
+                    <button
+                      key={c.name}
+                      type="button"
+                      onClick={() => chooseCountry(c.name)}
+                      className={`flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${
+                        country === c.name
+                          ? "border-brand bg-brand-soft"
+                          : "border-line bg-white hover:bg-canvas"
+                      }`}
+                    >
+                      <span className="block text-[14px] font-semibold text-ink">
+                        {c.name}
+                      </span>
+                      <span className="shrink-0 text-[12px] text-muted">
+                        {c.airportCount} bandara
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : null}
+
+          {/* Step 2 — Airport */}
           {step === "airport" ? (
             <div>
               <h2 className="text-[17px] font-bold tracking-[-0.01em] text-ink">
@@ -289,11 +429,11 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
               </div>
 
               <div className="mt-5 space-y-2">
-                {airports.map((a) => (
+                {visibleAirports.map((a) => (
                   <button
                     key={a.id}
                     type="button"
-                    onClick={() => setAirportId(a.id)}
+                    onClick={() => chooseAirport(a.id)}
                     className={`flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${
                       airportId === a.id
                         ? "border-brand bg-brand-soft"
@@ -317,7 +457,7 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
             </div>
           ) : null}
 
-          {/* Step 2 — Date & time */}
+          {/* Step 3 — Date & time */}
           {step === "datetime" ? (
             <div>
               <h2 className="text-[17px] font-bold tracking-[-0.01em] text-ink">
@@ -368,7 +508,7 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
             </div>
           ) : null}
 
-          {/* Step 3 — Flight */}
+          {/* Step 4 — Flight */}
           {step === "flight" ? (
             <div>
               <h2 className="text-[17px] font-bold tracking-[-0.01em] text-ink">
@@ -413,7 +553,7 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
             </div>
           ) : null}
 
-          {/* Step 4 — Service */}
+          {/* Step 5 — Service */}
           {step === "service" ? (
             <div>
               <h2 className="text-[17px] font-bold tracking-[-0.01em] text-ink">
@@ -423,8 +563,22 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
                 Harga per penumpang, mengikuti data di database.
               </p>
 
-              <div className="mt-5 space-y-2.5">
-                {services.map((s) => {
+              {serviceGroups.length === 0 ? (
+                <p className="mt-5 rounded-xl border border-line bg-canvas px-4 py-3 text-[13px] text-muted">
+                  Belum ada layanan untuk bandara ini. Pilih bandara lain atau
+                  hubungi kami untuk permintaan khusus.
+                </p>
+              ) : null}
+
+              <div className="mt-5 space-y-5">
+                {serviceGroups.map(([category, options]) => (
+                  <div key={category}>
+                    <h3 className="text-[12px] font-semibold uppercase tracking-[0.06em] text-muted">
+                      {category}
+                    </h3>
+
+                    <div className="mt-2 space-y-2.5">
+                {options.map((s) => {
                   const value = `${s.slug}::${s.packageId}`;
                   const active = value === serviceKey;
 
@@ -449,16 +603,105 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
                         </span>
                       </span>
                       <span className="shrink-0 text-[14px] font-bold text-ink">
-                        ${((s.adultUsdCents || s.childUsdCents) / 100).toFixed(2)}
+                        {formatMoney((s.adultUsdCents || s.childUsdCents) / 100)}
                       </span>
                     </button>
                   );
                 })}
+                    </div>
+                  </div>
+                ))}
               </div>
+
+              {service ? (
+                <>
+                  {/* Service description */}
+                  <section className="mt-6 rounded-xl border border-line bg-canvas p-5">
+                    <h3 className="text-[14px] font-bold tracking-[-0.01em] text-ink">
+                      Rincian layanan
+                    </h3>
+                    <p className="mt-0.5 text-[12px] text-muted">
+                      {airport
+                        ? `${airport.name}${airport.iataCode ? ` (${airport.iataCode})` : ""}`
+                        : service.title}
+                    </p>
+
+                    {service.description ? (
+                      <p className="mt-3 text-[13px] leading-relaxed text-ink">
+                        {service.description}
+                      </p>
+                    ) : null}
+
+                    {serviceSteps.length > 0 ? (
+                      <ol className="mt-3 space-y-1.5">
+                        {serviceSteps.map((item, index) => (
+                          <li key={item} className="flex gap-2.5 text-[13px] text-ink">
+                            <span className="shrink-0 font-semibold text-brand">
+                              {index + 1}.
+                            </span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    ) : null}
+
+                    {service.requirements.length > 0 ? (
+                      <div className="mt-4 border-t border-line pt-3">
+                        <p className="text-[12px] font-semibold text-ink">
+                          Yang perlu kamu siapkan
+                        </p>
+                        <ul className="mt-1.5 space-y-1">
+                          {service.requirements.map((item) => (
+                            <li key={item} className="text-[12px] text-muted">
+                              · {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+
+                    {airportNote ? (
+                      <p className="mt-4 border-t border-line pt-3 text-[12px] leading-relaxed text-muted">
+                        <span className="font-semibold text-ink">
+                          Catatan {airport?.iataCode}.
+                        </span>{" "}
+                        {airportNote}
+                      </p>
+                    ) : null}
+                  </section>
+
+                  {/* Optional add-ons */}
+                  {service.addOns.length > 0 ? (
+                    <section className="mt-4">
+                      <h3 className="text-[14px] font-bold tracking-[-0.01em] text-ink">
+                        Layanan tambahan
+                      </h3>
+                      <p className="mt-0.5 text-[12px] text-muted">
+                        Opsional — harganya langsung masuk ke total.
+                      </p>
+
+                      <div className="mt-3 space-y-2">
+                        {service.addOns.map((a) => (
+                          <PaxStepper
+                            key={a.slug}
+                            label={a.title}
+                            price={`${formatMoney(a.unitUsdCents / 100)} per unit`}
+                            value={addOnQty[a.slug] ?? 0}
+                            max={10}
+                            onChange={(next) =>
+                              setAddOnQty((prev) => ({ ...prev, [a.slug]: next }))
+                            }
+                          />
+                        ))}
+                      </div>
+                    </section>
+                  ) : null}
+                </>
+              ) : null}
             </div>
           ) : null}
 
-          {/* Step 5 — Passengers */}
+          {/* Step 6 — Passengers */}
           {step === "passenger" ? (
             <div>
               <h2 className="text-[17px] font-bold tracking-[-0.01em] text-ink">
@@ -547,7 +790,7 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
             </div>
           ) : null}
 
-          {/* Step 6 — Confirm */}
+          {/* Step 7 — Confirm */}
           {step === "confirm" ? (
             <div>
               <h2 className="text-[17px] font-bold tracking-[-0.01em] text-ink">
@@ -558,6 +801,7 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
               </p>
 
               <dl className="mt-5 divide-y divide-line border-y border-line">
+                <Row label="Negara" value={country || "—"} />
                 <Row
                   label="Bandara"
                   value={airport ? `${airport.name} (${airport.city})` : "—"}
@@ -596,6 +840,13 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
                   label="Penumpang"
                   value={`${adult} dewasa${child > 0 ? `, ${child} anak` : ""}`}
                 />
+                {selectedAddOns.map((a) => (
+                  <Row
+                    key={a.slug}
+                    label="Tambahan"
+                    value={`${a.title} ×${a.qty}`}
+                  />
+                ))}
                 <Row label="Nama" value={leadName || "—"} />
                 <Row label="Email" value={email || "—"} />
                 <Row label="Telepon" value={phone || "—"} />
@@ -651,6 +902,12 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
 
             <dl className="mt-4 space-y-2.5 text-[13px]">
               <div className="flex items-center justify-between gap-4">
+                <dt className="text-muted">Negara</dt>
+                <dd className="text-right font-medium text-ink">
+                  {country || "—"}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-4">
                 <dt className="text-muted">Bandara</dt>
                 <dd className="text-right font-medium text-ink">
                   {airport?.city ?? "—"}
@@ -676,16 +933,60 @@ export default function AirportVipWizard({ airports, airlines, services }: Props
               </div>
             </dl>
 
-            <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-              <span className="text-[13px] font-semibold text-ink">Total</span>
-              <span className="text-[18px] font-bold text-ink">
-                ${(totalUsdCents / 100).toFixed(2)}
-              </span>
+            {selectedAddOns.length > 0 ? (
+              <dl className="mt-3 space-y-1.5 border-t border-line pt-3 text-[12px]">
+                {selectedAddOns.map((a) => (
+                  <div key={a.slug} className="flex items-center justify-between gap-4">
+                    <dt className="text-muted">
+                      {a.title} ×{a.qty}
+                    </dt>
+                    <dd className="text-right text-ink">
+                      {formatMoney((a.unitUsdCents * a.qty) / 100)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+
+            {/* Base price */}
+            <div className="mt-4 border-t border-line pt-4">
+              <span className="text-[12px] text-muted">Harga dasar</span>
+              <p className="mt-0.5 text-[24px] font-bold tracking-[-0.02em] text-ink">
+                {formatMoney(totalUsdCents / 100)}
+              </p>
+              <p className="mt-1 text-[12px] text-muted">
+                {service
+                  ? `${service.title} · ${adult + child} penumpang`
+                  : "Pilih layanan untuk melihat harga"}
+              </p>
             </div>
 
             <p className="mt-3 text-[11px] leading-relaxed text-muted">
-              Harga akhir dihitung di server dan sudah termasuk pajak yang berlaku.
+              Harga di atas belum termasuk biaya pemesanan mendadak, tengah malam,
+              akhir pekan, atau hari libur bila berlaku. Total akhir dihitung di
+              server beserta pajak yang berlaku.
             </p>
+          </div>
+
+          {/* Booking rules */}
+          <div className="mt-4 rounded-2xl border border-line bg-white p-5">
+            <h2 className="text-[15px] font-bold tracking-[-0.01em] text-ink">
+              Aturan pemesanan
+            </h2>
+
+            <dl className="mt-3 divide-y divide-line text-[12px]">
+              {ruleRows.map((row) => (
+                <div
+                  key={row.label}
+                  className="flex items-start justify-between gap-4 py-2"
+                >
+                  <dt className="text-muted">{row.label}</dt>
+                  <dd className="shrink-0 text-right font-medium text-ink">
+                    {row.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </aside>
       </div>

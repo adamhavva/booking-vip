@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { CheckIcon } from "@/components/icons";
 import type { ServicePage } from "@/types";
 import { useLocale } from "@/components/providers/LocaleProvider";
@@ -9,7 +10,14 @@ import { formatDateLabel, localeFor } from "@/lib/format";
 /**
  * Sidebar booking panel for the service pages.
  * Pre-filled from the submitted search; submitting shows a confirmation state.
+ *
+ * A line that has a real booking tool sends the customer there instead: the
+ * form below writes nothing, so offering it next to a working tool would be
+ * a dead end.
  */
+const BOOKING_TOOL_HREF: Record<string, string> = {
+  "vip-service": "/airport-vip",
+};
 export default function BookingPanel({
   service,
   initial = {},
@@ -58,6 +66,8 @@ export default function BookingPanel({
   }
 
   if (!open) {
+    const toolHref = BOOKING_TOOL_HREF[service.slug];
+
     return (
       <aside className="h-fit rounded-2xl border border-line bg-canvas p-5">
         <h3 className="text-sm font-bold text-ink">{t("bookingPanel.availableOptions")}</h3>
@@ -71,15 +81,33 @@ export default function BookingPanel({
             </li>
           ))}
         </ul>
-        <p className="mt-4 text-xs text-muted">
-          {t("bookingPanel.placeholder")}
-        </p>
-        <button
-          onClick={() => setOpen(true)}
-          className="mt-4 w-full rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-brand-dark"
-        >
-          {t("bookingPanel.startBooking")}
-        </button>
+
+        {toolHref ? (
+          <>
+            <p className="mt-4 text-xs text-muted">
+              Pesan lewat tool kami: pilih negara, bandara, jadwal, layanan, lalu
+              konfirmasi.
+            </p>
+            <Link
+              href={toolHref}
+              className="mt-4 block w-full rounded-xl bg-brand px-4 py-2.5 text-center text-sm font-bold text-white shadow-sm hover:bg-brand-dark"
+            >
+              {t("bookingPanel.startBooking")}
+            </Link>
+          </>
+        ) : (
+          <>
+            <p className="mt-4 text-xs text-muted">
+              {t("bookingPanel.placeholder")}
+            </p>
+            <button
+              onClick={() => setOpen(true)}
+              className="mt-4 w-full rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-brand-dark"
+            >
+              {t("bookingPanel.startBooking")}
+            </button>
+          </>
+        )}
       </aside>
     );
   }
