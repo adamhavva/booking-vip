@@ -295,34 +295,10 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
  * For serviceType, optionally scope by lineSlug.
  */
 export async function getOptions(
-  kind:
-    | "airport"
-    | "city"
-    | "area"
-    | "destination"
-    | "serviceType"
-    | "airline"
-    | "country"
-    | "placeCountry",
+  kind: "airport" | "city" | "area" | "destination" | "serviceType" | "airline" | "country",
   lineSlug?: string
 ): Promise<OptionDTO[]> {
   try {
-    // The countries we actually fly from — distinct `Airport.country` rather
-    // than the `Country` table, so the list can never offer a country with no
-    // airport behind it. (`country` stays the dial-code list used by eVOA.)
-    if (kind === "placeCountry") {
-      const rows = await db.orm.public.Airport
-        .select("country")
-        .where((f) => f.active.eq(true))
-        .where((f) => f.kind.eq("airport"))
-        .all();
-
-      const names = [...new Set(rows.map((r) => r.country?.trim()).filter(Boolean))] as string[];
-      return names
-        .sort((a, b) => a.localeCompare(b))
-        .map((name) => ({ value: name, label: name }));
-    }
-
     if (kind === "airport") {
       const rows = await db.orm.public.Airport
         .select("iataCode", "name")
@@ -413,8 +389,6 @@ export async function getOptions(
  */
 export async function getPlaceOptions(
   kind: PlaceKind | PlaceKind[],
-  /** Keep only the places of this country — used by the airport dropdown. */
-  country?: string,
 ): Promise<PlaceNode[]> {
   try {
     const rows = await db.orm.public.Airport
@@ -423,12 +397,7 @@ export async function getPlaceOptions(
       .orderBy((f) => f.sortOrder.asc())
       .all();
 
-    // Filtering before the tree is built keeps a parent from another country
-    // out of the result; `buildPlaceTree` turns an orphan into a root, so the
-    // remaining places stay selectable.
-    const scoped = country ? rows.filter((r) => r.country === country) : rows;
-
-    const tree = buildPlaceTree(scoped);
+    const tree = buildPlaceTree(rows);
 
     return filterPlaceTree(tree, kind);
   } catch (error) {

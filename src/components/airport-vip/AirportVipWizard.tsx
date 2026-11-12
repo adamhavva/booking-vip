@@ -38,7 +38,7 @@ type Step =
   | "confirm";
 
 const STEPS: { key: Step; label: string }[] = [
-  { key: "country", label: "Negara" },
+  { key: "country", label: "Asal Negara" },
   { key: "airport", label: "Bandara" },
   { key: "datetime", label: "Jadwal" },
   { key: "flight", label: "Penerbangan" },
@@ -94,15 +94,9 @@ export default function AirportVipWizard({
   const dates = useMemo(() => upcomingDates(90), []);
   const { formatMoney } = useLocale();
 
-  // With a single country there is nothing to choose, so the wizard opens on
-  // the airport instead of a dead step. The pill stays in the rail and stays
-  // clickable, and the step works in full as soon as a second country exists.
-  const [country, setCountry] = useState(
-    countries.length === 1 ? countries[0].name : "",
-  );
-  const [step, setStep] = useState<Step>(
-    countries.length === 1 ? "airport" : "country",
-  );
+  /** Where the traveller is from — not where the airport is. */
+  const [country, setCountry] = useState("");
+  const [step, setStep] = useState<Step>("country");
   const [airportId, setAirportId] = useState("");
   const [direction, setDirection] = useState<"arrival" | "departure">("arrival");
   const [date, setDate] = useState(dates[0] ?? "");
@@ -122,11 +116,6 @@ export default function AirportVipWizard({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState<string | null>(null);
-
-  const visibleAirports = useMemo(
-    () => airports.filter((a) => a.country === country),
-    [airports, country],
-  );
 
   /** Picking another airport invalidates the service and its add-ons. */
   const chooseAirport = (id: string) => {
@@ -186,12 +175,7 @@ export default function AirportVipWizard({
     : serviceInfo.default?.note;
 
   /** Changing the country drops an airport that no longer belongs to it. */
-  const chooseCountry = (name: string) => {
-    setCountry(name);
-    if (airportId && !airports.some((a) => a.id === airportId && a.country === name)) {
-      chooseAirport("");
-    }
-  };
+
 
   const stepIndex = STEPS.findIndex((s) => s.key === step);
 
@@ -239,6 +223,17 @@ export default function AirportVipWizard({
       return;
     }
 
+    // The traveller's country has no column of its own — `Contact` has no
+    // nationality field and adding one needs the migration that is still
+    // pending — so it is written into the note the operator reads, clearly
+    // labelled, instead of being dropped.
+    const contactNote = [
+      country ? `Asal negara: ${country}` : "",
+      notes.trim(),
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
     const result = await createBooking({
       productSlug: service.slug,
       packageId: service.packageId,
@@ -254,7 +249,7 @@ export default function AirportVipWizard({
         phoneCountryCode: "ID",
         phone: phone.trim(),
         isGuestSelf: false,
-        notes: notes.trim() || undefined,
+        notes: contactNote || undefined,
       },
       flight: {
         airportName: airport
@@ -365,15 +360,17 @@ export default function AirportVipWizard({
           {step === "country" ? (
             <div>
               <h2 className="text-[17px] font-bold tracking-[-0.01em] text-ink">
-                Negara tujuan
+                Kamu datang dari negara mana?
               </h2>
               <p className="mt-1.5 text-[13px] text-muted">
-                Pilih negara, lalu kami tampilkan bandara yang kami layani di sana.
+                Kami perlu tahu kewarganegaraan kamu untuk menyiapkan jalur
+                imigrasi dan Visa on Arrival bila diperlukan. Layanan kami ada
+                di bandara-bandara Indonesia.
               </p>
 
               {countries.length === 0 ? (
                 <p className="mt-5 rounded-xl border border-line bg-canvas px-4 py-3 text-[13px] text-muted">
-                  Belum ada bandara yang aktif. Hubungi kami untuk permintaan khusus.
+                  Daftar negara belum tersedia. Hubungi kami untuk permintaan khusus.
                 </p>
               ) : (
                 <div className="mt-5 space-y-2">
@@ -381,7 +378,7 @@ export default function AirportVipWizard({
                     <button
                       key={c.name}
                       type="button"
-                      onClick={() => chooseCountry(c.name)}
+                      onClick={() => setCountry(c.name)}
                       className={`flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${
                         country === c.name
                           ? "border-brand bg-brand-soft"
@@ -391,8 +388,8 @@ export default function AirportVipWizard({
                       <span className="block text-[14px] font-semibold text-ink">
                         {c.name}
                       </span>
-                      <span className="shrink-0 text-[12px] text-muted">
-                        {c.airportCount} bandara
+                      <span className="shrink-0 font-mono text-[11px] text-muted">
+                        {c.code}
                       </span>
                     </button>
                   ))}
@@ -429,7 +426,7 @@ export default function AirportVipWizard({
               </div>
 
               <div className="mt-5 space-y-2">
-                {visibleAirports.map((a) => (
+                {airports.map((a) => (
                   <button
                     key={a.id}
                     type="button"
@@ -801,7 +798,7 @@ export default function AirportVipWizard({
               </p>
 
               <dl className="mt-5 divide-y divide-line border-y border-line">
-                <Row label="Negara" value={country || "—"} />
+                <Row label="Asal negara" value={country || "—"} />
                 <Row
                   label="Bandara"
                   value={airport ? `${airport.name} (${airport.city})` : "—"}
@@ -902,7 +899,7 @@ export default function AirportVipWizard({
 
             <dl className="mt-4 space-y-2.5 text-[13px]">
               <div className="flex items-center justify-between gap-4">
-                <dt className="text-muted">Negara</dt>
+                <dt className="text-muted">Asal negara</dt>
                 <dd className="text-right font-medium text-ink">
                   {country || "—"}
                 </dd>

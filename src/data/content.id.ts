@@ -237,9 +237,9 @@ export const searchFieldCopyId: Record<
   string,
   { label: string; placeholder: string }
 > = {
-  "vip-service:country": {
-    label: "Negara",
-    placeholder: "Pilih negara",
+  "vip-service:nationality": {
+    label: "Asal Negara",
+    placeholder: "Pilih negara asal",
   },
   "vip-service:airport": {
     label: "Bandara",

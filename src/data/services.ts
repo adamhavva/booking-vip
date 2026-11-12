@@ -42,11 +42,11 @@ export const serviceNav: ServiceNavItem[] = [
 export const serviceSearchFields: Record<string, ServiceSearchField[]> = {
   "Airport VIP Service": [
     {
-      key: "country",
-      label: "Country",
-      placeholder: "Select country",
-      icon: "pin",
-      kind: "select-place-country",
+      key: "nationality",
+      label: "Country of Origin",
+      placeholder: "Select your country",
+      icon: "users",
+      kind: "select-country",
     },
     {
       key: "airport",
