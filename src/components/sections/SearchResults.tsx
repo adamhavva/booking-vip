@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Container from "@/components/ui/Container";
 import Thumb from "@/components/ui/Thumb";
 import { ArrowRightIcon, SearchIcon } from "@/components/icons";
-import { searchAll } from "@/data/search";
+import { searchCatalog } from "@/app/actions/search";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import type { SearchResult } from "@/types";
 
 export default function SearchResults() {
   const params = useSearchParams();
@@ -16,7 +17,30 @@ export default function SearchResults() {
   const [query, setQuery] = useState(q);
   const { formatMoney, t } = useLocale();
 
-  const results = useMemo(() => searchAll(q), [q]);
+  // The results come from the database through the `searchCatalog` action,
+  // so the page stays static and fetches from the client.
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!q) {
+      setResults([]);
+      return;
+    }
+
+    let active = true;
+    setLoading(true);
+
+    void searchCatalog(q).then((rows) => {
+      if (!active) return;
+      setResults(rows);
+      setLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [q]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,11 +68,19 @@ export default function SearchResults() {
         />
       </form>
 
-      {q && (
+      {q && !loading && (
         <p className="mt-4 text-sm text-muted">
           {t("search.resultsCount", { n: results.length, plural: results.length === 1 ? "" : "s" })}{" "}
           <span className="font-semibold text-ink">&ldquo;{q}&rdquo;</span>
         </p>
+      )}
+
+      {q && loading && (
+        <ul className="mt-4 space-y-3">
+          {[0, 1, 2].map((row) => (
+            <li key={row} className="h-20 rounded-xl border border-line bg-white" />
+          ))}
+        </ul>
       )}
 
       {!q && (
@@ -58,7 +90,7 @@ export default function SearchResults() {
       )}
 
       <ul className="mt-4 space-y-3">
-        {results.map((r) => (
+        {!loading && results.map((r) => (
           <li key={`${r.kind}-${r.title}`}>
             <Link
               href={r.href}

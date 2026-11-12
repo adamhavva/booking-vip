@@ -1,11 +1,25 @@
 import Container from "@/components/ui/Container";
-import { seoBlocks } from "@/data/home";
+import { seoBlocks as staticSeoBlocks } from "@/data/home";
+import type { SeoBlockDTO } from "@/types";
 
-export default function SeoContent() {
+/**
+ * SEO body copy. DB-backed (`SeoBlock` table) when available, falls back to
+ * the static blocks otherwise — rendered server-side (English) so it stays
+ * crawlable.
+ */
+export default function SeoContent({ blocks }: { blocks?: SeoBlockDTO[] }) {
+  const resolved =
+    blocks && blocks.length > 0
+      ? blocks.map((b) => ({
+          title: b.title.en,
+          sections: b.sections.map((s) => ({ h: s.heading.en, p: s.body.en })),
+        }))
+      : staticSeoBlocks;
+
   return (
     <section className="bg-canvas">
       <Container className="space-y-10 py-12">
-        {seoBlocks.map((block) => (
+        {resolved.map((block) => (
           <div key={block.title}>
             <h2 className="mb-5 text-xl font-extrabold text-ink md:text-2xl">
               {block.title}

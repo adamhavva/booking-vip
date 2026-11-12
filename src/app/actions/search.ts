@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/prisma/db";
+import type { SearchResult } from "@/types";
 
 export type StoredSearch = {
   id: string;
@@ -106,6 +107,110 @@ export async function getRecentSearches(
     }));
   } catch (error) {
     console.error("[search] could not load recent searches", error);
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Catalog search
+// ---------------------------------------------------------------------------
+
+/**
+ * Free-text search across the catalog.
+ *
+ * Matches products on title/description and promos on their copy, then builds
+ * the result links from the service line each row belongs to. Returns an
+ * empty list on any error so the search page keeps rendering.
+ */
+export async function searchCatalog(query: string): Promise<SearchResult[]> {
+  const q = query.trim();
+  if (!q) return [];
+
+  try {
+    const lines = await db.orm.public.ServiceLine
+      .select("id", "slug", "label")
+      .all();
+    const lineById = new Map(lines.map((l) => [l.id, l]));
+
+    const products = await db.orm.public.Product
+      .select(
+        "slug",
+        "title",
+        "description",
+        "tone",
+        "lineId",
+        "serviceTypeId",
+        "airportId",
+        "fromPriceUsdCents",
+      )
+      .where((f) => f.active.eq(true))
+      .where((f) => f.isAddOn.eq(false))
+      .all();
+
+    const needle = q.toLowerCase();
+
+    const matched = products.filter((p) => {
+      const line = lineById.get(p.lineId);
+      return (
+        p.title.toLowerCase().includes(needle) ||
+        p.description.toLowerCase().includes(needle) ||
+        (line?.label ?? "").toLowerCase().includes(needle)
+      );
+    });
+
+    // The place of each match, for the subtitle.
+    const placeIds = [
+      ...new Set(matched.map((p) => p.airportId).filter((id): id is string => id != null)),
+    ];
+    const placeById = new Map<string, string>();
+    if (placeIds.length > 0) {
+      const places = await db.orm.public.Airport
+        .select("id", "name", "city")
+        .where((f) => f.id.in(placeIds))
+        .all();
+      for (const place of places) {
+        placeById.set(place.id, place.city || place.name);
+      }
+    }
+
+    const results: SearchResult[] = matched.flatMap((p) => {
+      const line = lineById.get(p.lineId);
+      if (!line) return [];
+      return [
+        {
+          kind: line.label,
+          title: p.title,
+          subtitle: p.airportId ? (placeById.get(p.airportId) ?? "") : p.description,
+          href: `/${line.slug}/${p.slug}`,
+          tone: p.tone,
+          priceUsd:
+            p.fromPriceUsdCents != null ? p.fromPriceUsdCents / 100 : undefined,
+        },
+      ];
+    });
+
+    // Promos matching the query, linking to the line they belong to.
+    const promos = await db.orm.public.Promo
+      .select("slug", "titleEn", "subtitleEn", "tone", "lineId")
+      .where((f) => f.active.eq(true))
+      .all();
+
+    for (const promo of promos) {
+      const haystack = `${promo.titleEn} ${promo.subtitleEn ?? ""}`.toLowerCase();
+      if (!haystack.includes(needle)) continue;
+      const line = promo.lineId ? lineById.get(promo.lineId) : null;
+      results.push({
+        kind: "Promo",
+        title: promo.titleEn,
+        subtitle: promo.subtitleEn ?? "",
+        href: line ? `/${line.slug}` : "/",
+        tone: promo.tone,
+      });
+    }
+
+    return results;
+  } catch (error) {
+    console.error("[search] could not search the catalog", error);
     return [];
   }
 }

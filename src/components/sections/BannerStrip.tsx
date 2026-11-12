@@ -2,8 +2,10 @@
 
 import Image from "next/image";
 import Container from "@/components/ui/Container";
+import { copyText } from "@/lib/content";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { DictKey } from "@/i18n";
+import type { CopyDTO } from "@/types";
 
 export default function BannerStrip({
   title,
@@ -14,6 +16,9 @@ export default function BannerStrip({
   titleKey,
   subtitleKey,
   ctaKey,
+  titleCopy,
+  subtitleCopy,
+  ctaCopy,
   imageUrl,
   href,
 }: {
@@ -25,15 +30,23 @@ export default function BannerStrip({
   titleKey?: DictKey;
   subtitleKey?: DictKey;
   ctaKey?: DictKey;
+  /** DB-backed bilingual copy (`Banner` table) — wins over `title`/`titleKey`. */
+  titleCopy?: CopyDTO | null;
+  subtitleCopy?: CopyDTO | null;
+  ctaCopy?: CopyDTO | null;
   /** Photo behind the banner — a gradient is used when there is none. */
   imageUrl?: string | null;
   href?: string | null;
 }) {
-  const { t } = useLocale();
+  const { t, lang } = useLocale();
 
-  const resolvedTitle = titleKey ? t(titleKey) : title;
-  const resolvedSubtitle = subtitleKey ? t(subtitleKey) : subtitle;
-  const resolvedCta = ctaKey ? t(ctaKey) : cta;
+  const resolvedTitle = titleCopy ? copyText(titleCopy, lang) : titleKey ? t(titleKey) : title;
+  const resolvedSubtitle = subtitleCopy
+    ? copyText(subtitleCopy, lang)
+    : subtitleKey
+      ? t(subtitleKey)
+      : subtitle;
+  const resolvedCta = ctaCopy ? copyText(ctaCopy, lang) : ctaKey ? t(ctaKey) : cta;
 
   return (
     <Container className="py-4">

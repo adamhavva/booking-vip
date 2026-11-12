@@ -1,19 +1,32 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { connection } from "next/server";
 import Link from "next/link";
 import ServiceLayout from "@/components/sections/ServiceLayout";
+import ServiceLayoutSkeleton from "@/components/sections/ServiceLayoutSkeleton";
+import { getServiceLineContent } from "@/app/actions/content";
+import { toServicePage } from "@/lib/servicePage";
 import { servicePages } from "@/data/services";
 
-const service = servicePages["evoa"];
+const fallback = servicePages["evoa"];
 
 export const metadata: Metadata = {
-  title: `${service.title} - Booking VIP`,
-  description: service.intro,
+  title: `${fallback.title} - Booking VIP`,
+  description: fallback.intro,
 };
 
+/**
+ * The eVOA index.
+ *
+ * The copy comes from the `ServiceLine` row inside a Suspense boundary; the
+ * application call-to-action below is fixed copy of the page itself.
+ */
 export default function EvoaPage() {
   return (
     <>
-      <ServiceLayout service={service} />
+      <Suspense fallback={<ServiceLayoutSkeleton />}>
+        <EvoaBody />
+      </Suspense>
 
       {/* The visa application service */}
       <section className="border-t border-line bg-canvas/50 py-10 md:py-14">
@@ -39,4 +52,11 @@ export default function EvoaPage() {
       </section>
     </>
   );
+}
+
+async function EvoaBody() {
+  await connection();
+
+  const line = await getServiceLineContent("evoa");
+  return <ServiceLayout service={toServicePage("evoa", line)} />;
 }

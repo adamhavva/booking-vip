@@ -1,11 +1,10 @@
+import { Suspense } from "react";
+import { connection } from "next/server";
 import {
   ArticleCard,
   DestinationCard,
-  EvoaCard,
   PromoCard,
-  TourCard,
-  TransportCard,
-  VipServiceCard,
+  ProductCard,
 } from "@/components/cards";
 import BottomTabBar from "@/components/sections/BottomTabBar";
 import BannerStrip from "@/components/sections/BannerStrip";
@@ -19,21 +18,47 @@ import SeoLinkGrid from "@/components/sections/SeoLinkGrid";
 // import StickyAppBanner from "@/components/sections/StickyAppBanner";
 import Carousel from "@/components/ui/Carousel";
 import Header from "@/components/layout/Header";
+import { getHomeContent } from "@/app/actions/content";
 import {
-  articles,
-  destinations,
-  evoaPlans,
-  promos,
-  promoTabs,
-  recommendationLinks,
-  recommendationTabs,
-  serviceSeoLinks,
-  serviceSeoTabs,
-  tours,
-  transports,
-  vipServices,
+  recommendationLinks as staticRecommendationLinks,
+  recommendationTabs as staticRecommendationTabs,
+  serviceSeoLinks as staticServiceSeoLinks,
+  serviceSeoTabs as staticServiceSeoTabs,
 } from "@/data/home";
+import type { CatalogDTO, HomeContentDTO, SeoLinkDTO } from "@/types";
 
+/** Tabs of a service line — "All" + each English tab, DB-sourced with a static fallback. */
+function lineTabs(content: HomeContentDTO | null, slug: string, fallback: string[]): string[] {
+  const line = content?.lines.find((l) => l.slug === slug);
+  if (!line || line.tabs.length === 0) return fallback;
+  return line.tabs.map((t) => t.en);
+}
+
+/** The products of a line, straight from its DB-backed catalog. */
+function lineProducts(content: HomeContentDTO | null, slug: string): CatalogDTO["products"] {
+  return content?.catalogs[slug]?.products ?? [];
+}
+
+/** English links of a `SeoLink` group, in the shape `SeoLinkGrid` expects. */
+function seoLinksOf(links: SeoLinkDTO[], group: string) {
+  return links
+    .filter((l) => l.group === group)
+    .map((l) => ({ label: l.label.en, service: l.service ?? "", tags: l.tags }));
+}
+
+/** "All" + the distinct `service` values of a `SeoLink` group. */
+function seoTabsOf(links: SeoLinkDTO[], group: string): string[] {
+  const services = [...new Set(links.filter((l) => l.group === group).map((l) => l.service).filter((s): s is string => !!s))];
+  return ["All", ...services];
+}
+
+/**
+ * The home page.
+ *
+ * The shell (header, hero, footer) stays static; everything fed by the
+ * database is streamed from `HomeBody` inside a Suspense boundary, because a
+ * DB read during prerender is not allowed under `cacheComponents`.
+ */
 export default function Home() {
   return (
     <div className="bg-white pb-20 lg:pb-0">
@@ -42,20 +67,91 @@ export default function Home() {
       <HeroSearch />
       <RecentSearches />
 
+      <Suspense fallback={<HomeBodySkeleton />}>
+        <HomeBody />
+      </Suspense>
+
+      <Footer />
+      <BottomTabBar />
+      {/* <StickyAppBanner /> */}
+    </div>
+  );
+}
+
+/** The placeholder shown while the DB-backed sections stream in. */
+function HomeBodySkeleton() {
+  return (
+    <div className="mx-auto max-w-[1200px] space-y-8 px-4 py-10 sm:px-6">
+      {[0, 1, 2].map((row) => (
+        <div key={row}>
+          <div className="mb-4 h-6 w-64 rounded-lg bg-canvas" />
+          <div className="flex gap-3 overflow-hidden">
+            {[0, 1, 2, 3].map((card) => (
+              <div key={card} className="h-56 w-[260px] shrink-0 rounded-xl bg-canvas" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Everything on the home page that comes from the database. */
+async function HomeBody() {
+  await connection();
+
+  const content = await getHomeContent();
+
+  const vipProducts = lineProducts(content, "vip-service");
+  const transportProducts = lineProducts(content, "transport");
+  const tourProducts = lineProducts(content, "tour-package");
+  const evoaProducts = lineProducts(content, "evoa");
+
+  const promos = content && content.promos.length > 0 ? content.promos : [];
+  const banners = content?.banners ?? [];
+  const articles = content && content.articles.length > 0 ? content.articles : [];
+  const destinations = content && content.destinations.length > 0 ? content.destinations : [];
+
+  const recommendationLinks =
+    content && content.seoLinks.length > 0
+      ? seoLinksOf(content.seoLinks, "recommendations")
+      : staticRecommendationLinks;
+  const recommendationTabs =
+    content && content.seoLinks.length > 0
+      ? seoTabsOf(content.seoLinks, "recommendations")
+      : staticRecommendationTabs;
+  const serviceSeoLinks =
+    content && content.seoLinks.length > 0
+      ? seoLinksOf(content.seoLinks, "services")
+      : staticServiceSeoLinks;
+  const serviceSeoTabs =
+    content && content.seoLinks.length > 0
+      ? seoTabsOf(content.seoLinks, "services")
+      : staticServiceSeoTabs;
+
+  const [fastTrackBanner, evoaBanner, corporateBanner] = banners;
+
+  // Promos are scoped to a service line, so the filter tabs are the lines.
+  const promoTabs = ["All", ...(content?.lines.map((l) => l.label) ?? [])];
+
+  return (
+    <>
       {/* Special deals */}
-      <SectionBand title="Special deals" emoji="🎉" titleKey="home.specialDeals">
-        <Carousel>
-          {promos.map((p) => (
-            <PromoCard key={p.title} promo={p} />
-          ))}
-        </Carousel>
-      </SectionBand>
+      {promos.length > 0 ? (
+        <SectionBand title="Special deals" emoji="🎉" titleKey="home.specialDeals">
+          <Carousel>
+            {promos.map((p) => (
+              <PromoCard key={p.slug} promo={p} />
+            ))}
+          </Carousel>
+        </SectionBand>
+      ) : null}
 
       {/* 1 — Airport VIP Service */}
       <SectionBand
         eyebrow="Airport VIP Service ✈️"
         title="Breeze through the airport"
-        tabs={["All", "Meet & Greet", "Fast Track", "Lounge", "Porter"]}
+        tabs={lineTabs(content, "vip-service", ["All", "Meet & Greet", "Fast Track", "Lounge", "Porter"])}
         seeAll="See all VIP services"
         seeAllHref="/vip-service"
         eyebrowKey="home.vipEyebrow"
@@ -63,8 +159,8 @@ export default function Home() {
         seeAllKey="home.vipSeeAll"
       >
         <Carousel>
-          {vipServices.map((s) => (
-            <VipServiceCard key={s.title} service={s} />
+          {vipProducts.map((p) => (
+            <ProductCard key={p.slug} product={p} href={`/vip-service/${p.slug}`} />
           ))}
         </Carousel>
       </SectionBand>
@@ -76,16 +172,18 @@ export default function Home() {
         cta="Book VIP"
         tone="from-sky-600 to-blue-800"
         compact
-        titleKey="banner.fastTrackTitle"
-        subtitleKey="banner.fastTrackSubtitle"
-        ctaKey="banner.fastTrackCta"
+        titleCopy={fastTrackBanner?.title}
+        subtitleCopy={fastTrackBanner?.subtitle}
+        ctaCopy={fastTrackBanner?.cta}
+        imageUrl={fastTrackBanner?.imageUrl}
+        href={fastTrackBanner?.ctaHref}
       />
 
       {/* 2 — Transport */}
       <SectionBand
         eyebrow="Transport 🚘"
         title="Private transfers & chauffeur service"
-        tabs={["All", "Sedan", "SUV", "Van", "Limousine"]}
+        tabs={lineTabs(content, "transport", ["All", "Sedan", "SUV", "Van", "Limousine"])}
         seeAll="See all transport"
         seeAllHref="/transport"
         eyebrowKey="home.transportEyebrow"
@@ -93,8 +191,8 @@ export default function Home() {
         seeAllKey="home.transportSeeAll"
       >
         <Carousel>
-          {transports.map((t) => (
-            <TransportCard key={t.model} item={t} />
+          {transportProducts.map((p) => (
+            <ProductCard key={p.slug} product={p} href={`/transport/${p.slug}`} />
           ))}
         </Carousel>
       </SectionBand>
@@ -103,7 +201,7 @@ export default function Home() {
       <SectionBand
         eyebrow="Tour Package 🗺️"
         title="Curated tours across Indonesia"
-        tabs={["All", "Bali", "Labuan Bajo", "Yogyakarta", "Lombok", "Papua"]}
+        tabs={lineTabs(content, "tour-package", ["All", "Bali", "Labuan Bajo", "Yogyakarta", "Lombok", "Papua"])}
         seeAll="See all tours"
         seeAllHref="/tour-package"
         eyebrowKey="home.tourEyebrow"
@@ -111,26 +209,28 @@ export default function Home() {
         seeAllKey="home.tourSeeAll"
       >
         <Carousel>
-          {tours.map((t) => (
-            <TourCard key={t.title} tour={t} />
+          {tourProducts.map((p) => (
+            <ProductCard key={p.slug} product={p} href={`/tour-package/${p.slug}`} />
           ))}
         </Carousel>
       </SectionBand>
 
       {/* Tour destinations */}
-      <SectionBand title="Popular destinations" emoji="📌" seeAll="See all!" titleKey="home.destinationsTitle" seeAllKey="home.destinationsSeeAll">
-        <Carousel>
-          {destinations.map((d) => (
-            <DestinationCard key={d.name} dest={d} />
-          ))}
-        </Carousel>
-      </SectionBand>
+      {destinations.length > 0 ? (
+        <SectionBand title="Popular destinations" emoji="📌" seeAll="See all!" titleKey="home.destinationsTitle" seeAllKey="home.destinationsSeeAll">
+          <Carousel>
+            {destinations.map((d) => (
+              <DestinationCard key={d.slug} dest={d} />
+            ))}
+          </Carousel>
+        </SectionBand>
+      ) : null}
 
       {/* 4 — eVOA */}
       <SectionBand
         eyebrow="eVOA 🛂"
         title="Electronic Visa on Arrival, made easy"
-        tabs={["All", "Tourist", "Business", "Express", "Transit"]}
+        tabs={lineTabs(content, "evoa", ["All", "Tourist", "Business", "Express", "Transit"])}
         seeAll="Check eligibility"
         seeAllHref="/evoa"
         eyebrowKey="home.evoaEyebrow"
@@ -138,8 +238,8 @@ export default function Home() {
         seeAllKey="home.evoaSeeAll"
       >
         <Carousel>
-          {evoaPlans.map((p) => (
-            <EvoaCard key={p.name} plan={p} />
+          {evoaProducts.map((p) => (
+            <ProductCard key={p.slug} product={p} href={`/evoa/${p.slug}`} />
           ))}
         </Carousel>
       </SectionBand>
@@ -151,26 +251,30 @@ export default function Home() {
         cta="Apply now"
         tone="from-violet-600 to-purple-800"
         compact
-        titleKey="banner.evoaTitle"
-        subtitleKey="banner.evoaSubtitle"
-        ctaKey="banner.evoaCta"
+        titleCopy={evoaBanner?.title}
+        subtitleCopy={evoaBanner?.subtitle}
+        ctaCopy={evoaBanner?.cta}
+        imageUrl={evoaBanner?.imageUrl}
+        href={evoaBanner?.ctaHref}
       />
 
       {/* Promos */}
-      <SectionBand
-        title="Check out the promos before you go"
-        emoji="🤩"
-        tabs={promoTabs}
-        seeAll="See all promos"
-        titleKey="home.promosTitle"
-        seeAllKey="home.promosSeeAll"
-      >
-        <Carousel>
-          {promos.map((p) => (
-            <PromoCard key={"pr-" + p.title} promo={p} />
-          ))}
-        </Carousel>
-      </SectionBand>
+      {promos.length > 0 ? (
+        <SectionBand
+          title="Check out the promos before you go"
+          emoji="🤩"
+          tabs={promoTabs}
+          seeAll="See all promos"
+          titleKey="home.promosTitle"
+          seeAllKey="home.promosSeeAll"
+        >
+          <Carousel>
+            {promos.map((p) => (
+              <PromoCard key={`pr-${p.slug}`} promo={p} />
+            ))}
+          </Carousel>
+        </SectionBand>
+      ) : null}
 
       {/* Corporate banner */}
       <BannerStrip
@@ -179,22 +283,26 @@ export default function Home() {
         cta="Learn more"
         tone="from-slate-700 to-slate-900"
         compact
-        titleKey="banner.corporateTitle"
-        subtitleKey="banner.corporateSubtitle"
-        ctaKey="banner.corporateCta"
+        titleCopy={corporateBanner?.title}
+        subtitleCopy={corporateBanner?.subtitle}
+        ctaCopy={corporateBanner?.cta}
+        imageUrl={corporateBanner?.imageUrl}
+        href={corporateBanner?.ctaHref}
       />
 
       {/* Articles / guides */}
-      <SectionBand title="Travel guides & tips" emoji="📖" titleKey="home.articlesTitle">
-        <Carousel>
-          {articles.map((a) => (
-            <ArticleCard key={a.title} article={a} />
-          ))}
-        </Carousel>
-      </SectionBand>
+      {articles.length > 0 ? (
+        <SectionBand title="Travel guides & tips" emoji="📖" titleKey="home.articlesTitle">
+          <Carousel>
+            {articles.map((a) => (
+              <ArticleCard key={a.slug} article={a} />
+            ))}
+          </Carousel>
+        </SectionBand>
+      ) : null}
 
       {/* SEO content */}
-      <SeoContent />
+      <SeoContent blocks={content?.seoBlocks} />
 
       {/* SEO link grids */}
       <SeoLinkGrid
@@ -209,10 +317,6 @@ export default function Home() {
         links={serviceSeoLinks}
         titleKey="home.exploreServicesTitle"
       />
-
-      <Footer />
-      <BottomTabBar />
-      {/* <StickyAppBanner /> */}
-    </div>
+    </>
   );
 }
