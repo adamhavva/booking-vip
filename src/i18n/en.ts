@@ -69,6 +69,7 @@ export const en = {
 
   // Service catalog
   "catalog.availableOptions": "Available options",
+  "catalog.unavailable": "The options could not be loaded. Please try again in a moment.",
   "catalog.recommended": "Recommended",
   "catalog.priceLowHigh": "Price: Low to High",
   "catalog.priceHighLow": "Price: High to Low",

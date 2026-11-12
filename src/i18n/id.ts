@@ -71,6 +71,7 @@ export const id: Record<DictKey, string> = {
 
   // Service catalog
   "catalog.availableOptions": "Pilihan tersedia",
+  "catalog.unavailable": "Pilihan belum bisa dimuat. Coba lagi sebentar.",
   "catalog.recommended": "Rekomendasi",
   "catalog.priceLowHigh": "Harga: Rendah ke Tinggi",
   "catalog.priceHighLow": "Harga: Tinggi ke Rendah",

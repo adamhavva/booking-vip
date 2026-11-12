@@ -3,15 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Container from "@/components/ui/Container";
 import TabPills from "@/components/ui/TabPills";
-import {
-  EvoaCard,
-  ProductCard,
-  TourCard,
-  TransportCard,
-  VipServiceCard,
-} from "@/components/cards";
-import { evoaPlans, tours, transports, vipServices } from "@/data/home";
-import type { CatalogDTO, ProductCardDTO, ServiceCatalogKind } from "@/types";
+import { ProductCard } from "@/components/cards";
+import type { CatalogDTO, ServiceCatalogKind } from "@/types";
 import { getCatalog } from "@/app/actions/catalog";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
@@ -25,60 +18,12 @@ const KIND_TO_LINE_SLUG: Record<ServiceCatalogKind, string> = {
 
 type SortMode = "recommended" | "price-asc" | "price-desc";
 
-/** Free-text match of an item against the active filter tab. */
-function matches(tab: string, haystack: string[]): boolean {
-  if (tab === "All") return true;
-  const t = tab.toLowerCase();
-  return haystack.some((h) => h.toLowerCase().includes(t));
-}
-
-const CATALOGS: Record<
-  ServiceCatalogKind,
-  {
-    tabs: string[];
-    items: () => React.ReactNode;
-    filter: (tab: string) => React.ReactNode;
-  }
-> = {
-  vip: {
-    tabs: ["All", "Meet & Greet", "Fast Track", "Lounge", "Porter"],
-    items: () =>
-      vipServices.map((s) => <VipServiceCard key={s.title} service={s} />),
-    filter: (tab) =>
-      vipServices
-        .filter((s) => matches(tab, [s.title, s.desc]))
-        .map((s) => <VipServiceCard key={s.title} service={s} />),
-  },
-  transport: {
-    tabs: ["All", "Sedan", "SUV", "Van", "Limousine"],
-    items: () =>
-      transports.map((t) => <TransportCard key={t.model} item={t} />),
-    filter: (tab) =>
-      transports
-        .filter((t) => matches(tab, [t.model, t.category]))
-        .map((t) => <TransportCard key={t.model} item={t} />),
-  },
-  tour: {
-    tabs: ["All", "Bali", "Labuan Bajo", "Yogyakarta", "Lombok", "Papua"],
-    items: () => tours.map((t) => <TourCard key={t.title} tour={t} />),
-    filter: (tab) =>
-      tours
-        .filter((t) => matches(tab, [t.title, t.location]))
-        .map((t) => <TourCard key={t.title} tour={t} />),
-  },
-  evoa: {
-    tabs: ["All", "Tourist", "Business", "Express", "Transit"],
-    items: () => evoaPlans.map((p) => <EvoaCard key={p.name} plan={p} />),
-    filter: (tab) =>
-      evoaPlans
-        .filter((p) => matches(tab, [p.name, p.destination]))
-        .map((p) => <EvoaCard key={p.name} plan={p} />),
-  },
-};
-
 /**
  * Filterable catalog of the service's products.
- * Fetches from DB on mount; falls back to static data on error.
+ *
+ * Every card comes from the database through `getCatalog`; while the request
+ * is in flight a skeleton is shown, and a failed/empty read reports that
+ * instead of falling back to placeholder cards.
  */
 export default function ServiceCatalog({
   kind,
@@ -94,10 +39,23 @@ export default function ServiceCatalog({
   const [priceIdx, setPriceIdx] = useState(0);
   const [sort, setSort] = useState<SortMode>("recommended");
 
+  const [loading, setLoading] = useState(true);
+
   // Fetch catalog from DB on mount
   useEffect(() => {
     const lineSlug = KIND_TO_LINE_SLUG[kind];
-    getCatalog(lineSlug).then((data) => setCatalog(data));
+    let active = true;
+    setLoading(true);
+
+    void getCatalog(lineSlug).then((data) => {
+      if (!active) return;
+      setCatalog(data);
+      setLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
   }, [kind]);
 
   // DB-backed facets
@@ -153,18 +111,43 @@ export default function ServiceCatalog({
     return products;
   }, [catalog, typeIdx, placeIdx, priceIdx, sort, serviceTypeTabs, placeTabs, priceTabs]);
 
-  // Fallback static items
-  const tab = serviceTypeTabs[typeIdx] ?? "All";
   const lineSlug = KIND_TO_LINE_SLUG[kind];
 
-  const staticItems = useMemo(() => {
-    const c = CATALOGS[kind];
-    return tab === "All" ? c.items() : c.filter(tab);
-  }, [kind, tabs, typeIdx, tab]);
-
-  // If DB data loaded, render DB-backed cards
-  if (catalog) {
+  if (!catalog) {
     return (
+      <Container as="section" className="py-8">
+        <h2 className="mb-4 text-xl font-extrabold text-ink md:text-2xl">
+          {t("catalog.availableOptions")}
+        </h2>
+
+        {loading ? (
+          <>
+            <TabPills
+              items={tabs}
+              active={typeIdx}
+              onChange={setTypeIdx}
+              variant="bordered"
+              className="mb-5"
+            />
+            <div className="flex flex-wrap gap-4">
+              {[0, 1, 2, 3].map((card) => (
+                <div
+                  key={card}
+                  className="h-64 w-[260px] rounded-xl border border-line bg-canvas"
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="rounded-xl border border-line bg-canvas px-4 py-6 text-sm text-muted">
+            {t("catalog.unavailable")}
+          </p>
+        )}
+      </Container>
+    );
+  }
+
+  return (
       <Container as="section" className="py-8">
         <h2 className="mb-4 text-xl font-extrabold text-ink md:text-2xl">
           {t("catalog.availableOptions")}
@@ -222,26 +205,6 @@ export default function ServiceCatalog({
             />
           ))}
         </div>
-      </Container>
-    );
-  }
-
-  // Fallback: render static data while loading or on error
-  return (
-    <Container as="section" className="py-8">
-      <h2 className="mb-4 text-xl font-extrabold text-ink md:text-2xl">
-        {t("catalog.availableOptions")}
-      </h2>
-
-      <TabPills
-        items={tabs}
-        active={typeIdx}
-        onChange={setTypeIdx}
-        variant="bordered"
-        className="mb-5"
-      />
-
-      <div className="flex flex-wrap gap-4">{staticItems}</div>
     </Container>
   );
 }
