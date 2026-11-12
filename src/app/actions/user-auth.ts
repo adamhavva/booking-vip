@@ -6,6 +6,7 @@ import { getAdminAuth } from "@/lib/firebase";
 import {
   createEmailPasswordAccount,
   deleteFirebaseUser,
+  sendEmailVerificationEmail,
   sendPasswordResetEmail,
   signInWithPassword,
 } from "@/lib/identity";
@@ -207,7 +208,12 @@ export async function registerUser(
   }
 
   await issueUserSession(signIn.idToken);
-  redirect("/my-booking");
+
+  // The verification mail goes out right after the account exists — the
+  // sign-in token doubles as the proof the Identity Toolkit asks for.
+  await sendEmailVerificationEmail(email, signIn.idToken);
+
+  redirect("/verify-email?sent=1");
 }
 
 /**

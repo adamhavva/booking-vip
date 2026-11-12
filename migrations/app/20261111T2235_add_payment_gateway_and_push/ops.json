@@ -1,0 +1,1004 @@
+[
+  {
+    "id": "table.PaymentWebhookEvent",
+    "label": "Create table \"PaymentWebhookEvent\"",
+    "summary": "Creates table \"PaymentWebhookEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PaymentWebhookEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PaymentWebhookEvent\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentWebhookEvent\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"PaymentWebhookEvent\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PaymentWebhookEvent\"",
+        "sql": "CREATE TABLE \"public\".\"PaymentWebhookEvent\" (\n  \"eventType\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"outcome\" text DEFAULT 'processed' NOT NULL,\n  \"payload\" jsonb,\n  \"provider\" text NOT NULL,\n  \"providerEventId\" text NOT NULL,\n  \"receivedAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PaymentWebhookEvent\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentWebhookEvent\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"PaymentWebhookEvent\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.PushSubscription",
+    "label": "Create table \"PushSubscription\"",
+    "summary": "Creates table \"PushSubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PushSubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PushSubscription\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PushSubscription\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"PushSubscription\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PushSubscription\"",
+        "sql": "CREATE TABLE \"public\".\"PushSubscription\" (\n  \"auth\" text NOT NULL,\n  \"createdAt\" timestamp(3) DEFAULT (now()) NOT NULL,\n  \"endpoint\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"p256dh\" text NOT NULL,\n  \"updatedAt\" timestamp(3) NOT NULL,\n  \"userAgent\" text,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PushSubscription\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"PushSubscription\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"PushSubscription\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.checkoutUrl",
+    "label": "Add column \"checkoutUrl\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "checkoutUrl",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"checkoutUrl\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "checkoutUrl"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"checkoutUrl\" on \"Payment\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"checkoutUrl\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"checkoutUrl\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"checkoutUrl\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "checkoutUrl"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"checkoutUrl\" on \"Payment\""
+        }
+      },
+      {
+        "description": "verify column \"checkoutUrl\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "checkoutUrl",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.expiresAt",
+    "label": "Add column \"expiresAt\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "expiresAt",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"expiresAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "expiresAt"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"expiresAt\" on \"Payment\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"expiresAt\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"expiresAt\" timestamp(3)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"expiresAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "expiresAt"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"expiresAt\" on \"Payment\""
+        }
+      },
+      {
+        "description": "verify column \"expiresAt\" has type \"timestamp(3) without time zone\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "expiresAt",
+          "timestamp(3) without time zone"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.paidAt",
+    "label": "Add column \"paidAt\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "paidAt",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"paidAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "paidAt"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"paidAt\" on \"Payment\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"paidAt\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"paidAt\" timestamp(3)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"paidAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "paidAt"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"paidAt\" on \"Payment\""
+        }
+      },
+      {
+        "description": "verify column \"paidAt\" has type \"timestamp(3) without time zone\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "paidAt",
+          "timestamp(3) without time zone"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.provider",
+    "label": "Add column \"provider\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "provider",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"provider\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "provider"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"provider\" on \"Payment\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"provider\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"provider\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"provider\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "provider"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"provider\" on \"Payment\""
+        }
+      },
+      {
+        "description": "verify column \"provider\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "provider",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.providerAmountCents",
+    "label": "Add column \"providerAmountCents\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "providerAmountCents",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"providerAmountCents\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "providerAmountCents"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"providerAmountCents\" on \"Payment\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"providerAmountCents\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"providerAmountCents\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"providerAmountCents\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "providerAmountCents"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"providerAmountCents\" on \"Payment\""
+        }
+      },
+      {
+        "description": "verify column \"providerAmountCents\" has type \"integer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "providerAmountCents",
+          "integer"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.providerCurrency",
+    "label": "Add column \"providerCurrency\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "providerCurrency",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"providerCurrency\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "providerCurrency"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"providerCurrency\" on \"Payment\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"providerCurrency\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"providerCurrency\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"providerCurrency\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "providerCurrency"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"providerCurrency\" on \"Payment\""
+        }
+      },
+      {
+        "description": "verify column \"providerCurrency\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "providerCurrency",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.providerRef",
+    "label": "Add column \"providerRef\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "providerRef",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"providerRef\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "providerRef"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"providerRef\" on \"Payment\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"providerRef\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"providerRef\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"providerRef\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "providerRef"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"providerRef\" on \"Payment\""
+        }
+      },
+      {
+        "description": "verify column \"providerRef\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "providerRef",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.rawPayload",
+    "label": "Add column \"rawPayload\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "rawPayload",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"rawPayload\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "rawPayload"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"rawPayload\" on \"Payment\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"rawPayload\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"rawPayload\" jsonb"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"rawPayload\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "rawPayload"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"rawPayload\" on \"Payment\""
+        }
+      },
+      {
+        "description": "verify column \"rawPayload\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "rawPayload",
+          "jsonb"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PaymentMethod.provider",
+    "label": "Add column \"provider\" to \"PaymentMethod\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "provider",
+        "table": "PaymentMethod"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"provider\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethod",
+          "provider"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"provider\" on \"PaymentMethod\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"provider\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentMethod\" ADD COLUMN \"provider\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"provider\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethod",
+          "provider"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"provider\" on \"PaymentMethod\""
+        }
+      },
+      {
+        "description": "verify column \"provider\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethod",
+          "provider",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PaymentMethod.providerCurrency",
+    "label": "Add column \"providerCurrency\" to \"PaymentMethod\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "providerCurrency",
+        "table": "PaymentMethod"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"providerCurrency\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethod",
+          "providerCurrency"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"providerCurrency\" on \"PaymentMethod\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"providerCurrency\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentMethod\" ADD COLUMN \"providerCurrency\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"providerCurrency\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethod",
+          "providerCurrency"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"providerCurrency\" on \"PaymentMethod\""
+        }
+      },
+      {
+        "description": "verify column \"providerCurrency\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethod",
+          "providerCurrency",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PaymentMethod.providerMethodCode",
+    "label": "Add column \"providerMethodCode\" to \"PaymentMethod\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "providerMethodCode",
+        "table": "PaymentMethod"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"providerMethodCode\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethod",
+          "providerMethodCode"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"providerMethodCode\" on \"PaymentMethod\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"providerMethodCode\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentMethod\" ADD COLUMN \"providerMethodCode\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"providerMethodCode\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethod",
+          "providerMethodCode"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"providerMethodCode\" on \"PaymentMethod\""
+        }
+      },
+      {
+        "description": "verify column \"providerMethodCode\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethod",
+          "providerMethodCode",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Payment.Payment_providerRef_idx",
+    "label": "Create index \"Payment_providerRef_idx\" on \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Payment_providerRef_idx",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Payment_providerRef_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Payment_providerRef_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Payment_providerRef_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Payment_providerRef_idx\"",
+        "sql": "CREATE INDEX \"Payment_providerRef_idx\" ON \"public\".\"Payment\" (\"providerRef\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Payment_providerRef_idx\" exists on \"Payment\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Payment_providerRef_idx\"",
+          "i",
+          "I",
+          "\"public\".\"Payment\"",
+          "btree",
+          "[\"providerRef\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentWebhookEvent.PaymentWebhookEvent_provider_providerEventId_key",
+    "label": "Create index \"PaymentWebhookEvent_provider_providerEventId_key\" on \"PaymentWebhookEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentWebhookEvent_provider_providerEventId_key",
+        "table": "PaymentWebhookEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentWebhookEvent_provider_providerEventId_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentWebhookEvent_provider_providerEventId_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"PaymentWebhookEvent_provider_providerEventId_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentWebhookEvent_provider_providerEventId_key\"",
+        "sql": "CREATE UNIQUE INDEX \"PaymentWebhookEvent_provider_providerEventId_key\" ON \"public\".\"PaymentWebhookEvent\" (\"provider\", \"providerEventId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentWebhookEvent_provider_providerEventId_key\" exists on \"PaymentWebhookEvent\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentWebhookEvent_provider_providerEventId_key\"",
+          "i",
+          "I",
+          "\"public\".\"PaymentWebhookEvent\"",
+          "btree",
+          "[\"provider\",\"providerEventId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PushSubscription.PushSubscription_endpoint_key",
+    "label": "Create index \"PushSubscription_endpoint_key\" on \"PushSubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PushSubscription_endpoint_key",
+        "table": "PushSubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PushSubscription_endpoint_key\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PushSubscription_endpoint_key\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"PushSubscription_endpoint_key\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PushSubscription_endpoint_key\"",
+        "sql": "CREATE UNIQUE INDEX \"PushSubscription_endpoint_key\" ON \"public\".\"PushSubscription\" (\"endpoint\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PushSubscription_endpoint_key\" exists on \"PushSubscription\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND \"i\".\"indisunique\" AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"PushSubscription_endpoint_key\"",
+          "i",
+          "I",
+          "\"public\".\"PushSubscription\"",
+          "btree",
+          "[\"endpoint\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PushSubscription.PushSubscription_userId_idx",
+    "label": "Create index \"PushSubscription_userId_idx\" on \"PushSubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PushSubscription_userId_idx",
+        "table": "PushSubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PushSubscription_userId_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PushSubscription_userId_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"PushSubscription_userId_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PushSubscription_userId_idx\"",
+        "sql": "CREATE INDEX \"PushSubscription_userId_idx\" ON \"public\".\"PushSubscription\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PushSubscription_userId_idx\" exists on \"PushSubscription\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"PushSubscription_userId_idx\"",
+          "i",
+          "I",
+          "\"public\".\"PushSubscription\"",
+          "btree",
+          "[\"userId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PushSubscription.PushSubscription_userId_fkey",
+    "label": "Add foreign key \"PushSubscription_userId_fkey\" on \"PushSubscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PushSubscription_userId_fkey",
+        "table": "PushSubscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PushSubscription_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PushSubscription_userId_fkey",
+          "public",
+          "\"public\".\"PushSubscription\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"PushSubscription_userId_fkey\" on \"PushSubscription\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PushSubscription_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PushSubscription\"\nADD CONSTRAINT \"PushSubscription_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"User\" (\"id\")\nON DELETE CASCADE\nON UPDATE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PushSubscription_userId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "PushSubscription_userId_fkey",
+          "public",
+          "\"public\".\"PushSubscription\"",
+          "f",
+          "[\"userId\"]",
+          "\"public\".\"User\"",
+          "[\"id\"]",
+          "c",
+          "c"
+        ]
+      }
+    ]
+  }
+]

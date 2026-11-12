@@ -76,6 +76,10 @@
       "model": "PaymentMethod",
       "namespace": "public"
     },
+    "PaymentWebhookEvent": {
+      "model": "PaymentWebhookEvent",
+      "namespace": "public"
+    },
     "PriceTier": {
       "model": "PriceTier",
       "namespace": "public"
@@ -102,6 +106,10 @@
     },
     "PromoCode": {
       "model": "PromoCode",
+      "namespace": "public"
+    },
+    "PushSubscription": {
+      "model": "PushSubscription",
       "namespace": "public"
     },
     "Review": {
@@ -301,6 +309,21 @@
                 },
                 "to": {
                   "model": "Airport",
+                  "namespace": "public"
+                }
+              },
+              "destinations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "destinationId"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
                   "namespace": "public"
                 }
               },
@@ -779,6 +802,13 @@
                   "kind": "scalar"
                 }
               },
+              "driverOption": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "dropoffLabel": {
                 "nullable": true,
                 "type": {
@@ -828,6 +858,13 @@
                   "kind": "scalar"
                 }
               },
+              "notes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "pickupLabel": {
                 "nullable": true,
                 "type": {
@@ -846,6 +883,13 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
+              "pickupPolicy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -1052,6 +1096,9 @@
                 "discountUsdCents": {
                   "column": "discountUsdCents"
                 },
+                "driverOption": {
+                  "column": "driverOption"
+                },
                 "dropoffLabel": {
                   "column": "dropoffLabel"
                 },
@@ -1073,6 +1120,9 @@
                 "invoiceNumber": {
                   "column": "invoiceNumber"
                 },
+                "notes": {
+                  "column": "notes"
+                },
                 "pickupLabel": {
                   "column": "pickupLabel"
                 },
@@ -1081,6 +1131,9 @@
                 },
                 "pickupLng": {
                   "column": "pickupLng"
+                },
+                "pickupPolicy": {
+                  "column": "pickupPolicy"
                 },
                 "promoCode": {
                   "column": "promoCode"
@@ -1293,6 +1346,13 @@
                   "kind": "scalar"
                 }
               },
+              "quantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "totalUsdCents": {
                 "nullable": false,
                 "type": {
@@ -1394,6 +1454,9 @@
                 "productId": {
                   "column": "productId"
                 },
+                "quantity": {
+                  "column": "quantity"
+                },
                 "totalUsdCents": {
                   "column": "totalUsdCents"
                 },
@@ -1472,6 +1535,13 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "title": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -1520,6 +1590,9 @@
                 },
                 "phoneCountryCode": {
                   "column": "phoneCountryCode"
+                },
+                "title": {
+                  "column": "title"
                 }
               },
               "namespaceId": "public",
@@ -2242,6 +2315,13 @@
                   "kind": "scalar"
                 }
               },
+              "checkoutUrl": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -2257,6 +2337,16 @@
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
+                }
+              },
+              "expiresAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
                 }
               },
               "fxRate": {
@@ -2277,6 +2367,51 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "paidAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "provider": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "providerAmountCents": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "providerCurrency": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "providerRef": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rawPayload": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/jsonb@1",
                   "kind": "scalar"
                 }
               },
@@ -2337,11 +2472,17 @@
                 "bookingId": {
                   "column": "bookingId"
                 },
+                "checkoutUrl": {
+                  "column": "checkoutUrl"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
                 "currencyCode": {
                   "column": "currencyCode"
+                },
+                "expiresAt": {
+                  "column": "expiresAt"
                 },
                 "fxRate": {
                   "column": "fxRate"
@@ -2351,6 +2492,24 @@
                 },
                 "methodId": {
                   "column": "methodId"
+                },
+                "paidAt": {
+                  "column": "paidAt"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "providerAmountCents": {
+                  "column": "providerAmountCents"
+                },
+                "providerCurrency": {
+                  "column": "providerCurrency"
+                },
+                "providerRef": {
+                  "column": "providerRef"
+                },
+                "rawPayload": {
+                  "column": "rawPayload"
                 },
                 "reference": {
                   "column": "reference"
@@ -2388,6 +2547,27 @@
               },
               "label": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "providerCurrency": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "providerMethodCode": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -2432,12 +2612,105 @@
                 "label": {
                   "column": "label"
                 },
+                "provider": {
+                  "column": "provider"
+                },
+                "providerCurrency": {
+                  "column": "providerCurrency"
+                },
+                "providerMethodCode": {
+                  "column": "providerMethodCode"
+                },
                 "sortOrder": {
                   "column": "sortOrder"
                 }
               },
               "namespaceId": "public",
               "table": "PaymentMethod"
+            }
+          },
+          "PaymentWebhookEvent": {
+            "fields": {
+              "eventType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "outcome": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "payload": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "providerEventId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "receivedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "eventType": {
+                  "column": "eventType"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "outcome": {
+                  "column": "outcome"
+                },
+                "payload": {
+                  "column": "payload"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "providerEventId": {
+                  "column": "providerEventId"
+                },
+                "receivedAt": {
+                  "column": "receivedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PaymentWebhookEvent"
             }
           },
           "PriceTier": {
@@ -2561,7 +2834,21 @@
                   "kind": "scalar"
                 }
               },
+              "destinationId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "direction": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "driverOption": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
@@ -2617,6 +2904,13 @@
                   "kind": "scalar"
                 }
               },
+              "itinerary": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
               "leadTimeDays": {
                 "nullable": false,
                 "type": {
@@ -2642,6 +2936,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
+              "pickupPolicy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -2673,6 +2974,13 @@
                   "kind": "scalar"
                 }
               },
+              "seats": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "serviceTypeId": {
                 "nullable": true,
                 "type": {
@@ -2701,6 +3009,13 @@
                   "kind": "scalar"
                 }
               },
+              "transmission": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -2709,6 +3024,13 @@
                   "typeParams": {
                     "precision": 3
                   }
+                }
+              },
+              "vendor": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               }
             },
@@ -2789,6 +3111,22 @@
                   "namespace": "public"
                 }
               },
+              "destination": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "destinationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Airport",
+                  "namespace": "public"
+                }
+              },
               "hostAddOns": {
                 "cardinality": "1:N",
                 "on": {
@@ -2866,8 +3204,14 @@
                 "description": {
                   "column": "description"
                 },
+                "destinationId": {
+                  "column": "destinationId"
+                },
                 "direction": {
                   "column": "direction"
+                },
+                "driverOption": {
+                  "column": "driverOption"
                 },
                 "durationLabel": {
                   "column": "durationLabel"
@@ -2890,6 +3234,9 @@
                 "isAddOn": {
                   "column": "isAddOn"
                 },
+                "itinerary": {
+                  "column": "itinerary"
+                },
                 "leadTimeDays": {
                   "column": "leadTimeDays"
                 },
@@ -2901,6 +3248,9 @@
                 },
                 "notIncluded": {
                   "column": "notIncluded"
+                },
+                "pickupPolicy": {
+                  "column": "pickupPolicy"
                 },
                 "rating": {
                   "column": "rating"
@@ -2914,6 +3264,9 @@
                 "ribbon": {
                   "column": "ribbon"
                 },
+                "seats": {
+                  "column": "seats"
+                },
                 "serviceTypeId": {
                   "column": "serviceTypeId"
                 },
@@ -2926,8 +3279,14 @@
                 "tone": {
                   "column": "tone"
                 },
+                "transmission": {
+                  "column": "transmission"
+                },
                 "updatedAt": {
                   "column": "updatedAt"
+                },
+                "vendor": {
+                  "column": "vendor"
                 }
               },
               "namespaceId": "public",
@@ -3541,6 +3900,120 @@
               },
               "namespaceId": "public",
               "table": "PromoCode"
+            }
+          },
+          "PushSubscription": {
+            "fields": {
+              "auth": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "endpoint": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "p256dh": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamp-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "userAgent": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "auth": {
+                  "column": "auth"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "endpoint": {
+                  "column": "endpoint"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "p256dh": {
+                  "column": "p256dh"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "userAgent": {
+                  "column": "userAgent"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PushSubscription"
             }
           },
           "Review": {
@@ -4843,6 +5316,21 @@
                   "namespace": "public"
                 }
               },
+              "pushSubscriptions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "PushSubscription",
+                  "namespace": "public"
+                }
+              },
               "reviews": {
                 "cardinality": "1:N",
                 "on": {
@@ -5578,6 +6066,11 @@
                   },
                   "nullable": false
                 },
+                "driverOption": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "dropoffLabel": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -5621,6 +6114,11 @@
                   "dataType": "pg/text",
                   "nullable": true
                 },
+                "notes": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "pickupLabel": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -5634,6 +6132,11 @@
                 "pickupLng": {
                   "codecId": "pg/float8@1",
                   "dataType": "pg/float8",
+                  "nullable": true
+                },
+                "pickupPolicy": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
                   "nullable": true
                 },
                 "promoCode": {
@@ -5853,6 +6356,10 @@
                 "adultCount": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
                   "nullable": false
                 },
                 "bookingId": {
@@ -5863,6 +6370,10 @@
                 "childCount": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
                   "nullable": false
                 },
                 "id": {
@@ -5873,6 +6384,10 @@
                 "infantCount": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
                   "nullable": false
                 },
                 "label": {
@@ -5893,6 +6408,15 @@
                 "productId": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
+                  "nullable": false
+                },
+                "quantity": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 1
+                  },
                   "nullable": false
                 },
                 "totalUsdCents": {
@@ -6025,6 +6549,11 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 }
               },
               "foreignKeys": [
@@ -6607,6 +7136,11 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
+                "checkoutUrl": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamp-date@1",
                   "dataType": "pg/timestamp",
@@ -6623,6 +7157,14 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "expiresAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 3
+                  }
                 },
                 "fxRate": {
                   "codecId": "pg/float8@1",
@@ -6641,6 +7183,39 @@
                 "methodId": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
+                  "nullable": true
+                },
+                "paidAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "providerAmountCents": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
+                },
+                "providerCurrency": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "providerRef": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "rawPayload": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
                   "nullable": true
                 },
                 "reference": {
@@ -6696,7 +7271,15 @@
                   }
                 }
               ],
-              "indexes": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "providerRef"
+                  ],
+                  "name": "Payment_providerRef_idx",
+                  "unique": false
+                }
+              ],
               "primaryKey": {
                 "columns": [
                   "id"
@@ -6730,6 +7313,21 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "providerCurrency": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "providerMethodCode": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "sortOrder": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
@@ -6747,6 +7345,73 @@
                     "code"
                   ],
                   "name": "PaymentMethod_code_key",
+                  "unique": true
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "PaymentWebhookEvent": {
+              "columns": {
+                "eventType": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "outcome": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "processed"
+                  },
+                  "nullable": false
+                },
+                "payload": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
+                  "nullable": true
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "providerEventId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "receivedAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "provider",
+                    "providerEventId"
+                  ],
+                  "name": "PaymentWebhookEvent_provider_providerEventId_key",
                   "unique": true
                 }
               ],
@@ -6863,12 +7528,26 @@
                   },
                   "nullable": false
                 },
+                "destinationId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "direction": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "default": {
                     "kind": "literal",
                     "value": "both"
+                  },
+                  "nullable": false
+                },
+                "driverOption": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "with_driver"
                   },
                   "nullable": false
                 },
@@ -6915,6 +7594,15 @@
                   },
                   "nullable": false
                 },
+                "itinerary": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "nullable": false
+                },
                 "leadTimeDays": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
@@ -6947,6 +7635,11 @@
                   },
                   "nullable": false
                 },
+                "pickupPolicy": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "rating": {
                   "codecId": "pg/float8@1",
                   "dataType": "pg/float8",
@@ -6969,6 +7662,11 @@
                 "ribbon": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
+                  "nullable": true
+                },
+                "seats": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": true
                 },
                 "serviceTypeId": {
@@ -6995,6 +7693,11 @@
                   },
                   "nullable": false
                 },
+                "transmission": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "updatedAt": {
                   "codecId": "pg/timestamp-date@1",
                   "dataType": "pg/timestamp",
@@ -7002,6 +7705,11 @@
                   "typeParams": {
                     "precision": 3
                   }
+                },
+                "vendor": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 }
               },
               "foreignKeys": [
@@ -7050,6 +7758,24 @@
                   "source": {
                     "columns": [
                       "airportId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Airport"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "destinationId"
                     ],
                     "namespaceId": "public",
                     "tableName": "Product"
@@ -7576,6 +8302,105 @@
                   ],
                   "name": "PromoCode_code_key",
                   "unique": true
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "PushSubscription": {
+              "columns": {
+                "auth": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "endpoint": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "p256dh": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamp-date@1",
+                  "dataType": "pg/timestamp",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "userAgent": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "PushSubscription_userId_idx"
+                  },
+                  "onDelete": "cascade",
+                  "onUpdate": "cascade",
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PushSubscription"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "endpoint"
+                  ],
+                  "name": "PushSubscription_endpoint_key",
+                  "unique": true
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "PushSubscription_userId_idx",
+                  "unique": false
                 }
               ],
               "primaryKey": {
@@ -8732,10 +9557,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "c126069b4daa98e6cc4ba6c3a8a249672ea57d8742f08fff0512ea631e0ef2bb"
+    "storageHash": "a994be472f24e8e39383f65e3653ef9f569fff573e5397f56bd09e6e8aa29f78"
   },
   "execution": {
-    "executionHash": "1e659c62b95e04d77e3556ba5e8735eb1bd10a675be63382e9cabc8cd7744c12",
+    "executionHash": "f2e4202e9184c02e0cd5f82f954a1a2e7c68894bc5acbd833deab456a39b91b7",
     "mutations": {
       "defaults": [
         {
@@ -8997,6 +9822,31 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "PaymentWebhookEvent",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "ref": {
+            "entry": "PaymentWebhookEvent",
+            "field": "receivedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "PriceTier",
             "field": "id",
             "namespace": "public"
@@ -9114,6 +9964,52 @@
           "ref": {
             "entry": "PromoCode",
             "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "ref": {
+            "entry": "PushSubscription",
+            "field": "createdAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PushSubscription",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "ref": {
+            "entry": "PushSubscription",
+            "field": "updatedAt",
             "namespace": "public"
           }
         },

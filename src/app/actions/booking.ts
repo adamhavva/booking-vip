@@ -158,6 +158,12 @@ export async function createBooking(
       return { ok: false, error: "Quantity must be between 1 and 99" };
     }
 
+    // The number of rental days (for the "per_day" packages) — default 1.
+    const days = input.days ?? 1;
+    if (!Number.isFinite(days) || days < 1 || days > 365) {
+      return { ok: false, error: "Jumlah hari sewa harus antara 1 dan 365" };
+    }
+
     // Validate travelers count matches adult + child — only when the names
     // were given (the transport flow only asks for the number of passengers).
     const travelers = input.travelers ?? [];
@@ -220,6 +226,9 @@ export async function createBooking(
         subtotalUsdCents += (packageRecord.adultUsdCents ?? 0) * input.adult;
         subtotalUsdCents += (packageRecord.childUsdCents ?? 0) * input.child;
         subtotalUsdCents += (packageRecord.infantUsdCents ?? 0) * input.infant;
+      } else if (packageRecord.unitKind === "per_day") {
+        // per_day: the price of one day × the number of days.
+        subtotalUsdCents += (packageRecord.unitUsdCents ?? 0) * days;
       } else {
         // per_unit: multiply by units (quantity)
         subtotalUsdCents += (packageRecord.unitUsdCents ?? 0) * units;
@@ -323,6 +332,19 @@ export async function createBooking(
             : (packageRecord.unitUsdCents ?? 0),
           totalUsdCents: itemTotal,
         });
+
+        // The number of days is stored separately — the column is written
+        // after the insert so a database that has not been migrated yet still
+        // accepts the booking.
+        if (packageRecord.unitKind === "per_day") {
+          try {
+            await db.orm.public.BookingItem
+              .where((f) => f.id.eq(itemId))
+              .update({ quantity: days } as never);
+          } catch (error) {
+            console.error("[booking] could not store the rental days", error);
+          }
+        }
       }
 
       // 3. BookingAddOn*
@@ -395,7 +417,29 @@ export async function createBooking(
         fxRate: input.fxRate,
       });
 
-      // 8. Count the promo usage
+      // 8. The rental extras — the pickup policy, the driver option and the
+      // customer's note. They are written after the insert so a database that
+      // has not been migrated yet still accepts the booking.
+      try {
+        const patch: Record<string, unknown> = {};
+        if (input.notes) patch.notes = input.notes;
+        if (input.pickupPolicy) patch.pickupPolicy = input.pickupPolicy;
+        if (input.driverOption) patch.driverOption = input.driverOption;
+        if (Object.keys(patch).length > 0) {
+          await db.orm.public.Booking
+            .where((f) => f.id.eq(bookingId))
+            .update(patch as never);
+        }
+        if (input.contact.title) {
+          await db.orm.public.Contact
+            .where((f) => f.id.eq(contactId))
+            .update({ title: input.contact.title } as never);
+        }
+      } catch (extraError) {
+        console.error("[booking] could not store the booking extras", extraError);
+      }
+
+      // 9. Count the promo usage
       if (appliedPromoId) {
         try {
           await markPromoUsed(appliedPromoId);

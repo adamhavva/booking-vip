@@ -1,36 +1,30 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { connection } from "next/server";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/sections/Footer";
 import BottomTabBar from "@/components/sections/BottomTabBar";
 import Container from "@/components/ui/Container";
 import TransportBookingClient from "@/components/transport/TransportBookingClient";
 import { getTransportVehicles } from "@/app/actions/catalog";
-import type { PickedPoint } from "@/components/transport/LocationPicker";
+import { parsePickedPoint } from "@/lib/picked-point";
+
+/** The query string of the booking step. */
+type TransportBookingParams = {
+  pickup?: string;
+  dropoff?: string;
+  /** The vehicle that was picked on the fleet list ("slug::packageId"). */
+  vehicle?: string;
+  date?: string;
+  time?: string;
+  days?: string;
+  driverOption?: string;
+};
 
 export const metadata: Metadata = {
   title: "Detail Transport · Booking VIP",
   description: "Isi detail perjalanan untuk pesanan transport kamu.",
 };
-
-/** Parse one of the two points that the map step handed over. */
-function parsePoint(raw: string | undefined): PickedPoint | null {
-  if (!raw) return null;
-
-  try {
-    const parsed = JSON.parse(raw) as Partial<PickedPoint>;
-    if (
-      typeof parsed.lat !== "number" ||
-      typeof parsed.lng !== "number" ||
-      typeof parsed.label !== "string"
-    ) {
-      return null;
-    }
-    return { lat: parsed.lat, lng: parsed.lng, label: parsed.label };
-  } catch {
-    return null;
-  }
-}
 
 /**
  * Step 2 of the transport flow — the booking form.
@@ -41,7 +35,7 @@ function parsePoint(raw: string | undefined): PickedPoint | null {
 export default function TransportBookingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ pickup?: string; dropoff?: string }>;
+  searchParams: Promise<TransportBookingParams>;
 }) {
   return (
     <div className="flex min-h-screen flex-col bg-white pb-20 lg:pb-0">
@@ -83,11 +77,15 @@ export default function TransportBookingPage({
 async function TransportBookingStep({
   searchParams,
 }: {
-  searchParams?: Promise<{ pickup?: string; dropoff?: string }>;
+  searchParams?: Promise<TransportBookingParams>;
 }) {
+  // The page reads the database and the query string — render it at request
+  // time instead of prerendering it.
+  await connection();
+
   const params = searchParams ? await searchParams : {};
-  const pickup = parsePoint(params.pickup);
-  const dropoff = parsePoint(params.dropoff);
+  const pickup = parsePickedPoint(params.pickup);
+  const dropoff = parsePickedPoint(params.dropoff);
   const vehicles = await getTransportVehicles();
 
   if (!pickup || !dropoff) {
@@ -108,6 +106,17 @@ async function TransportBookingStep({
   }
 
   return (
-    <TransportBookingClient pickup={pickup} dropoff={dropoff} vehicles={vehicles} />
+    <TransportBookingClient
+      pickup={pickup}
+      dropoff={dropoff}
+      vehicles={vehicles}
+      initial={{
+        vehicle: params.vehicle,
+        date: params.date,
+        time: params.time,
+        days: params.days ? Number(params.days) || 1 : undefined,
+        driverOption: params.driverOption,
+      }}
+    />
   );
 }

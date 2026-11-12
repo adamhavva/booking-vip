@@ -27,6 +27,10 @@ const catalogItems: NavItem[] = [
   { href: "/admin/catalog/promos", label: "Promo", icon: <TagIcon width={16} height={16} /> },
 ];
 
+const settingsItems: NavItem[] = [
+  { href: "/admin/settings/popup", label: "Popup Homepage", icon: <ListIcon width={16} height={16} /> },
+];
+
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -69,6 +73,24 @@ export default function AdminSidebar() {
           Catalog
         </p>
         {catalogItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors ${
+              isActive(pathname, item.href)
+                ? "bg-[var(--admin-hover)] font-medium text-[var(--admin-ink)]"
+                : "text-[var(--admin-muted)] hover:bg-[var(--admin-hover)] hover:text-[var(--admin-ink)]"
+            }`}
+          >
+            {item.icon}
+            {item.label}
+          </Link>
+        ))}
+
+        <p className="px-3 pb-2 pt-6 text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--admin-muted)]">
+          Pengaturan
+        </p>
+        {settingsItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}

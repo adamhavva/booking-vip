@@ -11,6 +11,7 @@ import BottomTabBar from "@/components/sections/BottomTabBar";
 import BannerStrip from "@/components/sections/BannerStrip";
 import Footer from "@/components/sections/Footer";
 import HeroSearch from "@/components/sections/HeroSearch";
+import HomePopup from "@/components/sections/HomePopup";
 import RecentSearches from "@/components/sections/RecentSearches";
 import SectionBand from "@/components/sections/SectionBand";
 import SeoContent from "@/components/sections/SeoContent";
@@ -37,6 +38,7 @@ export default function Home() {
   return (
     <div className="bg-white pb-20 lg:pb-0">
       <Header />
+      <HomePopup />
       <HeroSearch />
       <RecentSearches />
 

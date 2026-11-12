@@ -67,6 +67,8 @@ export default function PlacesForm({
         options: [
           { value: "airport", label: "Airport" },
           { value: "city", label: "City" },
+          { value: "area", label: "Area (pick-up)" },
+          { value: "destination", label: "Destinasi wisata" },
         ],
       },
       { name: "iataCode", label: "Kode IATA", kind: "text", hint: "Kosongkan untuk kota" },

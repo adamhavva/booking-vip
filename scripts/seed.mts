@@ -80,6 +80,7 @@ const serviceTypesByLine: Record<string, TypeSpec[]> = {
     { slug: "suv", name: "SUV" },
     { slug: "van", name: "Van" },
     { slug: "limousine", name: "Limousine" },
+    { slug: "hourly-hire", name: "Hourly Hire" },
   ],
   evoa: [
     { slug: "tourist", name: "Tourist" },
@@ -87,7 +88,15 @@ const serviceTypesByLine: Record<string, TypeSpec[]> = {
     { slug: "express", name: "Express" },
     { slug: "transit", name: "Transit" },
   ],
-  // tour: none (tabs are destinations)
+  // Tour: the destination is the parent of the tour packages below it.
+  "tour-package": [
+    { slug: "bali", name: "Bali" },
+    { slug: "labuan-bajo", name: "Labuan Bajo" },
+    { slug: "yogyakarta", name: "Yogyakarta" },
+    { slug: "lombok", name: "Lombok" },
+    { slug: "east-java", name: "East Java" },
+    { slug: "west-papua", name: "West Papua" },
+  ],
 };
 
 async function seedServiceTypes(
@@ -182,6 +191,97 @@ async function seedAirports(): Promise<{
   return { byIata, byCity, allIds: Object.values(byIata).concat(Object.values(byCity).filter((id) => !Object.values(byIata).includes(id))) };
 }
 
+// ---------- Child places (area & destination) ----------
+// The places form a hierarchy: a city parents the pick-up areas (transport)
+// and the tourist destinations (tour packages) below it.
+const childPlaces: {
+  kind: "area" | "destination";
+  name: string;
+  city: string;
+  sortOrder: number;
+}[] = [
+  // Areas — the pick-up / drop-off zones of the transport service.
+  { kind: "area", name: "Menteng", city: "Jakarta", sortOrder: 1 },
+  { kind: "area", name: "Kemang", city: "Jakarta", sortOrder: 2 },
+  { kind: "area", name: "Dago", city: "Bandung", sortOrder: 1 },
+  { kind: "area", name: "Riau", city: "Bandung", sortOrder: 2 },
+  { kind: "area", name: "Seminyak", city: "Bali", sortOrder: 1 },
+  { kind: "area", name: "Canggu", city: "Bali", sortOrder: 2 },
+  { kind: "area", name: "Nusa Dua", city: "Bali", sortOrder: 3 },
+  { kind: "area", name: "Gubeng", city: "Surabaya", sortOrder: 1 },
+  { kind: "area", name: "Malang", city: "Malang", sortOrder: 1 },
+
+  // Destinations — the tourist destinations of the tour packages.
+  { kind: "destination", name: "Ubud", city: "Bali", sortOrder: 1 },
+  { kind: "destination", name: "Nusa Penida", city: "Bali", sortOrder: 2 },
+  { kind: "destination", name: "Kuta Beach", city: "Bali", sortOrder: 3 },
+  { kind: "destination", name: "Komodo", city: "Labuan Bajo", sortOrder: 1 },
+  { kind: "destination", name: "Pink Beach", city: "Labuan Bajo", sortOrder: 2 },
+  { kind: "destination", name: "Borobudur", city: "Yogyakarta", sortOrder: 1 },
+  { kind: "destination", name: "Prambanan", city: "Yogyakarta", sortOrder: 2 },
+  { kind: "destination", name: "Gili Trawangan", city: "Lombok", sortOrder: 1 },
+  { kind: "destination", name: "Senaru", city: "Lombok", sortOrder: 2 },
+  { kind: "destination", name: "Taman Aire", city: "East Java", sortOrder: 1 },
+  { kind: "destination", name: "Raja Ampat", city: "West Papua", sortOrder: 1 },
+];
+
+async function seedChildPlaces() {
+  // The cities that parent the areas and the destinations.
+  const cities = [...new Set(childPlaces.map((p) => p.city))];
+
+  for (const city of cities) {
+    const existing = await db.orm.public.Airport
+      .select("id")
+      .where((f) => f.kind.eq("city"))
+      .where({ city })
+      .first();
+    if (existing) {
+      bump("Airport", false);
+      continue;
+    }
+    await db.orm.public.Airport.create({
+      id: crypto.randomUUID(),
+      kind: "city",
+      iataCode: null,
+      name: city,
+      city,
+      country: "Indonesia",
+      sortOrder: 100,
+    });
+    bump("Airport", true);
+  }
+
+  for (const place of childPlaces) {
+    const parent = await db.orm.public.Airport
+      .select("id")
+      .where((f) => f.kind.eq("city"))
+      .where({ city: place.city })
+      .first();
+    if (!parent) continue;
+
+    const existing = await db.orm.public.Airport
+      .select("id")
+      .where((f) => f.kind.eq(place.kind))
+      .where({ name: place.name })
+      .first();
+    if (existing) {
+      bump("Airport", false);
+      continue;
+    }
+    await db.orm.public.Airport.create({
+      id: crypto.randomUUID(),
+      kind: place.kind,
+      iataCode: null,
+      name: place.name,
+      city: place.city,
+      country: "Indonesia",
+      parentId: parent.id,
+      sortOrder: place.sortOrder,
+    });
+    bump("Airport", true);
+  }
+}
+
 // ---------- Product ----------
 function matchVipServiceType(title: string): string | null {
   const t = title.toLowerCase();
@@ -199,9 +299,37 @@ function matchTransportServiceType(category: string, model: string): string | nu
   if (m.includes("suv")) return "suv";
   if (m.includes("van")) return "van";
   if (m.includes("limousine")) return "limousine";
-  // "By the Hour" (City Hourly Hire) — no matching tab
+  // "By the Hour" (City Hourly Hire) — its own parent type.
+  if (m.includes("hourly") || category.toLowerCase().includes("by the hour")) {
+    return "hourly-hire";
+  }
   return null;
 }
+
+/**
+ * The parent type of a tour package: its destination.
+ *
+ * The destination is the parent of the tour packages below it — the same
+ * parent → child shape the other service lines use.
+ */
+function matchTourServiceType(location: string): string | null {
+  const l = location.toLowerCase().trim();
+  const slug = l
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  if (!slug) return null;
+  return tourDestinationSlugs.has(slug) ? slug : null;
+}
+
+/** The destinations that exist as a tour parent type. */
+const tourDestinationSlugs = new Set([
+  "bali",
+  "labuan-bajo",
+  "yogyakarta",
+  "lombok",
+  "east-java",
+  "west-papua",
+]);
 
 function matchEvoaServiceType(name: string): string | null {
   const n = name.toLowerCase();
@@ -271,14 +399,21 @@ async function seedProducts(
   // --- Transport products
   for (const t of transports) {
     const slug = t.slug;
-    const existing = await db.orm.public.Product.select("id").where({ slug }).first();
+    const typeSlug = matchTransportServiceType(t.category, t.model);
+    const serviceTypeId = typeSlug ? typeIds[`transport:${typeSlug}`] ?? null : null;
+    const existing = await db.orm.public.Product.select("id", "serviceTypeId").where({ slug }).first();
     if (existing) {
+      // The parent type may have been added later (hourly-hire) — keep the
+      // product in sync without touching anything else.
+      if (existing.serviceTypeId !== serviceTypeId) {
+        await db.orm.public.Product
+          .where({ id: existing.id })
+          .update({ serviceTypeId });
+      }
       map[slug] = existing.id;
       bump("Product", false);
       continue;
     }
-    const typeSlug = matchTransportServiceType(t.category, t.model);
-    const serviceTypeId = typeSlug ? typeIds[`transport:${typeSlug}`] ?? null : null;
     const created = await db.orm.public.Product.create({
       id: crypto.randomUUID(),
       slug,
@@ -298,8 +433,15 @@ async function seedProducts(
   // --- Tour products
   for (const t of tours) {
     const slug = t.slug;
-    const existing = await db.orm.public.Product.select("id").where({ slug }).first();
+    const typeSlug = matchTourServiceType(t.location);
+    const serviceTypeId = typeSlug ? typeIds[`tour-package:${typeSlug}`] ?? null : null;
+    const existing = await db.orm.public.Product.select("id", "serviceTypeId").where({ slug }).first();
     if (existing) {
+      if (existing.serviceTypeId !== serviceTypeId) {
+        await db.orm.public.Product
+          .where({ id: existing.id })
+          .update({ serviceTypeId });
+      }
       map[slug] = existing.id;
       bump("Product", false);
       continue;
@@ -309,6 +451,7 @@ async function seedProducts(
       id: crypto.randomUUID(),
       slug,
       lineId: tourLineId,
+      serviceTypeId,
       airportId,
       title: t.title,
       description: `${t.location} · ${t.duration}`,
@@ -886,12 +1029,101 @@ async function seedLoyaltyLevels() {
   }
 }
 
+// ---------- Payment methods ----------
+// The methods the customer can pick on the payment page. They are grouped by
+// the gateway method code, exactly like the marketplace does it — the guest
+// picks the concrete option on the gateway page.
+const paymentMethods: {
+  code: string;
+  label: string;
+  providerMethodCode: string;
+  sortOrder: number;
+}[] = [
+  {
+    code: "BANK_TRANSFER",
+    label: "Transfer Bank (Virtual Account) — BCA, Mandiri, BNI, BRI, BSI, Permata",
+    providerMethodCode: "BANK_TRANSFER",
+    sortOrder: 10,
+  },
+  {
+    code: "CREDIT_CARD",
+    label: "Kartu Kredit / Debit — Visa, Mastercard, JCB",
+    providerMethodCode: "CREDIT_CARD",
+    sortOrder: 20,
+  },
+  {
+    code: "EWALLET",
+    label: "E-Wallet — DANA, GoPay, ShopeePay, LinkAja, OVO",
+    providerMethodCode: "EWALLET",
+    sortOrder: 30,
+  },
+  {
+    code: "QRIS",
+    label: "QRIS — scan dengan aplikasi apa pun",
+    providerMethodCode: "QRIS",
+    sortOrder: 40,
+  },
+  {
+    code: "DIRECT_DEBIT",
+    label: "Pembayaran Instan — KlikBCA, OCTO, blu",
+    providerMethodCode: "DIRECT_DEBIT",
+    sortOrder: 50,
+  },
+  {
+    code: "RETAIL_OUTLET",
+    label: "Gerai Retail — Indomaret, Alfamart",
+    providerMethodCode: "RETAIL_OUTLET",
+    sortOrder: 60,
+  },
+  {
+    code: "PAYLATER",
+    label: "Paylater / Cicilan Tanpa Kartu — Kredivo, Akulaku",
+    providerMethodCode: "PAYLATER",
+    sortOrder: 70,
+  },
+];
+
+async function seedPaymentMethods() {
+  for (const method of paymentMethods) {
+    const existing = await db.orm.public.PaymentMethod
+      .select("id")
+      .where({ code: method.code })
+      .first();
+
+    if (existing) {
+      await db.orm.public.PaymentMethod.where({ id: existing.id }).update({
+        label: method.label,
+        provider: "xendit",
+        providerMethodCode: method.providerMethodCode,
+        providerCurrency: "IDR",
+        sortOrder: method.sortOrder,
+        active: true,
+      });
+      bump("PaymentMethod", false);
+      continue;
+    }
+
+    await db.orm.public.PaymentMethod.create({
+      id: crypto.randomUUID(),
+      code: method.code,
+      label: method.label,
+      provider: "xendit",
+      providerMethodCode: method.providerMethodCode,
+      providerCurrency: "IDR",
+      sortOrder: method.sortOrder,
+      active: true,
+    });
+    bump("PaymentMethod", true);
+  }
+}
+
 // ---------- main ----------
 async function main() {
   console.log("Seeding booking domain…");
   const lineIds = await seedServiceLines();
   const typeIds = await seedServiceTypes(lineIds);
   const airports = await seedAirports();
+  await seedChildPlaces();
   const productIds = await seedProducts(lineIds, typeIds, airports.byIata, airports.byCity);
   await seedProductPackages(productIds);
   await seedProductAddOns(productIds);
@@ -901,6 +1133,7 @@ async function main() {
   await seedCountries();
   await seedCurrencies();
   await seedLoyaltyLevels();
+  await seedPaymentMethods();
 
   console.log("Seeding content…");
   await seedContent(counts, lineIds);

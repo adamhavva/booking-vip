@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { connection } from "next/server";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/sections/Footer";
 import BottomTabBar from "@/components/sections/BottomTabBar";
@@ -23,13 +24,7 @@ export const metadata: Metadata = {
  * The flow mirrors the Asia Fast Track booking tool (airport → schedule →
  * flight → service → passenger → confirm), but the layout is our own.
  */
-export default async function AirportVipPage() {
-  const [airports, airlines, services] = await Promise.all([
-    listWizardAirports(),
-    listWizardAirlines(),
-    listWizardServices(),
-  ]);
-
+export default function AirportVipPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white pb-20 lg:pb-0">
       <Suspense>
@@ -52,11 +47,7 @@ export default async function AirportVipPage() {
           </div>
 
           <Suspense fallback={null}>
-            <AirportVipWizard
-              airports={airports}
-              airlines={airlines}
-              services={services}
-            />
+            <AirportVipSection />
           </Suspense>
         </Container>
       </main>
@@ -64,5 +55,27 @@ export default async function AirportVipPage() {
       <Footer />
       <BottomTabBar />
     </div>
+  );
+}
+
+/**
+ * The dynamic part of the page: the airports, airlines and services are read
+ * from the database, so the section is rendered per request.
+ */
+async function AirportVipSection() {
+  await connection();
+
+  const [airports, airlines, services] = await Promise.all([
+    listWizardAirports(),
+    listWizardAirlines(),
+    listWizardServices(),
+  ]);
+
+  return (
+    <AirportVipWizard
+      airports={airports}
+      airlines={airlines}
+      services={services}
+    />
   );
 }

@@ -10,6 +10,32 @@
  * server actions, the admin screens and the client components alike.
  */
 
+/**
+ * The kinds of place a row can have.
+ *
+ * - `airport` — a_bandara, usually a child of a `city`;
+ * - `city` — a city or region, the parent of the places below it;
+ * - `area` — a pick-up area inside a city (transport);
+ * - `destination` — a tourist destination inside a city (tour packages).
+ */
+export type PlaceKind = "airport" | "city" | "area" | "destination";
+
+/** The human label of a place kind. */
+export function placeKindLabel(kind: string): string {
+  switch (kind) {
+    case "airport":
+      return "Airport";
+    case "city":
+      return "Kota";
+    case "area":
+      return "Area";
+    case "destination":
+      return "Destinasi";
+    default:
+      return kind;
+  }
+}
+
 /** The raw place row the tree is built from. */
 export type PlaceRow = {
   id: string;
@@ -141,13 +167,14 @@ function createsCycle(
  */
 export function filterPlaceTree(
   nodes: PlaceNode[],
-  kind: string,
+  kind: string | string[],
 ): PlaceNode[] {
+  const kinds = Array.isArray(kind) ? kind : [kind];
   const out: PlaceNode[] = [];
 
   for (const node of nodes) {
-    const children = filterPlaceTree(node.children, kind);
-    if (node.kind === kind || children.length > 0) {
+    const children = filterPlaceTree(node.children, kinds);
+    if (kinds.includes(node.kind) || children.length > 0) {
       out.push({ ...node, children });
     }
   }

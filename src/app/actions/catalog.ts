@@ -1,7 +1,12 @@
 "use server";
 
 import { db } from "@/prisma/db";
-import { buildPlaceTree, filterPlaceTree, type PlaceNode } from "@/lib/places";
+import {
+  buildPlaceTree,
+  filterPlaceTree,
+  type PlaceKind,
+  type PlaceNode,
+} from "@/lib/places";
 import type {
   CatalogDTO,
   OptionDTO,
@@ -290,7 +295,7 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
  * For serviceType, optionally scope by lineSlug.
  */
 export async function getOptions(
-  kind: "airport" | "city" | "serviceType" | "airline" | "country",
+  kind: "airport" | "city" | "area" | "destination" | "serviceType" | "airline" | "country",
   lineSlug?: string
 ): Promise<OptionDTO[]> {
   try {
@@ -315,6 +320,16 @@ export async function getOptions(
         .orderBy((f) => f.city.asc())
         .all();
       return rows.map((r) => ({ value: r.city, label: r.city }));
+    }
+
+    if (kind === "area" || kind === "destination") {
+      const rows = await db.orm.public.Airport
+        .select("name", "city")
+        .where((f) => f.active.eq(true))
+        .where((f) => f.kind.eq(kind))
+        .orderBy((f) => f.name.asc())
+        .all();
+      return rows.map((r) => ({ value: r.name, label: `${r.name} (${r.city})` }));
     }
 
     if (kind === "serviceType") {
@@ -373,7 +388,7 @@ export async function getOptions(
  * (if any). A place without a parent is returned as a root.
  */
 export async function getPlaceOptions(
-  kind: "airport" | "city",
+  kind: PlaceKind | PlaceKind[],
 ): Promise<PlaceNode[]> {
   try {
     const rows = await db.orm.public.Airport
@@ -382,7 +397,9 @@ export async function getPlaceOptions(
       .orderBy((f) => f.sortOrder.asc())
       .all();
 
-    return filterPlaceTree(buildPlaceTree(rows), kind);
+    const tree = buildPlaceTree(rows);
+
+    return filterPlaceTree(tree, kind);
   } catch (error) {
     console.error("[catalog] could not load places", error);
     return [];
@@ -406,6 +423,22 @@ export type TransportVehicleDTO = {
   unitKind: string;
   /** The price of one unit in USD cents. */
   unitUsdCents: number;
+  /** The slug of the parent type ("sedan", "hourly-hire", …). */
+  parentSlug: string | null;
+  /** The name of the parent type ("Sedan", "Hourly Hire", …). */
+  parentName: string | null;
+};
+
+/**
+ * A parent type with the products (children) below it.
+ *
+ * The transport line is grouped the same way the airport line is: the parent
+ * is the vehicle class, the children are the concrete products.
+ */
+export type TransportVehicleGroupDTO = {
+  parentSlug: string;
+  parentName: string;
+  children: TransportVehicleDTO[];
 };
 
 export async function getTransportVehicles(): Promise<TransportVehicleDTO[]> {
@@ -414,12 +447,16 @@ export async function getTransportVehicles(): Promise<TransportVehicleDTO[]> {
     if (!line) return [];
 
     const products = await db.orm.public.Product
-      .select("id", "slug", "title", "description", "imageUrl", "tone")
+      .select("id", "slug", "title", "description", "imageUrl", "tone", "serviceTypeId")
       .where((f) => f.lineId.eq(line.id))
       .where((f) => f.active.eq(true))
       .where((f) => f.isAddOn.eq(false))
       .orderBy((f) => f.title.asc())
       .all();
+
+    const typeMap = await getServiceTypeNames(
+      products.map((p) => p.serviceTypeId),
+    );
 
     const vehicles: TransportVehicleDTO[] = [];
 
@@ -430,6 +467,10 @@ export async function getTransportVehicles(): Promise<TransportVehicleDTO[]> {
         .where((f) => f.active.eq(true))
         .orderBy((f) => f.sortOrder.asc())
         .all();
+
+      const parent = product.serviceTypeId
+        ? typeMap.get(product.serviceTypeId)
+        : undefined;
 
       for (const pkg of packages) {
         vehicles.push({
@@ -442,6 +483,8 @@ export async function getTransportVehicles(): Promise<TransportVehicleDTO[]> {
           packageLabel: pkg.label,
           unitKind: pkg.unitKind,
           unitUsdCents: pkg.unitUsdCents ?? pkg.adultUsdCents ?? 0,
+          parentSlug: parent?.slug ?? null,
+          parentName: parent?.name ?? null,
         });
       }
     }
@@ -451,6 +494,201 @@ export async function getTransportVehicles(): Promise<TransportVehicleDTO[]> {
     console.error("[catalog] could not load transport vehicles", error);
     return [];
   }
+}
+
+/**
+ * The transport vehicles, grouped by their parent type.
+ *
+ * A product without a parent type ends up in a "Lainnya" group, so nothing
+ * is ever hidden from the customer.
+ */
+export async function getTransportVehicleGroups(): Promise<
+  TransportVehicleGroupDTO[]
+> {
+  const vehicles = await getTransportVehicles();
+  return groupByParent(vehicles, "Lainnya");
+}
+
+/**
+ * Look up the parent type of a product.
+ *
+ * The products point at their parent through `serviceTypeId`. This helper
+ * resolves a list of ids into the slug / name of the parent, so the client
+ * can group the products the way the airport line does.
+ */
+async function getServiceTypeNames(
+  ids: (string | null)[],
+): Promise<Map<string, { slug: string; name: string }>> {
+  const wanted = [...new Set(ids.filter((id): id is string => !!id))];
+  const result = new Map<string, { slug: string; name: string }>();
+  if (wanted.length === 0) return result;
+
+  try {
+    const rows = await db.orm.public.ServiceType
+      .select("id", "slug", "name")
+      .where((f) => f.id.in(wanted))
+      .all();
+
+    for (const row of rows) {
+      result.set(row.id, { slug: row.slug, name: row.name });
+    }
+  } catch (error) {
+    console.error("[catalog] could not load the service types", error);
+  }
+
+  return result;
+}
+
+/**
+ * Group the items by their parent type.
+ *
+ * The groups keep the order in which the parents first appear, so the
+ * customer sees the vehicles in the same order as before.
+ */
+function groupByParent<
+  T extends { parentSlug: string | null; parentName: string | null },
+>(items: T[], fallbackName: string): { parentSlug: string; parentName: string; children: T[] }[] {
+  const groups: { parentSlug: string; parentName: string; children: T[] }[] = [];
+  const bySlug = new Map<string, (typeof groups)[number]>();
+
+  for (const item of items) {
+    const slug = item.parentSlug ?? "other";
+    const name = item.parentName ?? fallbackName;
+
+    let group = bySlug.get(slug);
+    if (!group) {
+      group = { parentSlug: slug, parentName: name, children: [] };
+      bySlug.set(slug, group);
+      groups.push(group);
+    }
+    group.children.push(item);
+  }
+
+  return groups;
+}
+
+export type TourPackageDTO = {
+  productSlug: string;
+  title: string;
+  description: string | null;
+  imageUrl: string | null;
+  tone: string | null;
+  durationLabel: string | null;
+  packageId: string;
+  packageLabel: string;
+  unitKind: string;
+  adultUsdCents: number;
+  childUsdCents: number;
+  infantUsdCents: number;
+  /** The minimum lead time of the product (days / hours). */
+  leadTimeDays: number;
+  leadTimeHours: number;
+  /** The slug of the parent type (the destination, e.g. "bali"). */
+  parentSlug: string | null;
+  /** The name of the parent type (the destination, e.g. "Bali"). */
+  parentName: string | null;
+};
+
+/**
+ * A destination with the tour packages (children) below it.
+ *
+ * The tour line follows the same parent → child shape as the other lines:
+ * the parent is the destination, the children are the packages.
+ */
+export type TourPackageGroupDTO = {
+  parentSlug: string;
+  parentName: string;
+  children: TourPackageDTO[];
+};
+
+/**
+ * Fetch the bookable tour packages of the "tour-package" line.
+ *
+ * Every package is priced per passenger (adult / child / infant), so the
+ * client can compute the total from the traveller counts.
+ */
+export async function getTourPackages(): Promise<TourPackageDTO[]> {
+  try {
+    const line = await getLineBySlug("tour-package");
+    if (!line) return [];
+
+    const products = await db.orm.public.Product
+      .select("id", "slug", "title", "description", "imageUrl", "tone", "durationLabel", "leadTimeDays", "leadTimeHours", "serviceTypeId")
+      .where((f) => f.lineId.eq(line.id))
+      .where((f) => f.active.eq(true))
+      .where((f) => f.isAddOn.eq(false))
+      .orderBy((f) => f.title.asc())
+      .all();
+
+    const tours: TourPackageDTO[] = [];
+
+    const typeMap = await getServiceTypeNames(
+      products.map((p) => p.serviceTypeId),
+    );
+
+    for (const product of products) {
+      const packages = await db.orm.public.ProductPackage
+        .select(
+          "id",
+          "label",
+          "unitKind",
+          "adultUsdCents",
+          "childUsdCents",
+          "infantUsdCents",
+          "unitUsdCents",
+        )
+        .where((f) => f.productId.eq(product.id))
+        .where((f) => f.active.eq(true))
+        .orderBy((f) => f.sortOrder.asc())
+        .all();
+
+      const parent = product.serviceTypeId
+        ? typeMap.get(product.serviceTypeId)
+        : undefined;
+
+      for (const pkg of packages) {
+        tours.push({
+          productSlug: product.slug,
+          title: product.title,
+          description: product.description ?? null,
+          imageUrl: product.imageUrl ?? null,
+          tone: product.tone ?? null,
+          durationLabel: product.durationLabel ?? null,
+          packageId: pkg.id,
+          packageLabel: pkg.label,
+          unitKind: pkg.unitKind,
+          adultUsdCents:
+            pkg.unitKind === "per_pax"
+              ? (pkg.adultUsdCents ?? pkg.unitUsdCents ?? 0)
+              : (pkg.unitUsdCents ?? 0),
+          childUsdCents:
+            pkg.unitKind === "per_pax" ? (pkg.childUsdCents ?? 0) : 0,
+          infantUsdCents:
+            pkg.unitKind === "per_pax" ? (pkg.infantUsdCents ?? 0) : 0,
+          leadTimeDays: product.leadTimeDays ?? 0,
+          leadTimeHours: product.leadTimeHours ?? 0,
+          parentSlug: parent?.slug ?? null,
+          parentName: parent?.name ?? null,
+        });
+      }
+    }
+
+    return tours;
+  } catch (error) {
+    console.error("[catalog] could not load tour packages", error);
+    return [];
+  }
+}
+
+/**
+ * The tour packages, grouped by their destination.
+ *
+ * A package without a destination ends up in a "Lainnya" group, so nothing
+ * is ever hidden from the customer.
+ */
+export async function getTourPackageGroups(): Promise<TourPackageGroupDTO[]> {
+  const tours = await getTourPackages();
+  return groupByParent(tours, "Lainnya");
 }
 
 /**

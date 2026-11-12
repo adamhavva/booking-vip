@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { createBooking } from "@/app/actions/booking";
+import PaymentStep from "@/components/payment/PaymentStep";
 import type { TransportVehicleDTO } from "@/app/actions/catalog";
 import type { PickedPoint } from "@/components/transport/LocationPicker";
 
@@ -10,6 +11,16 @@ type Props = {
   pickup: PickedPoint;
   dropoff: PickedPoint;
   vehicles: TransportVehicleDTO[];
+  /** The values that came from the search (the entry page). */
+  initial?: {
+    /** The vehicle that was picked on the fleet list ("slug::packageId"). */
+    vehicle?: string;
+    date?: string;
+    time?: string;
+    /** The number of rental days. */
+    days?: number;
+    driverOption?: string;
+  };
 };
 
 /** The next 30 days as `YYYY-MM-DD`. */
@@ -35,16 +46,28 @@ const TIME_SLOTS = [
  * only asks for what is left: when, how many passengers, which vehicle and
  * how to reach the customer. No passenger data is stored.
  */
-export default function TransportBookingClient({ pickup, dropoff, vehicles }: Props) {
+export default function TransportBookingClient({
+  pickup,
+  dropoff,
+  vehicles,
+  initial,
+}: Props) {
   const dates = useMemo(() => upcomingDates(), []);
 
-  const [date, setDate] = useState(dates[0] ?? "");
-  const [time, setTime] = useState("09:00");
+  const [date, setDate] = useState(initial?.date ?? dates[0] ?? "");
+  const [time, setTime] = useState(initial?.time ?? "09:00");
+  const [days, setDays] = useState(Math.max(1, initial?.days ?? 1));
+  const [driverOption, setDriverOption] = useState(
+    initial?.driverOption ?? "with_driver",
+  );
+  const [pickupPolicy, setPickupPolicy] = useState("vendor_pickup");
   const [adult, setAdult] = useState(1);
   const [child, setChild] = useState(0);
   const [vehicleSlug, setVehicleSlug] = useState(
-    vehicles[0] ? `${vehicles[0].productSlug}::${vehicles[0].packageId}` : "",
+    initial?.vehicle ??
+      (vehicles[0] ? `${vehicles[0].productSlug}::${vehicles[0].packageId}` : ""),
   );
+  const [title, setTitle] = useState("mr");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -60,7 +83,29 @@ export default function TransportBookingClient({ pickup, dropoff, vehicles }: Pr
     [vehicles, vehicleSlug],
   );
 
-  const totalUsdCents = selected ? selected.unitUsdCents : 0;
+  // The vehicles are grouped by their parent type (the vehicle class), the
+  // same parent → child shape the airport line uses.
+  const vehicleGroups = useMemo(() => {
+    const groups: { name: string; items: TransportVehicleDTO[] }[] = [];
+    const bySlug = new Map<string, (typeof groups)[number]>();
+
+    for (const vehicle of vehicles) {
+      const slug = vehicle.parentSlug ?? "other";
+      const name = vehicle.parentName ?? "Lainnya";
+
+      let group = bySlug.get(slug);
+      if (!group) {
+        group = { name, items: [] };
+        bySlug.set(slug, group);
+        groups.push(group);
+      }
+      group.items.push(vehicle);
+    }
+
+    return groups;
+  }, [vehicles]);
+
+  const totalUsdCents = selected ? selected.unitUsdCents * days : 0;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -89,8 +134,13 @@ export default function TransportBookingClient({ pickup, dropoff, vehicles }: Pr
       child,
       infant: 0,
       units: selected.unitKind === "per_unit" ? 1 : undefined,
+      days,
+      pickupPolicy,
+      driverOption,
+      notes: notes || undefined,
       addOns: [],
       contact: {
+        title,
         firstName,
         lastName,
         email,
@@ -121,7 +171,8 @@ export default function TransportBookingClient({ pickup, dropoff, vehicles }: Pr
   /* ----------------------------------------------------------------- */
   if (code) {
     return (
-      <div className="mx-auto max-w-lg rounded-2xl border border-line bg-white p-8 text-center">
+      <div className="mx-auto max-w-lg space-y-4">
+      <div className="rounded-2xl border border-line bg-white p-8 text-center">
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-soft text-brand-dark">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
@@ -159,6 +210,14 @@ export default function TransportBookingClient({ pickup, dropoff, vehicles }: Pr
             Kembali ke transport
           </Link>
         </div>
+      </div>
+
+        {/* The payment step — the gateway invoice is created on the server. */}
+        <PaymentStep
+          bookingCode={code}
+          email={email}
+          amountUsdCents={totalUsdCents}
+        />
       </div>
     );
   }
@@ -259,6 +318,92 @@ export default function TransportBookingClient({ pickup, dropoff, vehicles }: Pr
           </div>
         </section>
 
+        {/* Duration, driver and pickup policy */}
+        <section className="rounded-2xl border border-line bg-white p-5">
+          <h2 className="text-[15px] font-bold tracking-[-0.01em] text-ink">
+            Durasi &amp; supir
+          </h2>
+
+          <div className="mt-4 grid gap-3.5 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-[12px] font-medium text-ink">
+                Jumlah hari sewa
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={30}
+                value={days}
+                onChange={(e) => setDays(Math.max(1, Number(e.target.value) || 1))}
+                className="h-11 w-full rounded-xl border border-line bg-white px-3 text-[13px] text-ink outline-none transition-colors focus:border-brand"
+              />
+            </label>
+
+            <div>
+              <span className="mb-1.5 block text-[12px] font-medium text-ink">
+                Opsi supir
+              </span>
+              <div className="flex gap-2">
+                {[
+                  { value: "with_driver", label: "Dengan supir" },
+                  { value: "without_driver", label: "Tanpa supir" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setDriverOption(option.value)}
+                    className={`h-11 flex-1 rounded-xl border px-3 text-[13px] font-semibold transition-colors ${
+                      driverOption === option.value
+                        ? "border-brand bg-brand-soft text-brand"
+                        : "border-line bg-white text-muted hover:bg-canvas"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5">
+            <span className="mb-2 block text-[12px] font-medium text-ink">
+              Cara mobil diserahkan
+            </span>
+            <div className="grid gap-2.5 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => setPickupPolicy("vendor_pickup")}
+                className={`rounded-xl border p-4 text-left transition-colors ${
+                  pickupPolicy === "vendor_pickup"
+                    ? "border-brand bg-brand-soft"
+                    : "border-line bg-white hover:bg-canvas"
+                }`}
+              >
+                <span className="block text-[13px] font-bold text-ink">
+                  Ambil di Lokasi Vendor
+                </span>
+                <span className="mt-0.5 block text-[12px] text-muted">Gratis</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPickupPolicy("delivered")}
+                className={`rounded-xl border p-4 text-left transition-colors ${
+                  pickupPolicy === "delivered"
+                    ? "border-brand bg-brand-soft"
+                    : "border-line bg-white hover:bg-canvas"
+                }`}
+              >
+                <span className="block text-[13px] font-bold text-ink">
+                  Diantar ke Lokasi Kamu
+                </span>
+                <span className="mt-0.5 block text-[12px] text-muted">
+                  Kamu akan dikenakan biaya tambahan.
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* Passengers */}
         <section className="rounded-2xl border border-line bg-white p-5">
           <h2 className="text-[15px] font-bold tracking-[-0.01em] text-ink">
@@ -307,36 +452,45 @@ export default function TransportBookingClient({ pickup, dropoff, vehicles }: Pr
               Belum ada kendaraan yang tersedia saat ini.
             </p>
           ) : (
-            <div className="mt-4 space-y-2.5">
-              {vehicles.map((vehicle) => {
-                const value = `${vehicle.productSlug}::${vehicle.packageId}`;
-                const active = value === vehicleSlug;
+            <div className="mt-4 space-y-5">
+              {vehicleGroups.map((group) => (
+                <div key={group.name}>
+                  <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted">
+                    {group.name}
+                  </h3>
+                  <div className="space-y-2.5">
+                    {group.items.map((vehicle) => {
+                      const value = `${vehicle.productSlug}::${vehicle.packageId}`;
+                      const active = value === vehicleSlug;
 
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setVehicleSlug(value)}
-                    className={`flex w-full items-center justify-between gap-4 rounded-xl border p-4 text-left transition-colors ${
-                      active
-                        ? "border-brand bg-brand-soft"
-                        : "border-line bg-white hover:bg-canvas"
-                    }`}
-                  >
-                    <span className="min-w-0">
-                      <span className="block text-[14px] font-semibold text-ink">
-                        {vehicle.title}
-                      </span>
-                      <span className="mt-0.5 block text-[12px] text-muted">
-                        {vehicle.packageLabel}
-                      </span>
-                    </span>
-                    <span className="shrink-0 text-[14px] font-bold text-ink">
-                      ${(vehicle.unitUsdCents / 100).toFixed(2)}
-                    </span>
-                  </button>
-                );
-              })}
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setVehicleSlug(value)}
+                          className={`flex w-full items-center justify-between gap-4 rounded-xl border p-4 text-left transition-colors ${
+                            active
+                              ? "border-brand bg-brand-soft"
+                              : "border-line bg-white hover:bg-canvas"
+                          }`}
+                        >
+                          <span className="min-w-0">
+                            <span className="block text-[14px] font-semibold text-ink">
+                              {vehicle.title}
+                            </span>
+                            <span className="mt-0.5 block text-[12px] text-muted">
+                              {vehicle.packageLabel}
+                            </span>
+                          </span>
+                          <span className="shrink-0 text-[14px] font-bold text-ink">
+                            ${(vehicle.unitUsdCents / 100).toFixed(2)}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </section>
@@ -348,6 +502,19 @@ export default function TransportBookingClient({ pickup, dropoff, vehicles }: Pr
           </h2>
 
           <div className="mt-4 grid gap-3.5 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-[12px] font-medium text-ink">Gelar</span>
+              <select
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="h-11 w-full rounded-xl border border-line bg-white px-3 text-[13px] text-ink outline-none transition-colors focus:border-brand"
+              >
+                <option value="mr">Tuan</option>
+                <option value="mrs">Nyonya</option>
+                <option value="ms">Nona</option>
+              </select>
+            </label>
+
             <label className="block">
               <span className="mb-1.5 block text-[12px] font-medium text-ink">Nama depan</span>
               <input

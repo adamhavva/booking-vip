@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import AccountPageHeader from "@/components/account/AccountPageHeader";
+import EmailVerificationBanner from "@/components/account/EmailVerificationBanner";
 import { showToast } from "@/components/ui/toast";
 import {
   changeAccountPassword,
@@ -105,6 +106,8 @@ export default function ProfilePanel() {
         title="Profil Saya"
         description="Informasi akun dan pengaturan keamanan."
       />
+
+      <EmailVerificationBanner />
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Account information */}

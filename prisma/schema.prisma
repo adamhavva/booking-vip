@@ -31,6 +31,7 @@ model User {
   reviews       Review[]
   level         LoyaltyLevel? @relation(fields: [levelId], references: [id])
   visaApplications VisaApplication[]
+  pushSubscriptions PushSubscription[]
 }
 
 /// A loyalty tier — the thresholds live in the database, so they can be changed
@@ -226,6 +227,8 @@ model Airport {
   /// Sort order inside the parent group (lower comes first).
   sortOrder   Int       @default(0)
   products    Product[]
+  /// The tour products that use this place as their destination.
+  destinations Product[] @relation("DestinationPlace")
 }
 
 /// A bookable product (VIP service, vehicle, tour package, eVOA plan).
@@ -243,6 +246,20 @@ model Product {
   direction        String    @default("both")
   leadTimeHours    Int       @default(0)
   leadTimeDays     Int       @default(0)
+  /// The transport vendor (the rental company / the tour operator).
+  vendor           String?
+  /// "manual" | "automatic"
+  transmission     String?
+  /// How many passengers the vehicle carries.
+  seats            Int?
+  /// "with_driver" | "without_driver"
+  driverOption     String    @default("with_driver")
+  /// "vendor_pickup" (free — pick up at the vendor) | "delivered" (extra fee).
+  pickupPolicy     String?
+  /// The tour destination — a place row of kind "destination".
+  destinationId    String?
+  /// The day-by-day itinerary of a tour package.
+  itinerary        Json      @default("[]")
   included         Json      @default("[]")
   notIncluded      Json      @default("[]")
   requirements     Json      @default("[]")
@@ -262,6 +279,7 @@ model Product {
   line             ServiceLine   @relation(fields: [lineId], references: [id])
   serviceType      ServiceType?  @relation(fields: [serviceTypeId], references: [id])
   airport          Airport?      @relation(fields: [airportId], references: [id])
+  destination      Airport?      @relation("DestinationPlace", fields: [destinationId], references: [id])
   packages         ProductPackage[]
   /// Add-ons this product offers (where this product is the host).
   hostAddOns       ProductAddOn[] @relation("HostAddOns")
@@ -369,6 +387,12 @@ model Booking {
   dropoffLabel    String?
   dropoffLat      Float?
   dropoffLng      Float?
+  /// A free-form note from the customer (the "special request").
+  notes           String?
+  /// "with_driver" | "without_driver"
+  driverOption    String?
+  /// "vendor_pickup" | "delivered"
+  pickupPolicy    String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -391,11 +415,13 @@ model BookingItem {
   packageId     String?
   label         String
   packageLabel  String?
-  /// "per_pax" | "per_unit"
+  /// "per_pax" | "per_unit" | "per_day"
   unitKind      String
-  adultCount    Int
-  childCount    Int
-  infantCount   Int
+  adultCount    Int      @default(0)
+  childCount    Int      @default(0)
+  infantCount   Int      @default(0)
+  /// How many units were booked — the number of rental days for "per_day".
+  quantity      Int      @default(1)
   unitUsdCents  Int
   totalUsdCents Int
   booking       Booking  @relation(fields: [bookingId], references: [id])
@@ -418,6 +444,8 @@ model BookingAddOn {
 model Contact {
   id              String  @id @default(uuid())
   bookingId       String  @unique
+  /// "mr" | "mrs" | "ms"
+  title           String?
   firstName       String
   lastName        String
   email           String
@@ -457,6 +485,12 @@ model PaymentMethod {
   label     String
   sortOrder Int       @default(0)
   active    Boolean   @default(true)
+  /// The gateway that settles this method: "xendit" | "paypal" | null (offline).
+  provider  String?
+  /// The method code as the gateway names it ("VA", "EWALLET", "QRIS", "CREDIT_CARD").
+  providerMethodCode String?
+  /// The currency the customer is charged in for this method.
+  providerCurrency  String?
   payments  Payment[]
 }
 
@@ -470,9 +504,59 @@ model Payment {
   currencyCode   String
   fxRate         Float    @default(1)
   reference      String?
+  /// The gateway that owns this payment: "xendit" | "paypal" | null.
+  provider       String?
+  /// The provider-side id (the Xendit invoice id, the PayPal order id).
+  providerRef    String?
+  /// The amount charged by the provider, in the provider currency (cents).
+  providerAmountCents Int?
+  providerCurrency     String?
+  /// The checkout URL the customer was redirected to.
+  checkoutUrl    String?
+  expiresAt      DateTime?
+  paidAt         DateTime?
+  /// The raw provider payload, kept for auditing.
+  rawPayload     Json?
   createdAt      DateTime @default(now())
   booking        Booking  @relation(fields: [bookingId], references: [id])
   method         PaymentMethod? @relation(fields: [methodId], references: [id])
+
+  @@index([providerRef])
+}
+
+/// A webhook event received from a gateway — the dedupe/audit ledger.
+model PaymentWebhookEvent {
+  id           String   @id @default(uuid())
+  /// The gateway: "xendit" | "paypal".
+  provider     String
+  /// The provider's event id — unique per provider, so a replay is ignored.
+  providerEventId String
+  /// The event type, e.g. "invoice.paid".
+  eventType    String
+  /// "processed" | "ignored" | "failed".
+  outcome      String   @default("processed")
+  /// The raw payload as received.
+  payload      Json?
+  receivedAt   DateTime @default(now())
+
+  @@unique([provider, providerEventId])
+}
+
+/// A browser push subscription (Web Push / VAPID).
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  /// The push service endpoint — unique per browser profile.
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Currency {

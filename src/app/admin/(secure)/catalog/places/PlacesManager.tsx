@@ -8,7 +8,7 @@ import EntityManager from "@/components/admin/EntityManager";
 import StatusToggle from "@/components/admin/StatusToggle";
 import { adminClass } from "@/components/admin/tokens";
 import { useAdminList } from "@/components/admin/useAdminList";
-import { buildPlaceTree, flattenPlaceTree } from "@/lib/places";
+import { buildPlaceTree, flattenPlaceTree, placeKindLabel } from "@/lib/places";
 
 /**
  * Place table — airports and cities shared by the products.
@@ -69,7 +69,7 @@ export default function PlacesManager() {
       header: "Jenis",
       render: (row: AdminPlaceRow) => (
         <span className="text-[12px] text-[var(--admin-muted)]">
-          {row.kind === "airport" ? "Airport" : "City"}
+          {placeKindLabel(row.kind)}
         </span>
       ),
     },

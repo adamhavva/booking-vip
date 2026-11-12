@@ -17,6 +17,7 @@ export default function PlaceOptionList({
   query,
   selected,
   onSelect,
+  selectableKinds,
 }: {
   nodes: PlaceNode[];
   /** Free-text filter; parents stay visible while a child matches. */
@@ -24,6 +25,13 @@ export default function PlaceOptionList({
   /** The currently selected value (matched against the option value). */
   selected?: string;
   onSelect: (value: string) => void;
+  /**
+   * The kinds that are selectable even when they have children.
+   *
+   * By default a parent is only a group header; the transport flow wants the
+   * city *and* the areas below it to be pickable.
+   */
+  selectableKinds?: string[];
 }) {
   const q = (query ?? "").trim().toLowerCase();
 
@@ -34,6 +42,7 @@ export default function PlaceOptionList({
         query={q}
         selected={selected}
         onSelect={onSelect}
+        selectableKinds={selectableKinds}
         depth={0}
       />
     </ul>
@@ -46,12 +55,14 @@ function PlaceBranch({
   query,
   selected,
   onSelect,
+  selectableKinds,
   depth,
 }: {
   nodes: PlaceNode[];
   query: string;
   selected?: string;
   onSelect: (value: string) => void;
+  selectableKinds?: string[];
   depth: number;
 }) {
   const out: React.ReactNode[] = [];
@@ -66,22 +77,46 @@ function PlaceBranch({
         : node.children.filter((child) => placeMatches(child, query));
       if (query && !selfMatches && children.length === 0) continue;
 
+      // A parent of a "selectable" kind (a city in the transport flow) is a
+      // button first and a group second.
+      const isSelectable = selectableKinds?.includes(node.kind) ?? false;
+      const isSelected = selected === node.value;
+
       out.push(
         <li key={node.id} className="pt-2 first:pt-0">
-          <div
-            className="flex items-center gap-2 px-3 pb-1 text-[11px] font-bold uppercase tracking-[0.06em] text-muted"
-            style={depth > 0 ? { paddingLeft: `${12 + depth * 12}px` } : undefined}
-          >
-            <span className="truncate">{node.label}</span>
-            <span className="h-px flex-1 bg-line" />
-          </div>
-          <PlaceBranch
-            nodes={children}
-            query={query}
-            selected={selected}
-            onSelect={onSelect}
-            depth={depth + 1}
-          />
+          {isSelectable ? (
+            <button
+              type="button"
+              onClick={() => onSelect(node.value)}
+              className={`mx-3 mb-1 flex w-[calc(100%-1.5rem)] items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] font-bold transition-colors hover:bg-canvas ${
+                isSelected ? "bg-brand-soft text-brand" : "text-ink"
+              }`}
+              style={depth > 0 ? { marginLeft: `${depth * 12}px` } : undefined}
+            >
+              <span className="truncate">{node.label}</span>
+              {isSelected ? <span className="text-xs font-bold text-brand">✓</span> : null}
+            </button>
+          ) : (
+            <div
+              className="flex items-center gap-2 px-3 pb-1 text-[11px] font-bold uppercase tracking-[0.06em] text-muted"
+              style={depth > 0 ? { paddingLeft: `${12 + depth * 12}px` } : undefined}
+            >
+              <span className="truncate">{node.label}</span>
+              <span className="h-px flex-1 bg-line" />
+            </div>
+          )}
+          {/* A nested list — a <ul> inside the <li>, never a <li> inside a
+              <li> (invalid HTML, and a hydration error in React). */}
+          <ul className="list-none">
+            <PlaceBranch
+              nodes={children}
+              query={query}
+              selected={selected}
+              onSelect={onSelect}
+              selectableKinds={selectableKinds}
+              depth={depth + 1}
+            />
+          </ul>
         </li>
       );
       continue;

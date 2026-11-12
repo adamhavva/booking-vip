@@ -199,8 +199,8 @@ export const servicePages: Record<string, ServicePage> = {
         body: "Airport to hotel, hotel to restaurant, city to city, and multi-day chauffeur hire by the hour or by the day.",
       },
     ],
-    highlights: ["Sedan", "SUV", "Van", "Limousine"],
-    tabs: ["All", "Sedan", "SUV", "Van", "Limousine"],
+    highlights: ["Sedan", "SUV", "Van", "Limousine", "Hourly Hire"],
+    tabs: ["All", "Sedan", "SUV", "Van", "Limousine", "Hourly Hire"],
     catalog: "transport",
   },
 
@@ -225,7 +225,15 @@ export const servicePages: Record<string, ServicePage> = {
       },
     ],
     highlights: ["Bali", "Lombok", "Yogyakarta", "Labuan Bajo", "Papua"],
-    tabs: ["All", "Bali", "Labuan Bajo", "Yogyakarta", "Lombok", "Papua"],
+    tabs: [
+      "All",
+      "Bali",
+      "Labuan Bajo",
+      "Yogyakarta",
+      "Lombok",
+      "East Java",
+      "West Papua",
+    ],
     catalog: "tour",
   },
 

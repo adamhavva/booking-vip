@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import Container from "@/components/ui/Container";
-import Badge from "@/components/ui/Badge";
 import Popover from "@/components/ui/Popover";
 import FieldShell from "@/components/ui/FieldShell";
 import PaxPopover, {
@@ -23,7 +22,6 @@ import {
   StarIcon,
   UsersIcon,
 } from "@/components/icons";
-import { categories } from "@/data/home";
 import { serviceNav, serviceSearchFields } from "@/data/services";
 import { loadDraft, rememberSearch } from "@/lib/searchDraft";
 import { logSearch } from "@/app/actions/search";
@@ -212,50 +210,19 @@ function SelectField({
   );
 }
 
-/** Rail entry — picks the service whose form is shown below. */
-function ServiceTab({
-  label,
-  short,
-  tone,
-  badge,
-  active,
-  onClick,
-}: {
-  label: string;
-  short: string;
-  tone: string;
-  badge: string | null;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 transition-colors ${
-        active ? "bg-brand-soft" : "hover:bg-canvas"
-      }`}
-    >
-      <span
-        className={`flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br ${tone} text-[11px] font-bold text-white shadow-sm`}
-      >
-        {short}
-      </span>
-      <span
-        className={`whitespace-nowrap text-sm font-bold ${
-          active ? "text-brand" : "text-ink"
-        }`}
-      >
-        {label}
-      </span>
-      {badge && <Badge variant="pill">{badge}</Badge>}
-    </button>
-  );
-}
+/**
+ * The home hero only searches flights / airports.
+ *
+ * Every other service has its own page (Transport, Tour Package, e-VOA), so
+ * the form here never changes shape — the service cards below the card point
+ * at those pages.
+ */
+const HOME_SERVICE = "Airport VIP Service";
 
 export default function HeroSearch() {
   const router = useRouter();
   const { t, lang } = useLocale();
-  const [service, setService] = useState(categories[0].label);
+  const service = HOME_SERVICE;
   const [values, setValues] = useState<Values>({});
   const [resume, setResume] = useState<{ href: string; label: string } | null>(
     null
@@ -348,7 +315,6 @@ export default function HeroSearch() {
     if (!draft) return;
     setResume({ href: draft.href, label: draft.service });
     if (draft.values && serviceSearchFields[draft.service]) {
-      setService(draft.service);
       setValues((v) => ({ ...v, [draft.service]: draft.values }));
     }
   }, []);
@@ -497,21 +463,6 @@ export default function HeroSearch() {
 
         {/* Search card with a centered tab rail straddling its top edge */}
         <div className="relative mx-auto max-w-[1120px]">
-          {/* Service selector tabs */}
-          <div className="no-scrollbar relative z-10 mx-auto -mb-5 flex w-fit max-w-full items-center gap-1 overflow-x-auto rounded-full bg-white px-2 py-2 shadow-lg">
-            {lines.map((l) => (
-              <ServiceTab
-                key={l.slug}
-                label={l.label}
-                short={l.short}
-                tone={l.tone}
-                badge={l.badge}
-                active={l.label === service}
-                onClick={() => setService(l.label)}
-              />
-            ))}
-          </div>
-
           {/* Search card */}
           <div className="relative rounded-2xl bg-white p-4 shadow-xl md:p-6 md:pt-10">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
@@ -540,6 +491,33 @@ export default function HeroSearch() {
                 <span className="text-muted">{t("hero.resumeDevice")}</span>
               </p>
             )}
+
+            {/* The other services live on their own pages */}
+            <div className="mt-4 grid gap-2 border-t border-line pt-4 sm:grid-cols-2 lg:grid-cols-3">
+              {lines
+                .filter((l) => l.slug !== "vip-service")
+                .map((l) => (
+                  <Link
+                    key={l.slug}
+                    href={SERVICE_ROUTES[l.label] ?? `/${l.slug}`}
+                    className="flex items-center gap-3 rounded-xl border border-line bg-white px-3 py-2.5 transition-colors hover:bg-canvas"
+                  >
+                    <span
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${l.tone} text-[11px] font-bold text-white`}
+                    >
+                      {l.short}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-ink">
+                      {l.label}
+                    </span>
+                    <ChevronDown
+                      width={16}
+                      height={16}
+                      className="shrink-0 -rotate-90 text-muted"
+                    />
+                  </Link>
+                ))}
+            </div>
 
             {/* Promo strip */}
             <div className="mt-4 flex flex-wrap items-center gap-1 border-t border-line pt-4 text-sm text-ink">

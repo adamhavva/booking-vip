@@ -8,6 +8,14 @@ export type CreateBookingInput = {
   child: number;
   infant: number;
   units?: number; // for per_unit packages (default 1)
+  /** The number of rental days (for "per_day" packages). */
+  days?: number;
+  /** "vendor_pickup" | "delivered" — where the car is handed over. */
+  pickupPolicy?: string;
+  /** "with_driver" | "without_driver". */
+  driverOption?: string;
+  /** The free-form note of the customer (the "special request"). */
+  notes?: string;
   addOns: { slug: string; qty: number }[];
   contact: {
     firstName: string;
@@ -17,6 +25,8 @@ export type CreateBookingInput = {
     phone: string;
     isGuestSelf: boolean;
     notes?: string;
+    /** "mr" | "mrs" | "ms" */
+    title?: string;
   };
   flight: {
     airportName?: string;

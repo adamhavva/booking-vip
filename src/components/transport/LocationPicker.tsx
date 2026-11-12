@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import type { PickedPoint } from "./TransportMap";
+import type { PickedPoint } from "@/components/map/PickMap";
+import { searchAddress } from "@/lib/geocode";
 
 /**
  * The map of the transport flow.
@@ -10,7 +11,7 @@ import type { PickedPoint } from "./TransportMap";
  * Leaflet only works in the browser, so the map is loaded with `ssr: false`
  * and a plain skeleton is shown until it is ready.
  */
-const TransportMap = dynamic(() => import("./TransportMap"), {
+const PickMap = dynamic(() => import("@/components/map/PickMap"), {
   ssr: false,
   loading: () => (
     <div className="flex h-full w-full items-center justify-center bg-canvas text-[13px] text-muted">
@@ -28,36 +29,6 @@ type SearchResult = {
   label: string;
 };
 
-/**
- * Look an address up with OpenStreetMap Nominatim.
- *
- * The service is free and needs no key — good enough for the address field of
- * the transport flow.
- */
-async function searchAddress(query: string): Promise<SearchResult[]> {
-  const url = new URL("https://nominatim.openstreetmap.org/search");
-  url.searchParams.set("format", "jsonv2");
-  url.searchParams.set("limit", "5");
-  url.searchParams.set("q", query);
-
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
-  if (!response.ok) throw new Error("Pencarian alamat gagal");
-
-  const data = (await response.json()) as {
-    lat: string;
-    lon: string;
-    display_name: string;
-  }[];
-
-  return data.map((item) => ({
-    lat: Number(item.lat),
-    lng: Number(item.lon),
-    label: item.display_name,
-  }));
-}
-
 /** The pickup / dropoff picker of the transport flow. */
 export default function LocationPicker({
   pickup,
@@ -65,6 +36,12 @@ export default function LocationPicker({
   activeField,
   onChange,
   onActiveFieldChange,
+  heading = "Titik jemput",
+  description = "Pilih titik pickup dan dropoff — klik peta, geser pin, atau cari alamat.",
+  pickupLabel = "Lokasi pickup",
+  dropoffLabel = "Lokasi dropoff",
+  searchLabel = "Cari alamat",
+  searchPlaceholder = "Contoh: Plaza Senayan, Jakarta",
 }: {
   pickup: PickedPoint | null;
   dropoff: PickedPoint | null;
@@ -72,6 +49,12 @@ export default function LocationPicker({
   activeField: "pickup" | "dropoff";
   onChange: (field: "pickup" | "dropoff", point: PickedPoint | null) => void;
   onActiveFieldChange: (field: "pickup" | "dropoff") => void;
+  heading?: string;
+  description?: string;
+  pickupLabel?: string;
+  dropoffLabel?: string;
+  searchLabel?: string;
+  searchPlaceholder?: string;
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -129,7 +112,7 @@ export default function LocationPicker({
     debounceRef.current = setTimeout(() => runSearch(text), 500);
   };
 
-  /** Use the real location of the device. */
+  /** Use the real location of the device (the button under the two fields). */
   const handleUseMyLocation = () => {
     if (!("geolocation" in navigator)) {
       setGeoError("Perangkat kamu tidak mendukung lokasi otomatis.");
@@ -142,8 +125,7 @@ export default function LocationPicker({
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setLocating(false);
-        onActiveFieldChange("pickup");
-        onChange("pickup", {
+        onChange(activeField, {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
           label: "Lokasi saya",
@@ -166,15 +148,25 @@ export default function LocationPicker({
     });
   };
 
+  /** A dragged pin moves the point it belongs to. */
+  const handleMapMove = (
+    field: "pickup" | "dropoff",
+    point: { lat: number; lng: number },
+  ) => {
+    onChange(field, {
+      lat: point.lat,
+      lng: point.lng,
+      label: `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`,
+    });
+  };
+
   return (
     <div className="grid gap-5 lg:grid-cols-[380px_1fr]">
       {/* Left: the two address fields */}
       <div className="space-y-4">
         <div className="rounded-2xl border border-line bg-white p-5">
-          <h2 className="text-[15px] font-bold text-ink">Titikjemput</h2>
-          <p className="mt-1 text-[13px] text-muted">
-            Pilih titik pickup dan dropoff — klik peta atau cari alamat.
-          </p>
+          <h2 className="text-[15px] font-bold text-ink">{heading}</h2>
+          <p className="mt-1 text-[13px] text-muted">{description}</p>
 
           {/* Pickup */}
           <button
@@ -191,7 +183,7 @@ export default function LocationPicker({
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-[12px] font-semibold text-ink">
-                Lokasi pickup
+                {pickupLabel}
               </span>
               <span className="mt-0.5 block truncate text-[12px] text-muted">
                 {pickup?.label ?? "Belum dipilih"}
@@ -214,7 +206,7 @@ export default function LocationPicker({
             </span>
             <span className="min-w-0 flex-1">
               <span className="block text-[12px] font-semibold text-ink">
-                Lokasi dropoff
+                {dropoffLabel}
               </span>
               <span className="mt-0.5 block truncate text-[12px] text-muted">
                 {dropoff?.label ?? "Belum dipilih"}
@@ -251,14 +243,14 @@ export default function LocationPicker({
             htmlFor="transport-address-search"
             className="block text-[12px] font-semibold text-ink"
           >
-            Cari alamat ({activeField === "pickup" ? "pickup" : "dropoff"})
+            {searchLabel} ({activeField === "pickup" ? pickupLabel : dropoffLabel})
           </label>
           <input
             id="transport-address-search"
             type="text"
             value={query}
             onChange={(e) => handleQueryChange(e.target.value)}
-            placeholder="Contoh: Plaza Senayan, Jakarta"
+            placeholder={searchPlaceholder}
             className="mt-2 h-10 w-full rounded-xl border border-line bg-white px-3 text-[13px] text-ink outline-none placeholder:text-muted focus:border-brand"
           />
 
@@ -293,11 +285,12 @@ export default function LocationPicker({
 
       {/* Right: the map */}
       <div className="h-[420px] overflow-hidden rounded-2xl border border-line bg-canvas lg:h-[560px]">
-        <TransportMap
+        <PickMap
           pickup={pickup}
           dropoff={dropoff}
           activeField={activeField}
           onPick={handleMapPick}
+          onMove={handleMapMove}
         />
       </div>
     </div>

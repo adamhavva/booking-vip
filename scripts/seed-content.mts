@@ -25,6 +25,7 @@ import {
   utilityLinks,
 } from "../src/data/home.ts";
 import { serviceNav, servicePages, serviceSearchFields } from "../src/data/services.ts";
+import { evoaHowItWorks } from "../src/data/evoa.ts";
 import {
   articleCopyId,
   destinationCopyId,
@@ -471,12 +472,20 @@ const settingValues: Record<string, unknown> = {
   ],
   "search.placeholders": { en: searchPlaceholders, id: searchPlaceholders },
 
+  // The three "how it works" steps of the e-VOA application form.
+  "evoa.howItWorks": evoaHowItWorks,
+
   // Taxes — key → value. A value ending with "%" is a percentage of the
   // subtotal, a value starting with "$" is a fixed amount in USD.
   "pph12": "11%",
   "pph11": "9%",
   "service_fee": "$1",
 };
+
+/**
+ * Settings written by the admin UI — the seed never creates or deletes them.
+ */
+const adminManagedSettingKeys = ["home.popup"];
 
 export async function seedSettings(counts: SeedCounts) {
   for (const [key, value] of Object.entries(settingValues)) {
@@ -495,7 +504,13 @@ export async function seedSettings(counts: SeedCounts) {
 
   // Drop settings that are no longer managed by the seed — otherwise stale
   // keys linger in the database and confuse the read path.
-  const managed = new Set(Object.keys(settingValues));
+  //
+  // The admin-managed settings are never touched: they are written by the
+  // admin UI, not by the seed.
+  const managed = new Set([
+    ...Object.keys(settingValues),
+    ...adminManagedSettingKeys,
+  ]);
   const rows = await db.orm.public.Setting.select("key").all();
   for (const row of rows) {
     if (managed.has(row.key)) continue;
