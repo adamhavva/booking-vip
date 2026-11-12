@@ -476,7 +476,45 @@ export default function HeroSearch() {
         {/* Search card with a centered tab rail straddling its top edge */}
         <div className="relative mx-auto max-w-[1120px]">
           {/* Search card */}
-          <div className="relative rounded-2xl bg-white p-4 shadow-xl md:p-6 md:pt-10">
+          <div className="relative rounded-2xl bg-white p-4 shadow-xl md:p-6">
+            {/* The service rail, across the top of the card. The line the form
+                searches is marked as current; the rest open their own page. */}
+            <div className="mb-4 grid gap-2 border-b border-line pb-4 sm:grid-cols-2 lg:grid-cols-4">
+              {lines.map((l) => {
+                const current = l.slug === "vip-service";
+                return (
+                  <Link
+                    key={l.slug}
+                    href={SERVICE_ROUTES[l.label] ?? `/${l.slug}`}
+                    aria-current={current ? "true" : undefined}
+                    className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors ${
+                      current
+                        ? "border-brand bg-brand-soft"
+                        : "border-line bg-white hover:bg-canvas"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${l.tone} text-[11px] font-bold text-white`}
+                    >
+                      {l.short}
+                    </span>
+                    <span
+                      className={`min-w-0 flex-1 truncate text-[13px] font-semibold ${
+                        current ? "text-brand-dark" : "text-ink"
+                      }`}
+                    >
+                      {l.label}
+                    </span>
+                    <ChevronDown
+                      width={16}
+                      height={16}
+                      className={`shrink-0 -rotate-90 ${current ? "text-brand" : "text-muted"}`}
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+
             <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
               <div className="grid flex-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {fields.map(renderField)}
@@ -503,33 +541,6 @@ export default function HeroSearch() {
                 <span className="text-muted">{t("hero.resumeDevice")}</span>
               </p>
             )}
-
-            {/* The other services live on their own pages */}
-            <div className="mt-4 grid gap-2 border-t border-line pt-4 sm:grid-cols-2 lg:grid-cols-3">
-              {lines
-                .filter((l) => l.slug !== "vip-service")
-                .map((l) => (
-                  <Link
-                    key={l.slug}
-                    href={SERVICE_ROUTES[l.label] ?? `/${l.slug}`}
-                    className="flex items-center gap-3 rounded-xl border border-line bg-white px-3 py-2.5 transition-colors hover:bg-canvas"
-                  >
-                    <span
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${l.tone} text-[11px] font-bold text-white`}
-                    >
-                      {l.short}
-                    </span>
-                    <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-ink">
-                      {l.label}
-                    </span>
-                    <ChevronDown
-                      width={16}
-                      height={16}
-                      className="shrink-0 -rotate-90 text-muted"
-                    />
-                  </Link>
-                ))}
-            </div>
 
             {/* Promo strip */}
             <div className="mt-4 flex flex-wrap items-center gap-1 border-t border-line pt-4 text-sm text-ink">
