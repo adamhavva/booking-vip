@@ -4,9 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import BookingPanel from "@/components/sections/BookingPanel";
-import { serviceSearchFields } from "@/data/services";
 import { loadDraft } from "@/lib/searchDraft";
 import { formatDateLabel, localeFor } from "@/lib/format";
+import { copyText } from "@/lib/content";
+import { useSearchFields } from "@/lib/useContent";
 import type { ServicePage } from "@/types";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
@@ -14,6 +15,12 @@ import { useLocale } from "@/components/providers/LocaleProvider";
  * Reads the search the user submitted on the home page (query string), with
  * the locally saved draft as fallback, then shows a summary of it above the
  * booking form.
+ *
+ * The fields come from the database through `useSearchFields`, the same
+ * source the home form renders from, so a field added there shows up here
+ * too. (They used to be looked up in the static map by `service.eyebrow`,
+ * which is the short code — "VIP" — while the map is keyed by the display
+ * label, so the summary never rendered.)
  */
 export default function ServiceSearchSection({
   service,
@@ -24,15 +31,27 @@ export default function ServiceSearchSection({
   const { t, lang } = useLocale();
   const [saved, setSaved] = useState<Record<string, string> | null>(null);
 
-  const fields = serviceSearchFields[service.eyebrow] ?? [];
+  const dbFields = useSearchFields(service.slug);
 
-  // Fallback: the last search saved on this device.
+  /** The fields with their copy resolved for the active language. */
+  const fields = useMemo(
+    () =>
+      dbFields.map((f) => ({
+        key: f.key,
+        kind: f.kind,
+        label: copyText(f.label, lang),
+      })),
+    [dbFields, lang]
+  );
+
+  // Fallback: the last search saved on this device. The draft records the
+  // display label of the line, which is `title`, not the short `eyebrow`.
   useEffect(() => {
     const draft = loadDraft();
-    if (draft && draft.service === service.eyebrow) {
+    if (draft && draft.service === service.title) {
       setSaved(draft.values);
     }
-  }, [service.eyebrow]);
+  }, [service.title]);
 
   const values = useMemo(() => {
     const fromUrl: Record<string, string> = {};

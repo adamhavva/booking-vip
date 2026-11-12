@@ -25,6 +25,8 @@ export type ServiceSearchFieldKind =
   /** Passenger counter (adults / children / infants). */
   | "pax"
   | "select-airport"
+  /** Country of the airports we serve — narrows the airport dropdown. */
+  | "select-place-country"
   | "select-city"
   | "select-service-type"
   | "select-country";

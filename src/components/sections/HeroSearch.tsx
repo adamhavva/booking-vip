@@ -269,6 +269,18 @@ export default function HeroSearch() {
     [dbFields, lang]
   );
 
+  /**
+   * The country chosen in the search form, when the service has that field.
+   *
+   * It scopes the airport dropdown, so it has to be known before the options
+   * are fetched.
+   */
+  const countryKey = useMemo(
+    () => fields.find((f) => f.kind === "select-place-country")?.key ?? "",
+    [fields]
+  );
+  const placeCountry = countryKey ? (values[service]?.[countryKey] ?? "") : "";
+
   // Fetch options for select fields
   useEffect(() => {
     const kinds = new Set<string>();
@@ -277,10 +289,16 @@ export default function HeroSearch() {
       else if (f.kind === "select-city") kinds.add("city");
       else if (f.kind === "select-service-type") kinds.add("serviceType");
       else if (f.kind === "select-country") kinds.add("country");
+      else if (f.kind === "select-place-country") kinds.add("placeCountry");
     }
 
     for (const kind of kinds) {
-      const key = kind as "airport" | "city" | "serviceType" | "country";
+      const key = kind as
+        | "airport"
+        | "city"
+        | "serviceType"
+        | "country"
+        | "placeCountry";
       // Create a unique cache key that includes lineSlug for serviceType
       const cacheKey = key === "serviceType" ? `serviceType:${lineSlug}` : key;
       if (!options[cacheKey]) {
@@ -294,6 +312,10 @@ export default function HeroSearch() {
   }, [fields, lineSlug]);
 
   // Fetch the place hierarchy for the grouped airport / city dropdowns.
+  //
+  // The airport tree is scoped by the country field when the form has one, so
+  // the cache key carries the country — switching country fetches that
+  // country's airports instead of reusing the previous list.
   useEffect(() => {
     const kinds = new Set<"airport" | "city">();
     for (const f of fields) {
@@ -302,12 +324,14 @@ export default function HeroSearch() {
     }
 
     for (const kind of kinds) {
-      if (placeTrees[kind]) continue;
-      getPlaceOptions(kind).then((tree) => {
-        setPlaceTrees((prev) => ({ ...prev, [kind]: tree }));
+      const country = kind === "airport" ? placeCountry : "";
+      const cacheKey = country ? `${kind}:${country}` : kind;
+      if (placeTrees[cacheKey]) continue;
+      getPlaceOptions(kind, country || undefined).then((tree) => {
+        setPlaceTrees((prev) => ({ ...prev, [cacheKey]: tree }));
       });
     }
-  }, [fields, placeTrees]);
+  }, [fields, placeTrees, placeCountry]);
 
   // Restore the last submitted search (persisted on this device).
   useEffect(() => {
@@ -326,6 +350,24 @@ export default function HeroSearch() {
       ...v,
       [service]: { ...currentValues, [key]: value },
     }));
+
+  /**
+   * Choose the country.
+   *
+   * The airport belongs to the previous country, so it is cleared — keeping
+   * it would submit a pair that does not go together.
+   */
+  const setCountry = (key: string, value: string) => {
+    const airportKey = fields.find((f) => f.kind === "select-airport")?.key;
+    setValues((v) => ({
+      ...v,
+      [service]: {
+        ...currentValues,
+        [key]: value,
+        ...(airportKey ? { [airportKey]: "" } : {}),
+      },
+    }));
+  };
 
   /** Store the passenger counts plus the readable summary of a `pax` field. */
   const setPax = (key: string, counts: PaxCounts) => {
@@ -374,17 +416,22 @@ export default function HeroSearch() {
       case "select-airport":
       case "select-city":
       case "select-service-type":
-      case "select-country": {
+      case "select-country":
+      case "select-place-country": {
         let fieldOptions: OptionDTO[] = [];
         let tree: PlaceNode[] | undefined;
         if (f.kind === "select-airport") {
-          fieldOptions = options.airport ?? [];
-          tree = placeTrees.airport;
+          tree = placeTrees[placeCountry ? `airport:${placeCountry}` : "airport"];
+          // While the country's list is still loading, show nothing rather
+          // than the unscoped list of every country's airports.
+          fieldOptions = placeCountry && !tree ? [] : (options.airport ?? []);
         } else if (f.kind === "select-city") {
           fieldOptions = options.city ?? [];
           tree = placeTrees.city;
         } else if (f.kind === "select-country") fieldOptions = options.country ?? [];
-        else {
+        else if (f.kind === "select-place-country") {
+          fieldOptions = options.placeCountry ?? [];
+        } else {
           fieldOptions = options[`serviceType:${lineSlug}`] ?? [];
         }
 
@@ -396,7 +443,11 @@ export default function HeroSearch() {
             value={value}
             options={fieldOptions}
             tree={tree}
-            onChange={(v) => setField(f.key, v)}
+            onChange={(v) =>
+              f.kind === "select-place-country"
+                ? setCountry(f.key, v)
+                : setField(f.key, v)
+            }
             searchable={f.kind === "select-airport"}
           />
         );

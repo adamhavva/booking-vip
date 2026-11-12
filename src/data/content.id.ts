@@ -237,6 +237,10 @@ export const searchFieldCopyId: Record<
   string,
   { label: string; placeholder: string }
 > = {
+  "vip-service:country": {
+    label: "Negara",
+    placeholder: "Pilih negara",
+  },
   "vip-service:airport": {
     label: "Bandara",
     placeholder: "Pilih bandara",
