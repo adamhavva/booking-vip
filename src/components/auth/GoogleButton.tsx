@@ -13,8 +13,11 @@ import { signInUserWithGoogle } from "@/app/actions/user-auth";
  */
 export default function GoogleButton({
   label = "Lanjut dengan Google",
+  className = "w-full",
 }: {
   label?: string;
+  /** Width/utility classes for the button — defaults to full width. */
+  className?: string;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -28,6 +31,9 @@ export default function GoogleButton({
         new GoogleAuthProvider(),
       );
       const idToken = await result.user.getIdToken();
+      // The action issues the cookie and redirects client-side; the root
+      // AccountProvider re-reads the overview on that navigation, so the
+      // header swaps to the account menu without a page reload.
       await signInUserWithGoogle(idToken);
     } catch (err) {
       const code = (err as { code?: string })?.code;
@@ -38,23 +44,25 @@ export default function GoogleButton({
     }
   }
 
+  // One wrapper element so the button + its error paragraph stay a single
+  // grid item when the button sits in the two-column SSO grid.
   return (
-    <>
+    <div className="w-full">
       <button
         type="button"
         onClick={handleClick}
         disabled={pending}
-        className="inline-flex h-11 w-full items-center justify-center gap-2.5 rounded-lg border border-line bg-white text-sm font-semibold text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-60"
+        className={`inline-flex h-11 items-center justify-center gap-2.5 rounded-lg border border-line bg-white text-sm font-semibold text-ink transition-colors hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25 disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
       >
         <GoogleIcon />
         {pending ? "Membuka Google…" : label}
       </button>
       {error ? (
-        <p className="rounded-lg border border-danger/25 bg-danger/5 px-3 py-2 text-[13px] text-danger">
+        <p className="mt-2 rounded-lg border border-danger/25 bg-danger/5 px-3 py-2 text-[13px] text-danger">
           {error}
         </p>
       ) : null}
-    </>
+    </div>
   );
 }
 

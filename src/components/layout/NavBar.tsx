@@ -5,10 +5,19 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Container from "@/components/ui/Container";
 import { CloseIcon, MenuIcon, SearchIcon } from "@/components/icons";
-import { searchPlaceholders } from "@/data/home";
 import { serviceNav } from "@/data/services";
 import { useLocale, type Lang } from "@/components/providers/LocaleProvider";
+import { SERVICE_SLUG_KEYS } from "@/lib/serviceLabels";
+import type { DictKey } from "@/i18n";
 import { SUPPORTED, type CurrencyCode } from "@/lib/currency";
+
+/** The rotating search placeholders, as dictionary keys. */
+const PLACEHOLDER_KEYS: DictKey[] = [
+  "nav.searchPlaceholder.1",
+  "nav.searchPlaceholder.2",
+  "nav.searchPlaceholder.3",
+  "nav.searchPlaceholder.4",
+];
 
 /**
  * Primary navigation bar: the search field plus the four service menus.
@@ -31,7 +40,7 @@ export default function NavBar({
 
   useEffect(() => {
     const t = setInterval(
-      () => setIdx((i) => (i + 1) % searchPlaceholders.length),
+      () => setIdx((i) => (i + 1) % PLACEHOLDER_KEYS.length),
       2800
     );
     return () => clearInterval(t);
@@ -41,6 +50,12 @@ export default function NavBar({
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
+
+  /** Translated service label — eVOA (no key) keeps its brand label. */
+  const navLabel = (href: string, fallback: string) => {
+    const key = SERVICE_SLUG_KEYS[href.replace(/^\//, "")];
+    return key ? t(key) : fallback;
+  };
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +82,7 @@ export default function NavBar({
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={searchPlaceholders[idx]}
+            placeholder={t(PLACEHOLDER_KEYS[idx])}
             aria-label={t("nav.searchAria")}
             className="h-11 w-full rounded-full bg-white pl-11 pr-4 text-sm text-ink shadow-sm outline-none placeholder:text-muted"
           />
@@ -89,7 +104,7 @@ export default function NavBar({
                         : "text-white/90 hover:bg-white/10"
                   }`}
                 >
-                  {s.label}
+                  {navLabel(s.href, s.label)}
                 </Link>
               </li>
             );
@@ -169,7 +184,7 @@ export default function NavBar({
                       >
                         {s.short}
                       </span>
-                      {s.label}
+                      {navLabel(s.href, s.label)}
                     </Link>
                   </li>
                 );

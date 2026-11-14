@@ -25,13 +25,17 @@ import {
   serviceSeoLinks as staticServiceSeoLinks,
   serviceSeoTabs as staticServiceSeoTabs,
 } from "@/data/home";
-import type { CatalogDTO, HomeContentDTO, SeoLinkDTO } from "@/types";
+import type { CatalogDTO, CopyDTO, HomeContentDTO, SeoLinkDTO } from "@/types";
 
-/** Tabs of a service line — "All" + each English tab, DB-sourced with a static fallback. */
-function lineTabs(content: HomeContentDTO | null, slug: string, fallback: string[]): string[] {
+/**
+ * Tabs of a service line — bilingual copy, DB-sourced with a static
+ * (English-only) fallback. The active language is picked in the client
+ * (`SectionBand`), so no DB read happens at prerender.
+ */
+function lineTabs(content: HomeContentDTO | null, slug: string, fallback: string[]): CopyDTO[] {
   const line = content?.lines.find((l) => l.slug === slug);
-  if (!line || line.tabs.length === 0) return fallback;
-  return line.tabs.map((t) => t.en);
+  if (!line || line.tabs.length === 0) return fallback.map((t) => ({ en: t, id: null }));
+  return line.tabs;
 }
 
 /** The products of a line, straight from its DB-backed catalog. */
@@ -39,11 +43,11 @@ function lineProducts(content: HomeContentDTO | null, slug: string): CatalogDTO[
   return content?.catalogs[slug]?.products ?? [];
 }
 
-/** English links of a `SeoLink` group, in the shape `SeoLinkGrid` expects. */
+/** Bilingual links of a `SeoLink` group, in the shape `SeoLinkGrid` expects. */
 function seoLinksOf(links: SeoLinkDTO[], group: string) {
   return links
     .filter((l) => l.group === group)
-    .map((l) => ({ label: l.label.en, service: l.service ?? "", tags: l.tags }));
+    .map((l) => ({ label: l.label.en, labelId: l.label.id, service: l.service ?? "", tags: l.tags }));
 }
 
 /** "All" + the distinct `service` values of a `SeoLink` group. */
@@ -138,7 +142,7 @@ async function HomeBody() {
     <>
       {/* Special deals */}
       {promos.length > 0 ? (
-        <SectionBand title="Special deals" emoji="🎉" titleKey="home.specialDeals">
+        <SectionBand title="Special deals" emoji="🎉" titleKey="home.specialDeals" seeAllKey="section.seeAll">
           <Carousel>
             {promos.map((p) => (
               <PromoCard key={p.slug} promo={p} />
@@ -151,7 +155,7 @@ async function HomeBody() {
       <SectionBand
         eyebrow="Airport VIP Service ✈️"
         title="Breeze through the airport"
-        tabs={lineTabs(content, "vip-service", ["All", "Meet & Greet", "Fast Track", "Lounge", "Porter"])}
+        tabsCopy={lineTabs(content, "vip-service", ["All", "Meet & Greet", "Fast Track", "Lounge", "Porter"])}
         seeAll="See all VIP services"
         seeAllHref="/vip-service"
         eyebrowKey="home.vipEyebrow"
@@ -172,6 +176,9 @@ async function HomeBody() {
         cta="Book VIP"
         tone="from-sky-600 to-blue-800"
         compact
+        titleKey="banner.fastTrackTitle"
+        subtitleKey="banner.fastTrackSubtitle"
+        ctaKey="banner.fastTrackCta"
         titleCopy={fastTrackBanner?.title}
         subtitleCopy={fastTrackBanner?.subtitle}
         ctaCopy={fastTrackBanner?.cta}
@@ -183,7 +190,7 @@ async function HomeBody() {
       <SectionBand
         eyebrow="Transport 🚘"
         title="Private transfers & chauffeur service"
-        tabs={lineTabs(content, "transport", ["All", "Sedan", "SUV", "Van", "Limousine"])}
+        tabsCopy={lineTabs(content, "transport", ["All", "Sedan", "SUV", "Van", "Limousine"])}
         seeAll="See all transport"
         seeAllHref="/transport"
         eyebrowKey="home.transportEyebrow"
@@ -201,7 +208,7 @@ async function HomeBody() {
       <SectionBand
         eyebrow="Tour Package 🗺️"
         title="Curated tours across Indonesia"
-        tabs={lineTabs(content, "tour-package", ["All", "Bali", "Labuan Bajo", "Yogyakarta", "Lombok", "Papua"])}
+        tabsCopy={lineTabs(content, "tour-package", ["All", "Bali", "Labuan Bajo", "Yogyakarta", "Lombok", "Papua"])}
         seeAll="See all tours"
         seeAllHref="/tour-package"
         eyebrowKey="home.tourEyebrow"
@@ -230,7 +237,7 @@ async function HomeBody() {
       <SectionBand
         eyebrow="eVOA 🛂"
         title="Electronic Visa on Arrival, made easy"
-        tabs={lineTabs(content, "evoa", ["All", "Tourist", "Business", "Express", "Transit"])}
+        tabsCopy={lineTabs(content, "evoa", ["All", "Tourist", "Business", "Express", "Transit"])}
         seeAll="Check eligibility"
         seeAllHref="/evoa"
         eyebrowKey="home.evoaEyebrow"
@@ -251,6 +258,9 @@ async function HomeBody() {
         cta="Apply now"
         tone="from-violet-600 to-purple-800"
         compact
+        titleKey="banner.evoaTitle"
+        subtitleKey="banner.evoaSubtitle"
+        ctaKey="banner.evoaCta"
         titleCopy={evoaBanner?.title}
         subtitleCopy={evoaBanner?.subtitle}
         ctaCopy={evoaBanner?.cta}
@@ -283,6 +293,9 @@ async function HomeBody() {
         cta="Learn more"
         tone="from-slate-700 to-slate-900"
         compact
+        titleKey="banner.corporateTitle"
+        subtitleKey="banner.corporateSubtitle"
+        ctaKey="banner.corporateCta"
         titleCopy={corporateBanner?.title}
         subtitleCopy={corporateBanner?.subtitle}
         ctaCopy={corporateBanner?.cta}
@@ -292,7 +305,7 @@ async function HomeBody() {
 
       {/* Articles / guides */}
       {articles.length > 0 ? (
-        <SectionBand title="Travel guides & tips" emoji="📖" titleKey="home.articlesTitle">
+        <SectionBand title="Travel guides & tips" emoji="📖" titleKey="home.articlesTitle" seeAllKey="section.seeAll">
           <Carousel>
             {articles.map((a) => (
               <ArticleCard key={a.slug} article={a} />

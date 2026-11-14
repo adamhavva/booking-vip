@@ -67,12 +67,16 @@ export async function getCatalog(lineSlug: string): Promise<CatalogDTO | null> {
       .select(
         "slug",
         "title",
+        "titleId",
         "description",
+        "descriptionId",
         "tone",
         "ribbon",
+        "ribbonId",
         "rating",
         "reviews",
         "durationLabel",
+        "durationLabelId",
         "fromPriceUsdCents",
         "serviceTypeId",
         "airportId",
@@ -87,24 +91,29 @@ export async function getCatalog(lineSlug: string): Promise<CatalogDTO | null> {
     const serviceTypeIds = [...new Set(products.map((p) => p.serviceTypeId).filter((x): x is string => x != null))];
     const airportIds = [...new Set(products.map((p) => p.airportId).filter((x): x is string => x != null))];
 
-    // Fetch service type names
-    const serviceTypeMap = new Map<string, string>();
+    // Fetch service type names (EN + the optional ID variant)
+    const serviceTypeMap = new Map<string, { name: string; nameId: string | null }>();
     if (serviceTypeIds.length > 0) {
       const types = await db.orm.public.ServiceType
-        .select("id", "name")
+        .select("id", "name", "nameId")
         .where((f) => f.id.in(serviceTypeIds))
         .all();
-      for (const t of types) serviceTypeMap.set(t.id, t.name);
+      for (const t of types) serviceTypeMap.set(t.id, { name: t.name, nameId: t.nameId });
     }
 
-    // Fetch airport/city names
-    const placeMap = new Map<string, string>();
+    // Fetch airport/city names (EN + the optional ID variant)
+    const placeMap = new Map<string, { name: string; nameId: string | null }>();
     if (airportIds.length > 0) {
       const airports = await db.orm.public.Airport
-        .select("id", "name", "city")
+        .select("id", "name", "nameId", "city", "cityId")
         .where((f) => f.id.in(airportIds))
         .all();
-      for (const a of airports) placeMap.set(a.id, a.city || a.name);
+      for (const a of airports) {
+        placeMap.set(a.id, {
+          name: a.city || a.name,
+          nameId: a.cityId ?? a.nameId,
+        });
+      }
     }
 
     // Fetch price tiers for this line
@@ -115,25 +124,33 @@ export async function getCatalog(lineSlug: string): Promise<CatalogDTO | null> {
       .orderBy((f) => f.sortOrder.asc())
       .all();
 
-    // Map products to DTOs
+    // Map products to DTOs. The *Id fields carry the Indonesian variants;
+    // the client picks them via pickLang and falls back to EN when null.
     const productDTOs: ProductCardDTO[] = products.map((p) => ({
       slug: p.slug,
       title: p.title,
+      titleId: p.titleId,
       subtitle: p.description,
+      subtitleId: p.descriptionId,
       priceUsd: centsToUsd(p.fromPriceUsdCents) ?? 0,
       fromUsd: centsToUsd(p.fromPriceUsdCents),
       ribbon: p.ribbon ?? undefined,
+      ribbonId: p.ribbonId,
       tone: p.tone,
       imageUrl: p.imageUrl ?? null,
-      serviceTypeName: p.serviceTypeId ? serviceTypeMap.get(p.serviceTypeId) : undefined,
-      placeName: p.airportId ? placeMap.get(p.airportId) : undefined,
+      serviceTypeName: p.serviceTypeId ? serviceTypeMap.get(p.serviceTypeId)?.name : undefined,
+      serviceTypeNameId: p.serviceTypeId ? serviceTypeMap.get(p.serviceTypeId)?.nameId : undefined,
+      placeName: p.airportId ? placeMap.get(p.airportId)?.name : undefined,
+      placeNameId: p.airportId ? placeMap.get(p.airportId)?.nameId : undefined,
       rating: p.rating ?? undefined,
       reviews: p.reviews ?? undefined,
       durationLabel: p.durationLabel ?? undefined,
+      durationLabelId: p.durationLabelId,
     }));
 
-    // Collect unique places (airports referenced by products)
-    const places = Array.from(placeMap.entries()).map(([id, name]) => ({ id, name }));
+    // Collect unique places (airports referenced by products). The facet
+    // label stays canonical (EN) — it is a filter value, not display copy.
+    const places = Array.from(placeMap.entries()).map(([id, p]) => ({ id, name: p.name }));
 
     return {
       serviceTypes: serviceTypes.map((t) => ({ slug: t.slug, name: t.name })),
@@ -163,15 +180,21 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
         "slug",
         "lineId",
         "title",
+        "titleId",
         "description",
+        "descriptionId",
         "tone",
         "ribbon",
+        "ribbonId",
         "direction",
         "leadTimeHours",
         "leadTimeDays",
         "included",
+        "includedId",
         "notIncluded",
+        "notIncludedId",
         "requirements",
+        "requirementsId",
         "fromPriceUsdCents",
         "serviceTypeId",
         "airportId",
@@ -190,28 +213,32 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
     const line = await getLineById(product.lineId);
     if (!line) return null;
 
-    // Get service type name
+    // Get service type name (EN + the optional ID variant)
     let typeLabel = "";
+    let typeLabelId: string | null = null;
     const serviceTypeId = product.serviceTypeId;
     if (serviceTypeId != null) {
       const types = await db.orm.public.ServiceType
-        .select("name")
+        .select("name", "nameId")
         .where((f) => f.id.eq(serviceTypeId))
         .limit(1)
         .all();
       typeLabel = types[0]?.name ?? "";
+      typeLabelId = types[0]?.nameId ?? null;
     }
 
-    // Get place name
+    // Get place name (EN + the optional ID variant)
     let placeLabel = "";
+    let placeLabelId: string | null = null;
     const airportId = product.airportId;
     if (airportId != null) {
       const airports = await db.orm.public.Airport
-        .select("name", "city")
+        .select("name", "nameId", "city", "cityId")
         .where((f) => f.id.eq(airportId))
         .limit(1)
         .all();
       placeLabel = airports[0]?.city ?? airports[0]?.name ?? "";
+      placeLabelId = airports[0]?.cityId ?? airports[0]?.nameId ?? null;
     }
 
     // Get packages (active, sorted)
@@ -219,6 +246,7 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
       .select(
         "id",
         "label",
+        "labelId",
         "unitKind",
         "adultUsdCents",
         "childUsdCents",
@@ -243,13 +271,14 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
     let addOns: ProductDetailDTO["addOns"] = [];
     if (addOnIds.length > 0) {
       const addOnProducts = await db.orm.public.Product
-        .select("slug", "title", "fromPriceUsdCents")
+        .select("slug", "title", "titleId", "fromPriceUsdCents")
         .where((f) => f.id.in(addOnIds))
         .where((f) => f.active.eq(true))
         .all();
       addOns = addOnProducts.map((p) => ({
         slug: p.slug,
         label: p.title,
+        labelId: p.titleId,
         unitUsd: centsToUsd(p.fromPriceUsdCents) ?? 0,
       }));
     }
@@ -258,18 +287,26 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
       slug: product.slug,
       lineSlug: line.slug,
       title: product.title,
+      titleId: product.titleId,
       typeLabel,
+      typeLabelId,
       placeLabel,
+      placeLabelId,
       direction: product.direction,
       leadTimeHours: product.leadTimeHours,
       leadTimeDays: product.leadTimeDays,
       description: product.description,
+      descriptionId: product.descriptionId,
       included: (product.included as string[]) ?? [],
+      includedId: (product.includedId as string[] | null) ?? null,
       notIncluded: (product.notIncluded as string[]) ?? [],
+      notIncludedId: (product.notIncludedId as string[] | null) ?? null,
       requirements: (product.requirements as string[]) ?? [],
+      requirementsId: (product.requirementsId as string[] | null) ?? null,
       packages: packages.map((p) => ({
         id: p.id,
         label: p.label,
+        labelId: p.labelId,
         unitKind: p.unitKind,
         adultUsd: centsToUsd(p.adultUsdCents),
         childUsd: centsToUsd(p.childUsdCents),
@@ -281,6 +318,7 @@ export async function getProduct(slug: string): Promise<ProductDetailDTO | null>
       addOns,
       tone: product.tone,
       ribbon: product.ribbon ?? undefined,
+      ribbonId: product.ribbonId,
       fromUsd: centsToUsd(product.fromPriceUsdCents) ?? 0,
     };
   } catch (error) {
@@ -384,15 +422,17 @@ export async function getOptions(
  * The place hierarchy, grouped by parent.
  *
  * Returns the tree of active places pruned to the requested kind: the
- * airports grouped under their city, the cities grouped under their parent
- * (if any). A place without a parent is returned as a root.
+ * airports grouped under their city, the destinations under their province
+ * / city, and so on up the chain (region → country → province → city →
+ * district → village). Ancestors of a matching place are kept as group
+ * headers; a place without a parent is returned as a root.
  */
 export async function getPlaceOptions(
   kind: PlaceKind | PlaceKind[],
 ): Promise<PlaceNode[]> {
   try {
     const rows = await db.orm.public.Airport
-      .select("id", "kind", "iataCode", "name", "city", "country", "parentId", "sortOrder")
+      .select("id", "kind", "level", "iataCode", "name", "city", "country", "parentId", "sortOrder")
       .where((f) => f.active.eq(true))
       .orderBy((f) => f.sortOrder.asc())
       .all();

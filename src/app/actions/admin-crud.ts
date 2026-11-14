@@ -2,6 +2,7 @@
 
 import { db } from "@/prisma/db";
 import { getAdminSession } from "@/lib/admin/session";
+import { PLACE_KINDS, type PlaceKind } from "@/lib/places";
 import {
   setProductAddOns,
   setProductAmenities,
@@ -104,6 +105,24 @@ function asStringArray(value: unknown): string[] {
   return value.map((item) => String(item).trim()).filter(Boolean);
 }
 
+/** Parse a free-form key/value list — [{ key, name, excluded? }]. */
+function asKeyValueArray(
+  value: unknown,
+): { key: string; name: string; excluded?: boolean }[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter(
+      (item): item is Record<string, unknown> =>
+        !!item && typeof item === "object" && !Array.isArray(item),
+    )
+    .map((item) => ({
+      key: typeof item.key === "string" ? item.key.trim() : "",
+      name: typeof item.name === "string" ? item.name.trim() : "",
+      excluded: item.excluded === true,
+    }))
+    .filter((entry) => entry.key !== "" && entry.name !== "");
+}
+
 /** Parse a `datetime-local` (or ISO) input into a Date — null when empty. */
 function parseDateInput(value: unknown): Date | null {
   const text = asString(value);
@@ -130,6 +149,12 @@ function explainError(message: string): { error: string; field?: string } {
   }
 
   const lower = message.toLowerCase();
+  if (lower.includes("kind must be one of")) {
+    return { field: "kind", error: "Jenis place tidak valid." };
+  }
+  if (lower.includes("level must be one of")) {
+    return { field: "level", error: "Level wilayah tidak valid." };
+  }
   if (lower.includes("slug")) return { field: "slug", error: "Slug sudah dipakai data lain." };
   if (lower.includes("iata")) return { field: "iataCode", error: "Kode IATA sudah dipakai place lain." };
   if (lower.includes("label")) return { field: "label", error: "Label sudah dipakai data lain." };
@@ -218,6 +243,7 @@ export async function saveAdminEntity(input: {
           reviews: asNumber(values.reviews),
           durationLabel: asOptionalString(values.durationLabel),
           fromPriceUsdCents: asNumber(values.fromPriceUsdCents),
+          specs: asKeyValueArray(values.specs),
           active: asBoolean(values.active),
         });
 
@@ -237,7 +263,9 @@ export async function saveAdminEntity(input: {
       case "package": {
         const label = asString(values.label);
         const productId = asString(values.productId);
-        const unitKind = asString(values.unitKind) === "per_unit" ? "per_unit" : "per_pax";
+        const rawKind = asString(values.unitKind);
+        const unitKind =
+          rawKind === "per_unit" ? "per_unit" : rawKind === "per_day" ? "per_day" : "per_pax";
 
         if (!label) return fail("label", "Label wajib diisi.");
         if (!productId) return fail("productId", "Produk wajib dipilih.");
@@ -253,6 +281,9 @@ export async function saveAdminEntity(input: {
           unitUsdCents: asNumber(values.unitUsdCents),
           durationHours: asNumber(values.durationHours),
           extraHourUsdCents: asNumber(values.extraHourUsdCents),
+          fromUsdCents: asNumber(values.fromUsdCents),
+          description: asOptionalString(values.description),
+          info: asKeyValueArray(values.info),
           sortOrder: asNumber(values.sortOrder) ?? 0,
           active: asBoolean(values.active),
         });
@@ -307,11 +338,19 @@ export async function saveAdminEntity(input: {
         if (!name) return fail("name", "Nama wajib diisi.");
         if (!city) return fail("city", "Kota wajib diisi.");
 
-        const kind = asString(values.kind) === "city" ? "city" : "airport";
+        const rawKind = asString(values.kind);
+        const kind: PlaceKind = (PLACE_KINDS as readonly string[]).includes(rawKind)
+          ? (rawKind as PlaceKind)
+          : "airport";
+        const rawLevel = asString(values.level);
+        const level = (PLACE_KINDS as readonly string[]).includes(rawLevel)
+          ? (rawLevel as PlaceKind)
+          : kind;
 
         await upsertAirport({
           id,
           kind,
+          level,
           iataCode: asOptionalString(values.iataCode),
           name,
           city,

@@ -6,24 +6,36 @@ import Logo from "@/components/layout/Logo";
 import { footerColumns, socials } from "@/data/home";
 import { serviceNav } from "@/data/services";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { SERVICE_LABEL_KEYS } from "@/lib/serviceLabels";
+import type { DictKey } from "@/i18n";
+import { VisaLogo, MastercardLogo, PayPalLogo, QrisLogo } from "@/components/icons";
 
 /** Label → route, so the Services column links to the service sub-pages. */
 const serviceRoutes = Object.fromEntries(
   serviceNav.map((s) => [s.label, s.href])
 );
 
-function AppBadge({ store, downloadLabel }: { store: string; downloadLabel: string }) {
-  return (
-    <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-left">
-      <span className="h-6 w-6 rounded bg-gradient-to-br from-slate-300 to-slate-500" />
-      <span className="text-xs leading-tight text-white/80">
-        {downloadLabel}
-        <br />
-        <span className="font-semibold text-white">{store}</span>
-      </span>
-    </div>
-  );
-}
+/** Column heading → dictionary key. */
+const HEADING_KEYS: Record<string, DictKey> = {
+  Services: "footer.services",
+  Company: "footer.company",
+  Support: "footer.support",
+};
+
+/** Column item → dictionary key. Service names reuse the nav keys; eVOA is a brand term. */
+const ITEM_KEYS: Record<string, DictKey> = {
+  ...SERVICE_LABEL_KEYS,
+  "About Us": "footer.aboutUs",
+  "How It Works": "footer.howItWorks",
+  Careers: "footer.careers",
+  Partners: "footer.partners",
+  Contact: "footer.contact",
+  "Help Center": "footer.helpCenter",
+  FAQ: "footer.faq",
+  "Privacy Policy": "footer.privacyPolicy",
+  "Terms & Conditions": "footer.terms",
+  "Refund Policy": "footer.refundPolicy",
+};
 
 export default function Footer() {
   const { t } = useLocale();
@@ -32,18 +44,18 @@ export default function Footer() {
     <footer className="bg-[#0b1b2b] text-white/80">
       <Container className="py-12">
         {/* Top: logo + contact */}
-        <div className="mb-10 grid gap-8 md:grid-cols-[1.2fr_1fr_1fr_1fr_1.3fr]">
+        <div className="mb-10 grid gap-8 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div>
             <Logo />
             <div className="mt-4 space-y-2 text-sm">
               <p>
-                <span className="text-white/60">Chat:</span> {t("footer.chat")}
+                <span className="text-white/60">{t("footer.chatLabel")}</span> {t("footer.chat")}
               </p>
               <p>
-                <span className="text-white/60">Email:</span> cs@example.com
+                <span className="text-white/60">{t("footer.emailLabel")}</span> cs@example.com
               </p>
               <p>
-                <span className="text-white/60">Call Center:</span>
+                <span className="text-white/60">{t("footer.callCenter")}</span>
                 <br />
                 +62 000 0000 000
               </p>
@@ -52,28 +64,20 @@ export default function Footer() {
 
           {Object.entries(footerColumns).map(([heading, items]) => (
             <div key={heading}>
-              <h3 className="mb-3 text-sm font-bold text-white">{heading}</h3>
+              <h3 className="mb-3 text-sm font-bold text-white">
+                {HEADING_KEYS[heading] ? t(HEADING_KEYS[heading]) : heading}
+              </h3>
               <ul className="space-y-2 text-sm">
                 {items.map((i) => (
                   <li key={i}>
                     <Link href={serviceRoutes[i] ?? "#"} className="hover:text-white">
-                      {i}
+                      {ITEM_KEYS[i] ? t(ITEM_KEYS[i]) : i}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
-
-          <div>
-            <h3 className="mb-3 text-sm font-bold text-white">
-              {t("footer.cheaperOnApp")}
-            </h3>
-            <div className="flex flex-col gap-2">
-              <AppBadge store="App Store" downloadLabel={t("footer.downloadOn")} />
-              <AppBadge store="Google Play" downloadLabel={t("footer.downloadOn")} />
-            </div>
-          </div>
         </div>
 
         {/* Lower: partner / secure / awards / social */}
@@ -92,12 +96,20 @@ export default function Footer() {
               {t("footer.secure")}
             </h3>
             <div className="flex flex-wrap gap-2">
-              {["Visa", "Mastercard", "JCB", "Amex"].map((s) => (
+              {(
+                [
+                  ["Visa", VisaLogo],
+                  ["Mastercard", MastercardLogo],
+                  ["PayPal", PayPalLogo],
+                  ["QRIS", QrisLogo],
+                ] as const
+              ).map(([label, LogoMark]) => (
                 <span
-                  key={s}
-                  className="rounded border border-white/15 px-2 py-1 text-[11px] text-white/70"
+                  key={label}
+                  aria-label={label}
+                  className="inline-flex h-8 items-center rounded-md bg-white px-2"
                 >
-                  {s}
+                  <LogoMark aria-hidden="true" />
                 </span>
               ))}
             </div>

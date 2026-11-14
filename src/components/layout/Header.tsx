@@ -10,6 +10,14 @@ import NavBar from "./NavBar";
 import LocaleMenu from "./LocaleMenu";
 import UserMenu from "./UserMenu";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import type { DictKey } from "@/i18n";
+
+/** Utility-bar link label → dictionary key. */
+const UTILITY_KEYS: Record<string, DictKey> = {
+  "About Us": "header.aboutUs",
+  "How It Works": "header.howItWorks",
+  "Help Center": "header.helpCenter",
+};
 
 /**
  * Site header: utility bar + brand row, followed by the {@link NavBar}.
@@ -58,7 +66,7 @@ export default function Header({
               href={u.href}
               className={solid ? "hover:text-ink" : "hover:text-white"}
             >
-              {u.label}
+              {UTILITY_KEYS[u.label] ? t(UTILITY_KEYS[u.label]) : u.label}
             </Link>
           ))}
           <LocaleMenu variant={solid ? "solid" : "overlay"} />

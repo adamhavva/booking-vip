@@ -34,6 +34,25 @@ export const serviceNav: ServiceNavItem[] = [
   },
 ];
 
+/** Which rail glyph a service line uses on the home hero category rail. */
+export type ServiceRailIcon = "plane" | "car" | "compass" | "passport";
+
+/**
+ * Presentation metadata of the home hero category rail, keyed by line slug.
+ * Operator-editable marketing content: the glyph and the optional red
+ * discount pill. The number is language-neutral; the label next to it is
+ * translated through the `hero.cat.*` dictionary keys.
+ */
+export const serviceRailMeta: Record<
+  string,
+  { icon: ServiceRailIcon; discountPercent?: number }
+> = {
+  "vip-service": { icon: "plane", discountPercent: 50 },
+  transport: { icon: "car", discountPercent: 25 },
+  "tour-package": { icon: "compass", discountPercent: 65 },
+  evoa: { icon: "passport" },
+};
+
 /**
  * Fields of the home search form, per service. `key` is the query-string
  * key used when the form is submitted, so the sub-page can read the values

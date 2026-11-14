@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "@/components/icons";
@@ -8,7 +8,11 @@ import Field from "./Field";
 import FieldControl, { type FieldSpec, type FieldValues } from "./fields";
 import { adminClass } from "./tokens";
 import { showAdminToast } from "./toast";
-import { saveAdminEntity, type AdminEntityTable } from "@/app/actions/admin-crud";
+import {
+  saveAdminEntity,
+  type AdminEntityTable,
+  type AdminSaveResult,
+} from "@/app/actions/admin-crud";
 
 /**
  * The shared create / update page.
@@ -34,8 +38,11 @@ export default function EntityFormPage({
   loadError,
   rowMissing,
   entityName,
+  onSave,
+  renderPreview,
 }: {
-  table: AdminEntityTable;
+  /** The module name — an `AdminEntityTable`, or a custom one when `onSave` is given. */
+  table: string;
   /** The row being edited — `undefined` in create mode. */
   id?: string;
   title: string;
@@ -52,6 +59,13 @@ export default function EntityFormPage({
   rowMissing?: boolean;
   /** The name of the edited record, shown in the page header. */
   entityName?: string | null;
+  /**
+   * Custom save action for modules that are not a catalog table (e.g. the
+   * Setting-backed discount campaigns). Defaults to `saveAdminEntity`.
+   */
+  onSave?: (input: { id?: string; values: FieldValues }) => Promise<AdminSaveResult>;
+  /** Live content rendered under the field grid, with the current values. */
+  renderPreview?: (values: FieldValues) => ReactNode;
 }) {
   if (loading) {
     return (
@@ -89,6 +103,8 @@ export default function EntityFormPage({
       initialValues={initialValues}
       loadError={loadError}
       entityName={entityName}
+      onSave={onSave}
+      renderPreview={renderPreview}
     />
   );
 }
@@ -105,8 +121,10 @@ function EntityForm({
   initialValues,
   loadError,
   entityName,
+  onSave,
+  renderPreview,
 }: {
-  table: AdminEntityTable;
+  table: string;
   id?: string;
   title: string;
   subtitle?: string;
@@ -116,6 +134,8 @@ function EntityForm({
   initialValues: FieldValues;
   loadError?: string;
   entityName?: string | null;
+  onSave?: (input: { id?: string; values: FieldValues }) => Promise<AdminSaveResult>;
+  renderPreview?: (values: FieldValues) => ReactNode;
 }) {
   const router = useRouter();
   const [values, setValues] = useState<FieldValues>(initialValues);
@@ -132,11 +152,19 @@ function EntityForm({
   const fieldId = (name: string) => `field-${table}-${id ?? "new"}-${name}`;
 
   const setValue = (name: string, value: unknown) => {
-    setValues((prev) => ({ ...prev, [name]: value }));
+    // A field may reset others when it changes — e.g. picking another
+    // service line clears the product selection scoped to the old line.
+    const clears = fields.find((f) => f.name === name)?.clearsOnChange ?? [];
+    setValues((prev) => {
+      const next = { ...prev, [name]: value };
+      for (const target of clears) next[target] = [];
+      return next;
+    });
     setFieldErrors((prev) => {
-      if (!prev[name]) return prev;
+      const touched = [name, ...clears].filter((key) => prev[key]);
+      if (touched.length === 0) return prev;
       const next = { ...prev };
-      delete next[name];
+      for (const key of touched) delete next[key];
       return next;
     });
   };
@@ -150,7 +178,9 @@ function EntityForm({
     setFieldErrors({});
 
     try {
-      const result = await saveAdminEntity({ table, id, values });
+      const result = onSave
+        ? await onSave({ id, values })
+        : await saveAdminEntity({ table: table as AdminEntityTable, id, values });
 
       if (!result.ok) {
         setError(result.error);
@@ -207,24 +237,38 @@ function EntityForm({
                 !f.visibleWhen ||
                 values[f.visibleWhen.name] === f.visibleWhen.equals,
             )
-            .map((f) => (
-            <Field
-              key={f.name}
-              label={f.label}
-              hint={f.hint}
-              wide={f.wide}
-              htmlFor={fieldId(f.name)}
-              error={fieldErrors[f.name]}
-            >
-              <FieldControl
-                spec={f}
-                id={fieldId(f.name)}
-                value={values[f.name]}
-                onChange={(v) => setValue(f.name, v)}
-              />
-            </Field>
-          ))}
+            .map((f) => {
+              // Options may depend on another field's value (e.g. the
+              // products of the selected service line).
+              const spec = f.optionsWhen
+                ? {
+                    ...f,
+                    options:
+                      f.optionsWhen.byValue[
+                        String(values[f.optionsWhen.name] ?? "")
+                      ] ?? [],
+                  }
+                : f;
+              return (
+                <Field
+                  key={f.name}
+                  label={f.label}
+                  hint={f.hint}
+                  wide={f.wide}
+                  htmlFor={fieldId(f.name)}
+                  error={fieldErrors[f.name]}
+                >
+                  <FieldControl
+                    spec={spec}
+                    id={fieldId(f.name)}
+                    value={values[f.name]}
+                    onChange={(v) => setValue(f.name, v)}
+                  />
+                </Field>
+              );
+            })}
         </div>
+        {renderPreview ? renderPreview(values) : null}
       </div>
 
       <div className="sticky bottom-0 z-40 mt-5 flex items-center justify-end gap-2 border-t border-[var(--admin-line)] bg-white py-3">

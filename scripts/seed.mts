@@ -179,6 +179,7 @@ async function seedAirports(): Promise<{
     const created = await db.orm.public.Airport.create({
       id: crypto.randomUUID(),
       kind: a.kind,
+      level: a.kind,
       iataCode: a.iataCode,
       name: a.name,
       city: a.city,
@@ -242,6 +243,7 @@ async function seedChildPlaces() {
     await db.orm.public.Airport.create({
       id: crypto.randomUUID(),
       kind: "city",
+      level: "city",
       iataCode: null,
       name: city,
       city,
@@ -271,6 +273,7 @@ async function seedChildPlaces() {
     await db.orm.public.Airport.create({
       id: crypto.randomUUID(),
       kind: place.kind,
+      level: place.kind,
       iataCode: null,
       name: place.name,
       city: place.city,
@@ -279,6 +282,171 @@ async function seedChildPlaces() {
       sortOrder: place.sortOrder,
     });
     bump("Airport", true);
+  }
+}
+
+// ---------- Place hierarchy (region → country → province → city → …) ----------
+// Only the famous Indonesian tourist destinations are seeded here — the rest
+// of the administrative divisions are added later through the admin area.
+// Idempotent: rows are looked up by (kind, name) and only inserted when
+// missing; parent links are repaired when they point somewhere else.
+
+type PlaceSpec = {
+  kind: "region" | "country" | "province" | "city" | "district" | "village" | "destination";
+  name: string;
+  /** The city label stored on the row (defaults to the name). */
+  city?: string;
+  parent?: string;
+  sortOrder?: number;
+};
+
+const hierarchyPlaces: PlaceSpec[] = [
+  // Region → country.
+  { kind: "region", name: "Asia Tenggara", sortOrder: 1 },
+  { kind: "country", name: "Indonesia", parent: "Asia Tenggara", sortOrder: 1 },
+
+  // Provinces — only the ones that host a famous destination.
+  { kind: "province", name: "DKI Jakarta", parent: "Indonesia", sortOrder: 1 },
+  { kind: "province", name: "Jawa Barat", parent: "Indonesia", sortOrder: 2 },
+  { kind: "province", name: "Jawa Timur", parent: "Indonesia", sortOrder: 3 },
+  { kind: "province", name: "DI Yogyakarta", parent: "Indonesia", sortOrder: 4 },
+  { kind: "province", name: "Bali", parent: "Indonesia", sortOrder: 5 },
+  { kind: "province", name: "Nusa Tenggara Barat", parent: "Indonesia", sortOrder: 6 },
+  { kind: "province", name: "Nusa Tenggara Timur", parent: "Indonesia", sortOrder: 7 },
+  { kind: "province", name: "Sumatera Utara", parent: "Indonesia", sortOrder: 8 },
+  { kind: "province", name: "Papua Barat Daya", parent: "Indonesia", sortOrder: 9 },
+
+  // Kabupaten / kota of the famous spots.
+  { kind: "city", name: "Kab. Badung", parent: "Bali", sortOrder: 1 },
+  { kind: "city", name: "Kab. Gianyar", parent: "Bali", sortOrder: 2 },
+  { kind: "city", name: "Kab. Klungkung", parent: "Bali", sortOrder: 3 },
+  { kind: "city", name: "Kab. Karangasem", parent: "Bali", sortOrder: 4 },
+  { kind: "city", name: "Kab. Magelang", parent: "DI Yogyakarta", sortOrder: 1 },
+  { kind: "city", name: "Kab. Lombok Utara", parent: "Nusa Tenggara Barat", sortOrder: 1 },
+  { kind: "city", name: "Kab. Manggarai Barat", parent: "Nusa Tenggara Timur", sortOrder: 1 },
+  { kind: "city", name: "Kab. Probolinggo", parent: "Jawa Timur", sortOrder: 1 },
+  { kind: "city", name: "Kab. Samosir", parent: "Sumatera Utara", sortOrder: 1 },
+  { kind: "city", name: "Kab. Raja Ampat", parent: "Papua Barat Daya", sortOrder: 1 },
+
+  // Kecamatan (districts).
+  { kind: "district", name: "Kuta Selatan", parent: "Kab. Badung", sortOrder: 1 },
+  { kind: "district", name: "Ubud", parent: "Kab. Gianyar", sortOrder: 1 },
+  { kind: "district", name: "Nusa Penida", parent: "Kab. Klungkung", sortOrder: 1 },
+  { kind: "district", name: "Borobudur", parent: "Kab. Magelang", sortOrder: 1 },
+  { kind: "district", name: "Komodo", parent: "Kab. Manggarai Barat", sortOrder: 1 },
+  { kind: "district", name: "Sukapura", parent: "Kab. Probolinggo", sortOrder: 1 },
+  { kind: "district", name: "Pangururan", parent: "Kab. Samosir", sortOrder: 1 },
+
+  // Desa / kelurahan — a few famous ones, as the deepest level.
+  { kind: "village", name: "Peliatan", parent: "Ubud", sortOrder: 1 },
+  { kind: "village", name: "Wanurejo", parent: "Borobudur", sortOrder: 1 },
+  { kind: "village", name: "Cemoro Lawang", parent: "Sukapura", sortOrder: 1 },
+
+  // Famous destinations that are not in the base seed yet.
+  { kind: "destination", name: "Tanah Lot", parent: "Kab. Badung", sortOrder: 10 },
+  { kind: "destination", name: "Pura Uluwatu", parent: "Kuta Selatan", sortOrder: 10 },
+  { kind: "destination", name: "Pura Besakih", parent: "Kab. Karangasem", sortOrder: 10 },
+  { kind: "destination", name: "Gunung Rinjani", parent: "Kab. Lombok Utara", sortOrder: 10 },
+  { kind: "destination", name: "Gunung Bromo", parent: "Kab. Probolinggo", sortOrder: 10 },
+  { kind: "destination", name: "Danau Toba", parent: "Kab. Samosir", sortOrder: 10 },
+];
+
+/**
+ * Existing rows that move under a new parent in the hierarchy. The label
+ * (the submitted search value) never changes — only the grouping does.
+ */
+const hierarchyReparents: { kind: string; name: string; parent: string }[] = [
+  // Cities under their province.
+  { kind: "city", name: "Jakarta", parent: "DKI Jakarta" },
+  { kind: "city", name: "Bandung", parent: "Jawa Barat" },
+  { kind: "city", name: "Surabaya", parent: "Jawa Timur" },
+  { kind: "city", name: "Malang", parent: "Jawa Timur" },
+  { kind: "city", name: "East Java", parent: "Jawa Timur" },
+  { kind: "city", name: "Yogyakarta", parent: "DI Yogyakarta" },
+  { kind: "city", name: "Bali", parent: "Bali" },
+  { kind: "city", name: "Lombok", parent: "Nusa Tenggara Barat" },
+  { kind: "city", name: "Labuan Bajo", parent: "Nusa Tenggara Timur" },
+  { kind: "city", name: "Medan", parent: "Sumatera Utara" },
+  { kind: "city", name: "West Papua", parent: "Papua Barat Daya" },
+  // Airports are leaves under their city.
+  { kind: "airport", name: "Soekarno-Hatta", parent: "Jakarta" },
+  { kind: "airport", name: "Ngurah Rai", parent: "Bali" },
+  { kind: "airport", name: "Juanda", parent: "Surabaya" },
+  { kind: "airport", name: "Kualanamu", parent: "Medan" },
+  // Famous destinations deeper into the tree.
+  { kind: "destination", name: "Ubud", parent: "Ubud" },
+  { kind: "destination", name: "Nusa Penida", parent: "Nusa Penida" },
+  { kind: "destination", name: "Borobudur", parent: "Borobudur" },
+  { kind: "destination", name: "Komodo", parent: "Komodo" },
+  { kind: "destination", name: "Pink Beach", parent: "Komodo" },
+  { kind: "destination", name: "Gili Trawangan", parent: "Kab. Lombok Utara" },
+  { kind: "destination", name: "Senaru", parent: "Kab. Lombok Utara" },
+  { kind: "destination", name: "Raja Ampat", parent: "Kab. Raja Ampat" },
+];
+
+async function seedPlaceHierarchy() {
+  const idOf = new Map<string, string>();
+
+  const findPlace = async (kind: string, name: string) =>
+    db.orm.public.Airport
+      .select("id", "parentId")
+      .where((f) => f.kind.eq(kind))
+      .where({ name })
+      .first();
+
+  // Insert the missing hierarchy rows, parents first (the list is ordered).
+  for (const spec of hierarchyPlaces) {
+    const existing = await findPlace(spec.kind, spec.name);
+    const parentId = spec.parent ? (idOf.get(spec.parent) ?? null) : null;
+    if (existing) {
+      idOf.set(spec.name, existing.id);
+      // Repair the parent link when it points somewhere else.
+      if (parentId && existing.parentId !== parentId) {
+        await db.orm.public.Airport
+          .where({ id: existing.id })
+          .update({ parentId });
+      }
+      bump("Airport", false);
+      continue;
+    }
+    const created = await db.orm.public.Airport.create({
+      id: crypto.randomUUID(),
+      kind: spec.kind,
+      level: spec.kind,
+      iataCode: null,
+      name: spec.name,
+      city: spec.city ?? spec.name,
+      country: "Indonesia",
+      parentId,
+      sortOrder: spec.sortOrder ?? 0,
+    });
+    idOf.set(spec.name, created.id);
+    bump("Airport", true);
+  }
+
+  // Re-parent the existing rows (cities, airports, destinations) under the
+  // hierarchy. The label never changes, so search / booking keep working.
+  for (const move of hierarchyReparents) {
+    const row = await findPlace(move.kind, move.name);
+    const parentId = idOf.get(move.parent);
+    if (!row || !parentId) continue;
+    if (row.parentId !== parentId) {
+      await db.orm.public.Airport.where({ id: row.id }).update({ parentId });
+    }
+    bump("Airport", false);
+  }
+
+  // Repair the level of rows created before the `level` column existed —
+  // they still carry the column default ("city"). The migration backfill
+  // covers fresh databases; this covers everything else. Idempotent.
+  const stale = await db.orm.public.Airport
+    .select("id", "kind")
+    .where((f) => f.level.eq("city"))
+    .all();
+  for (const row of stale) {
+    if (row.kind !== "city") {
+      await db.orm.public.Airport.where({ id: row.id }).update({ level: row.kind });
+    }
   }
 }
 
@@ -1124,6 +1292,7 @@ async function main() {
   const typeIds = await seedServiceTypes(lineIds);
   const airports = await seedAirports();
   await seedChildPlaces();
+  await seedPlaceHierarchy();
   const productIds = await seedProducts(lineIds, typeIds, airports.byIata, airports.byCity);
   await seedProductPackages(productIds);
   await seedProductAddOns(productIds);

@@ -218,3 +218,144 @@ export const TrashIcon = (p: SVGProps<SVGSVGElement>) => (
     <path d="M10 11v6M14 11v6" />
   </svg>
 );
+
+/* ── Payment brand marks ─────────────────────────────────────────────
+   Filled brand logos (not currentColor strokes), drawn as paths/shapes
+   so they render identically everywhere — no fonts, no external assets. */
+
+/** Visa — italic bold blue wordmark. */
+export const VisaLogo = (p: SVGProps<SVGSVGElement>) => (
+  <svg
+    width={42}
+    height={16}
+    viewBox="0 -1 42 16"
+    fill="none"
+    aria-hidden="true"
+    {...p}
+  >
+    <g
+      transform="translate(3.5 0) skewX(-12)"
+      stroke="#1A1F71"
+      strokeWidth={3}
+      strokeLinecap="butt"
+      strokeLinejoin="round"
+    >
+      <path d="M1.5 1.5 6 12.5 10.5 1.5" />
+      <path d="M15 1.5v11" />
+      <path d="M27 2.4c-1.1-1.1-2.6-1.7-4.1-1.7-2.2 0-3.8 1.2-3.8 3 0 3.4 7.6 2.8 7.6 6.2 0 1.9-1.8 3.1-4.1 3.1-1.8 0-3.4-.7-4.5-1.9" />
+      <path d="M29 13 33.5 1 38 13M30.8 9h5.4" />
+    </g>
+  </svg>
+);
+
+/** Mastercard — overlapping red / yellow circles, orange intersection. */
+export const MastercardLogo = (p: SVGProps<SVGSVGElement>) => (
+  <svg
+    width={27}
+    height={20}
+    viewBox="0 0 30 22"
+    fill="none"
+    aria-hidden="true"
+    {...p}
+  >
+    <circle cx="9.5" cy="11" r="9" fill="#EB001B" />
+    <circle cx="20.5" cy="11" r="9" fill="#F79E1B" />
+    <path
+      d="M15 3.88A9 9 0 0 1 15 18.12A9 9 0 0 1 15 3.88Z"
+      fill="#FF5F00"
+    />
+  </svg>
+);
+
+/** PayPal — double-P monogram (dark blue back, light blue front). */
+const payPalP =
+  "M2 0H10C15 0 18 3 18 7.5C18 12 15 15 10 15H6.5V24H2ZM6.5 4V11H9.5C12 11 13.5 9.7 13.5 7.5C13.5 5.3 12 4 9.5 4Z";
+
+export const PayPalLogo = (p: SVGProps<SVGSVGElement>) => (
+  <svg
+    width={17}
+    height={20}
+    viewBox="0 0 25 30"
+    fill="none"
+    aria-hidden="true"
+    {...p}
+  >
+    <path d={payPalP} fill="#003087" fillRule="evenodd" />
+    <path
+      d={payPalP}
+      transform="translate(5 5)"
+      fill="#009CDE"
+      fillRule="evenodd"
+      stroke="#fff"
+      strokeWidth={1.5}
+      paintOrder="stroke"
+    />
+  </svg>
+);
+
+/** QRIS — red QR-corner glyph + bold red QRIS lettering. */
+export const QrisLogo = (p: SVGProps<SVGSVGElement>) => (
+  <svg
+    width={54}
+    height={16}
+    viewBox="0 0 47 14"
+    fill="none"
+    aria-hidden="true"
+    {...p}
+  >
+    <g transform="translate(0 1)" fill="#E31E25">
+      <path d="M0 0H12V12H0ZM3 3V9H9V3Z" fillRule="evenodd" />
+      <rect x="4.5" y="4.5" width="3" height="3" />
+      <rect x="13.5" y="1.5" width="2" height="2" />
+      <rect x="13.5" y="8.5" width="2" height="2" />
+    </g>
+    <g
+      transform="translate(17 2)"
+      stroke="#E31E25"
+      strokeWidth={2.2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="4.7" cy="5" r="3.5" />
+      <path d="M6.5 7.5 8.8 10.2" />
+      <path d="M11 10V0H14.2C16.2 0 17.2 1 17.2 2.7C17.2 4.4 16.2 5.4 14.2 5.4H11M14.2 5.4 17.4 10" />
+      <path d="M20.5 0V10" />
+      <path d="M28 1.4C27.2 0.5 26 0 24.8 0C23 0 21.8 1 21.8 2.4C21.8 5.4 28 4.6 28 7.6C28 9.1 26.7 10 24.9 10C23.5 10 22.2 9.4 21.4 8.4" />
+    </g>
+  </svg>
+);
+
+/** Car — the transport category glyph of the hero rail. */
+export const CarIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M4 16v-3l1.6-4.2A2 2 0 0 1 7.5 7.5h9a2 2 0 0 1 1.9 1.3L20 13v3" />
+    <path d="M4 13h16" />
+    <circle cx="7.5" cy="16" r="1.8" />
+    <circle cx="16.5" cy="16" r="1.8" />
+  </svg>
+);
+
+/** Compass — the tour-package category glyph of the hero rail. */
+export const CompassIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="m15.5 8.5-2 5-5 2 2-5z" />
+  </svg>
+);
+
+/** Passport — the eVOA category glyph of the hero rail. */
+export const PassportIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="5" y="3" width="14" height="18" rx="2" />
+    <circle cx="12" cy="10" r="3" />
+    <path d="M9 16.5h6" />
+  </svg>
+);
+
+/** Ticket — the promo strip glyph of the hero card. */
+export const TicketIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-6z" />
+    <path d="M13 5v2M13 11v2M13 17v2" />
+  </svg>
+);

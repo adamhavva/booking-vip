@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { pickLang } from "@/lib/content";
 import PaxStepper from "./PaxStepper";
 import type { ProductDetailDTO } from "@/types";
 
@@ -34,7 +35,7 @@ const TIME_SLOTS = generateTimeSlots();
  * Booking box — date/time picker, package selection, pax counts, total, and CTA.
  */
 export default function BookingBox({ product }: { product: ProductDetailDTO }) {
-  const { formatMoney, t } = useLocale();
+  const { formatMoney, t, lang } = useLocale();
   const router = useRouter();
 
   const [date, setDate] = useState("");
@@ -157,7 +158,9 @@ export default function BookingBox({ product }: { product: ProductDetailDTO }) {
                   onChange={() => setPackageIdx(i)}
                   className="h-4 w-4 accent-brand"
                 />
-                <span className="flex-1 text-sm font-semibold text-ink">{pkg.label}</span>
+                <span className="flex-1 text-sm font-semibold text-ink">
+                  {pickLang(pkg.label, pkg.labelId, lang)}
+                </span>
                 <span className="text-sm font-bold text-brand">
                   {formatMoney(
                     pkg.unitKind === "per_pax"

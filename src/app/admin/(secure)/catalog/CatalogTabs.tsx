@@ -12,6 +12,7 @@ const TABS = [
   { href: "/admin/catalog/service-lines", label: "Service Line" },
   { href: "/admin/catalog/amenities", label: "Amenity" },
   { href: "/admin/catalog/promos", label: "Promo" },
+  { href: "/admin/catalog/discount-campaigns", label: "Diskon Akumulasi" },
 ];
 
 /** Tab navigation of the catalog section. */

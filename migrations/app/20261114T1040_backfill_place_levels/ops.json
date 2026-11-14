@@ -1,0 +1,24 @@
+[
+  {
+    "id": "data.public.Airport.level.backfill",
+    "label": "Backfill \"level\" from \"kind\" on \"Airport\"",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "level",
+        "table": "Airport"
+      }
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "set level = kind for existing places",
+        "sql": "UPDATE \"public\".\"Airport\" SET \"level\" = \"kind\" WHERE \"level\" <> \"kind\""
+      }
+    ],
+    "postcheck": []
+  }
+]

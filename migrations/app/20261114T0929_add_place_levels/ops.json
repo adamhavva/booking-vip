@@ -1,0 +1,428 @@
+[
+  {
+    "id": "column.public.Airport.level",
+    "label": "Add column \"level\" to \"Airport\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "level",
+        "table": "Airport"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"level\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "level"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"level\" on \"Airport\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"level\"",
+        "sql": "ALTER TABLE \"public\".\"Airport\" ADD COLUMN \"level\" text DEFAULT 'city' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"level\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "level"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"level\" on \"Airport\""
+        }
+      },
+      {
+        "description": "verify column \"level\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "level",
+          "text"
+        ]
+      },
+      {
+        "description": "verify column \"level\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Airport",
+          "level",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.specs",
+    "label": "Add column \"specs\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "specs",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"specs\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "specs"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"specs\" on \"Product\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"specs\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"specs\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"specs\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "specs"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"specs\" on \"Product\""
+        }
+      },
+      {
+        "description": "verify column \"specs\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "specs",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"specs\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "specs",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ProductPackage.description",
+    "label": "Add column \"description\" to \"ProductPackage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "description",
+        "table": "ProductPackage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"description\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "description"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"description\" on \"ProductPackage\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"description\"",
+        "sql": "ALTER TABLE \"public\".\"ProductPackage\" ADD COLUMN \"description\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"description\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "description"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"description\" on \"ProductPackage\""
+        }
+      },
+      {
+        "description": "verify column \"description\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "description",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ProductPackage.fromUsdCents",
+    "label": "Add column \"fromUsdCents\" to \"ProductPackage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "fromUsdCents",
+        "table": "ProductPackage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"fromUsdCents\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "fromUsdCents"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"fromUsdCents\" on \"ProductPackage\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"fromUsdCents\"",
+        "sql": "ALTER TABLE \"public\".\"ProductPackage\" ADD COLUMN \"fromUsdCents\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"fromUsdCents\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "fromUsdCents"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"fromUsdCents\" on \"ProductPackage\""
+        }
+      },
+      {
+        "description": "verify column \"fromUsdCents\" has type \"integer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "fromUsdCents",
+          "integer"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ProductPackage.info",
+    "label": "Add column \"info\" to \"ProductPackage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "info",
+        "table": "ProductPackage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"info\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "info"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"info\" on \"ProductPackage\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"info\"",
+        "sql": "ALTER TABLE \"public\".\"ProductPackage\" ADD COLUMN \"info\" jsonb DEFAULT '[]'::jsonb NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"info\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "info"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"info\" on \"ProductPackage\""
+        }
+      },
+      {
+        "description": "verify column \"info\" has type \"jsonb\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "info",
+          "jsonb"
+        ]
+      },
+      {
+        "description": "verify column \"info\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "ProductPackage",
+          "info",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Airport.Airport_level_idx",
+    "label": "Create index \"Airport_level_idx\" on \"Airport\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Airport_level_idx",
+        "table": "Airport"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Airport_level_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Airport_level_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Airport_level_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Airport_level_idx\"",
+        "sql": "CREATE INDEX \"Airport_level_idx\" ON \"public\".\"Airport\" (\"level\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Airport_level_idx\" exists on \"Airport\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Airport_level_idx\"",
+          "i",
+          "I",
+          "\"public\".\"Airport\"",
+          "btree",
+          "[\"level\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Airport.Airport_parentId_idx",
+    "label": "Create index \"Airport_parentId_idx\" on \"Airport\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Airport_parentId_idx",
+        "table": "Airport"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Airport_parentId_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Airport_parentId_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"Airport_parentId_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Airport_parentId_idx\"",
+        "sql": "CREATE INDEX \"Airport_parentId_idx\" ON \"public\".\"Airport\" (\"parentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Airport_parentId_idx\" exists on \"Airport\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"Airport_parentId_idx\"",
+          "i",
+          "I",
+          "\"public\".\"Airport\"",
+          "btree",
+          "[\"parentId\"]"
+        ]
+      }
+    ]
+  }
+]

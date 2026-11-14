@@ -245,13 +245,24 @@ export async function createBooking(
 
     const grossUsdCents = subtotalUsdCents + addOnsUsdCents;
 
+    // The signed-in customer (null for guests) — needed before the promo
+    // check so a reward voucher can be matched against its owner.
+    const userSession = await getUserSession();
+
     // Apply the promo code (if any). The discount can never exceed the total.
+    // Reward vouchers are re-validated here server-side: ownership, expiry,
+    // the usage limit and the stored value — the client never decides them.
     let discountUsdCents = 0;
     let appliedPromoId: string | null = null;
 
     const promoInput = input.promoCode?.trim();
     if (promoInput) {
-      const check = await checkPromo(promoInput, grossUsdCents);
+      const check = await checkPromo(
+        promoInput,
+        grossUsdCents,
+        new Date(),
+        userSession?.uid ?? null,
+      );
       if (!check.ok) {
         return { ok: false, error: check.error };
       }
@@ -283,8 +294,6 @@ export async function createBooking(
     try {
       // 1. Booking
       // Link the booking to the signed-in customer (null for guests).
-      const userSession = await getUserSession();
-
       await db.orm.public.Booking.create({
         id: bookingId,
         code,
@@ -488,7 +497,13 @@ export async function validatePromoCode(
   const trimmed = code.trim();
   if (!trimmed) return { ok: false, error: "Kode promo wajib diisi." };
 
-  const check = await checkPromo(trimmed, subtotalUsdCents);
+  const session = await getUserSession();
+  const check = await checkPromo(
+    trimmed,
+    subtotalUsdCents,
+    new Date(),
+    session?.uid ?? null,
+  );
   if (!check.ok) return { ok: false, error: check.error };
 
   return {

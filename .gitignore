@@ -57,3 +57,8 @@ opencode*
 # firebase service account
 *firebase-adminsdk*.json
 .credentials/firebase-service-account.json
+.devin
+.claude
+.cursor
+.opencode
+.remember

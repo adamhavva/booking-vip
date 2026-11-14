@@ -1,0 +1,13 @@
+{
+  "email": "bv.loyalty.v8wsky@example.com",
+  "password": "Test-v8wsky-Passw0rd!",
+  "menuTextAfterLogin": "Loyalty Tester\n\nTier Member\n\n0 Points\n\nMy Orders\nPoints & Level\nPayment Methods\nMy Reviews\nHelp\nSettings\nSign out",
+  "voucherCode": "RWD-NHQUEB",
+  "balanceBefore": "500",
+  "balanceAfter": "0",
+  "bookingCode": "BV-PZ82W4",
+  "totalBefore": "$85.00",
+  "totalAfter": "$76.50",
+  "voucherCode2": "RWD-SMLRM2",
+  "bookingCode2": "BV-V7KFF6"
+}

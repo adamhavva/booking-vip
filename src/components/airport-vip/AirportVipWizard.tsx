@@ -1,9 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createBooking } from "@/app/actions/booking";
+import { getPlaceOptions } from "@/app/actions/catalog";
 import PaxStepper from "@/components/booking/PaxStepper";
+import PlaceOptionList from "@/components/ui/PlaceOptionList";
+import { SearchIcon } from "@/components/icons";
+import { placeLabel, type PlaceNode } from "@/lib/places";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import {
   bookingRuleRows,
@@ -117,6 +121,15 @@ export default function AirportVipWizard({
   const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState<string | null>(null);
 
+  // The place hierarchy (region → country → province → city → airport) for
+  // the grouped airport picker. The flat `airports` prop stays the fallback
+  // when the hierarchy cannot be loaded.
+  const [placeTree, setPlaceTree] = useState<PlaceNode[]>([]);
+  const [airportQuery, setAirportQuery] = useState("");
+  useEffect(() => {
+    getPlaceOptions("airport").then(setPlaceTree);
+  }, []);
+
   /** Picking another airport invalidates the service and its add-ons. */
   const chooseAirport = (id: string) => {
     setAirportId(id);
@@ -125,6 +138,10 @@ export default function AirportVipWizard({
   };
 
   const airport = airports.find((a) => a.id === airportId) ?? null;
+  /** The label the place tree submits for an airport ("Ngurah Rai (DPS)"). */
+  const airportValue = airport
+    ? placeLabel({ kind: "airport", name: airport.name, iataCode: airport.iataCode })
+    : "";
   const airline = airlines.find((a) => a.code === airlineCode) ?? null;
   const service =
     services.find((s) => `${s.slug}::${s.packageId}` === serviceKey) ?? null;
@@ -425,32 +442,67 @@ export default function AirportVipWizard({
                 ))}
               </div>
 
-              <div className="mt-5 space-y-2">
-                {airports.map((a) => (
-                  <button
-                    key={a.id}
-                    type="button"
-                    onClick={() => chooseAirport(a.id)}
-                    className={`flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${
-                      airportId === a.id
-                        ? "border-brand bg-brand-soft"
-                        : "border-line bg-white hover:bg-canvas"
-                    }`}
-                  >
-                    <span className="min-w-0">
-                      <span className="block text-[14px] font-semibold text-ink">
-                        {a.name}
+              {placeTree.length > 0 ? (
+                /* Grouped / cascading picker — drill region → country →
+                   province → city down to the airport, or search across the
+                   whole tree. The submitted value stays the airport label;
+                   the wizard keeps working with the airport id. */
+                <div className="mt-5 rounded-xl border border-line bg-white p-3">
+                  <div className="relative mb-2">
+                    <SearchIcon
+                      width={16}
+                      height={16}
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+                    />
+                    <input
+                      value={airportQuery}
+                      onChange={(e) => setAirportQuery(e.target.value)}
+                      placeholder="Cari bandara atau kota…"
+                      className="w-full rounded-xl border border-line bg-canvas py-2 pl-9 pr-3 text-sm text-ink outline-none focus:border-brand"
+                    />
+                  </div>
+                  <PlaceOptionList
+                    nodes={placeTree}
+                    query={airportQuery}
+                    selected={airportValue}
+                    selectableKinds={["airport"]}
+                    onSelect={(label) => {
+                      const match = airports.find(
+                        (a) =>
+                          placeLabel({ kind: "airport", name: a.name, iataCode: a.iataCode }) === label,
+                      );
+                      if (match) chooseAirport(match.id);
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="mt-5 space-y-2">
+                  {airports.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onClick={() => chooseAirport(a.id)}
+                      className={`flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors ${
+                        airportId === a.id
+                          ? "border-brand bg-brand-soft"
+                          : "border-line bg-white hover:bg-canvas"
+                      }`}
+                    >
+                      <span className="min-w-0">
+                        <span className="block text-[14px] font-semibold text-ink">
+                          {a.name}
+                        </span>
+                        <span className="mt-0.5 block text-[12px] text-muted">{a.city}</span>
                       </span>
-                      <span className="mt-0.5 block text-[12px] text-muted">{a.city}</span>
-                    </span>
-                    {a.iataCode ? (
-                      <span className="shrink-0 rounded-lg bg-canvas px-2 py-1 font-mono text-[11px] font-semibold text-ink">
-                        {a.iataCode}
-                      </span>
-                    ) : null}
-                  </button>
-                ))}
-              </div>
+                      {a.iataCode ? (
+                        <span className="shrink-0 rounded-lg bg-canvas px-2 py-1 font-mono text-[11px] font-semibold text-ink">
+                          {a.iataCode}
+                        </span>
+                      ) : null}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ) : null}
 

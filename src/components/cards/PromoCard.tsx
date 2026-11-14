@@ -2,15 +2,15 @@
 
 import CardImage from "@/components/ui/CardImage";
 import { copyText } from "@/lib/content";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useMountedLocale } from "@/lib/useMountedLocale";
 import type { PromoDTO } from "@/types";
 
 /** A promo tile — DB-backed (`Promo` table), bilingual via `copyText`. */
 export default function PromoCard({ promo }: { promo: PromoDTO }) {
-  const { lang } = useLocale();
+  const { lang } = useMountedLocale();
 
   return (
-    <div className="relative h-40 w-[320px] shrink-0 snap-start overflow-hidden rounded-xl text-white">
+    <div className="relative h-40 w-[320px] shrink-0 snap-start overflow-hidden rounded-xl border border-line text-white shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <CardImage
         src={promo.imageUrl}
         tone={promo.tone}

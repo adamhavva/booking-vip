@@ -20,7 +20,7 @@ export default function AdminShell({
       <AdminSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <AdminTopbar email={email} />
-        <main className="flex-1 px-8 py-7">{children}</main>
+        <main className="min-w-0 flex-1 px-4 py-6 sm:px-8 sm:py-7">{children}</main>
       </div>
       <AdminToaster />
     </div>

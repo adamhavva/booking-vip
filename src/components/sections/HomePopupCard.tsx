@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { PopupSettingsDTO } from "@/lib/popup";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 /**
  * The homepage popup card.
@@ -12,6 +13,7 @@ import type { PopupSettingsDTO } from "@/lib/popup";
  * session does not bring it back.
  */
 export default function HomePopupCard({ settings }: { settings: PopupSettingsDTO }) {
+  const { t } = useLocale();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export default function HomePopupCard({ settings }: { settings: PopupSettingsDTO
         <button
           type="button"
           onClick={close}
-          aria-label="Tutup"
+          aria-label={t("popup.close")}
           className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm transition-opacity hover:opacity-70"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
@@ -107,7 +109,7 @@ export default function HomePopupCard({ settings }: { settings: PopupSettingsDTO
               onClick={close}
               className="inline-flex h-10 items-center rounded-xl border border-line bg-white px-4 text-[13px] font-semibold text-ink transition-colors hover:bg-canvas"
             >
-              Nanti saja
+              {t("popup.later")}
             </button>
           </div>
         </div>

@@ -8,6 +8,7 @@ import {
   type UserAuthState,
 } from "@/app/actions/user-auth";
 import AuthField from "@/components/auth/AuthField";
+import FacebookButton from "@/components/auth/FacebookButton";
 import GoogleButton from "@/components/auth/GoogleButton";
 import TurnstileWidget from "@/components/auth/TurnstileWidget";
 
@@ -40,6 +41,7 @@ export default function LoginForm() {
     if (state.error) setTurnstileReset((n) => n + 1);
   }, [state]);
 
+
   function handleForgotPassword() {
     const email = document.querySelector<HTMLInputElement>(
       'input[name="email"]',
@@ -65,23 +67,19 @@ export default function LoginForm() {
 
   return (
     <div>
-      <div className="mb-7">
-        <h1 className="text-[26px] font-extrabold tracking-[-0.02em] text-ink">
+      <div className="mb-6 text-center">
+        <h1 className="text-2xl font-bold tracking-tight text-ink">
           Selamat datang kembali
         </h1>
-        <p className="mt-1.5 text-[14px] text-muted">
-          Masuk untuk melihat pesanan dan mengelola akun kamu.
+        <p className="mt-2 text-sm text-muted">
+          Belum punya akun?{" "}
+          <Link
+            href="/register"
+            className="font-medium text-ink underline underline-offset-4 transition-colors hover:text-brand"
+          >
+            Daftar
+          </Link>
         </p>
-      </div>
-
-      <GoogleButton />
-
-      <div className="my-6 flex items-center gap-3">
-        <span className="h-px flex-1 bg-line" />
-        <span className="text-[12px] uppercase tracking-[0.08em] text-muted">
-          atau lanjut dengan email
-        </span>
-        <span className="h-px flex-1 bg-line" />
       </div>
 
       <form action={formAction} className="flex flex-col gap-4">
@@ -110,7 +108,7 @@ export default function LoginForm() {
                 name="remember"
                 value="1"
                 defaultChecked
-                className="h-4 w-4 rounded border-line accent-[#0064d2]"
+                className="h-4 w-4 rounded border-line accent-ink"
               />
               Ingat saya
             </label>
@@ -118,7 +116,7 @@ export default function LoginForm() {
               type="button"
               onClick={handleForgotPassword}
               disabled={resetPending}
-              className="text-[13px] font-medium text-brand hover:underline disabled:opacity-60"
+              className="text-[13px] font-medium text-ink underline-offset-4 transition-colors hover:underline disabled:cursor-not-allowed disabled:opacity-60"
             >
               {resetPending ? "Mengirim…" : "Lupa password?"}
             </button>
@@ -152,26 +150,26 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-ink text-sm font-semibold text-white transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {pending ? "Memproses…" : "Masuk"}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-[13px] text-muted">
-        Belum punya akun?{" "}
-        <Link href="/register" className="font-semibold text-brand hover:underline">
-          Daftar
-        </Link>
-      </p>
+      <div className="my-6 flex items-center gap-3">
+        <span className="h-px flex-1 bg-line" />
+        <span className="text-xs text-muted">Atau</span>
+        <span className="h-px flex-1 bg-line" />
+      </div>
 
-      <p className="mt-2 text-center text-[13px] text-muted">
-        <Link
-          href="/admin/login"
-          className="font-semibold text-ink hover:underline"
-        >
-          Masuk ke area admin
-        </Link>
+      <div className="grid grid-cols-2 gap-3">
+        <GoogleButton label="Google" className="w-full" />
+        <FacebookButton className="w-full" />
+      </div>
+
+      <p className="mt-6 text-center text-xs leading-relaxed text-muted">
+        Dengan melanjutkan, kamu menyetujui Syarat &amp; Ketentuan dan
+        Kebijakan Privasi Booking VIP.
       </p>
     </div>
   );

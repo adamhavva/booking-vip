@@ -2,6 +2,7 @@ import "server-only";
 
 import { db } from "@/prisma/db";
 import { convertUsdCents, getUsdRate } from "@/lib/fx";
+import { recomputeUserPoints } from "@/lib/loyalty";
 import {
   createInvoice,
   getInvoice,
@@ -308,6 +309,8 @@ export async function applyGatewayEvent(params: {
     await db.orm.public.Booking
       .where((f) => f.id.eq(payment.bookingId))
       .update({ status: "confirmed" });
+
+    await awardPointsForBooking(payment.bookingId);
   } else if (status === "failed" || status === "expired" || status === "cancelled") {
     await db.orm.public.Payment
       .where((f) => f.id.eq(payment.id))
@@ -367,10 +370,31 @@ export async function getPaymentStatus(params: {
   };
 }
 
+/**
+ * Credit the loyalty points of a booking that was just paid for.
+ *
+ * The balance is re-derived from the source rows (paid bookings minus
+ * redeemed vouchers), so calling this twice — webhook and return page — is
+ * harmless. A points failure never blocks the payment confirmation.
+ */
+async function awardPointsForBooking(bookingId: string): Promise<void> {
+  try {
+    const rows = await db.orm.public.Booking
+      .select("userId")
+      .where((f) => f.id.eq(bookingId))
+      .limit(1)
+      .all();
+    const userId = rows[0]?.userId;
+    if (userId) await recomputeUserPoints(userId);
+  } catch (error) {
+    console.error("[payments] could not credit loyalty points", error);
+  }
+}
+
 /** Refresh a pending payment from the gateway — used by the return page. */
 export async function refreshPayment(paymentId: string): Promise<string | null> {
   const rows = await db.orm.public.Payment
-    .select("id", "provider", "providerRef", "status")
+    .select("id", "bookingId", "provider", "providerRef", "status")
     .where((f) => f.id.eq(paymentId))
     .limit(1)
     .all();
@@ -386,6 +410,7 @@ export async function refreshPayment(paymentId: string): Promise<string | null> 
       await db.orm.public.Payment
         .where((f) => f.id.eq(payment.id))
         .update({ status: "paid", paidAt: new Date() });
+      await awardPointsForBooking(payment.bookingId);
       return "paid";
     }
     return payment.status;

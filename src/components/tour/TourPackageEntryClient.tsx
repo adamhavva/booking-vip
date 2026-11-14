@@ -61,7 +61,7 @@ export default function TourPackageEntryClient({
           places={places}
           value={destination}
           selectableKinds={["destination"]}
-          placeholder="Pilih destinasiendgroup"
+          placeholder="Pilih destinasi"
           onSelect={setDestination}
         />
 

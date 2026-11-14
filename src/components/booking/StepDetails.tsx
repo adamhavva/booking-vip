@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getOptions } from "@/app/actions/catalog";
+import PlaceSelect from "@/components/ui/PlaceSelect";
+import type { PlaceNode } from "@/lib/places";
 import type { OptionDTO } from "@/types";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
@@ -25,6 +27,8 @@ type FlightData = {
 type Props = {
   date: string;
   time: string;
+  /** The place hierarchy for the location field — empty keeps the text input. */
+  places?: PlaceNode[];
   airportName: string;
   adults: number;
   children: number;
@@ -41,6 +45,7 @@ type Props = {
 export default function StepDetails({
   date,
   time,
+  places,
   airportName,
   adults,
   children,
@@ -120,18 +125,34 @@ export default function StepDetails({
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-muted">
-              {t("wizard.details.location")}
-            </label>
-            <input
-              type="text"
-              value={flight.location}
-              onChange={(e) =>
-                onFlightChange({ ...flight, location: e.target.value })
-              }
-              placeholder={t("wizard.details.locationPlaceholder")}
-              className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm text-ink"
-            />
+            {places && places.length > 0 ? (
+              /* Cascading place picker — the submitted value stays the place
+                 label, so the booking payload is unchanged. PlaceSelect
+                 renders its own label. */
+              <PlaceSelect
+                label={t("wizard.details.location")}
+                places={places}
+                value={flight.location}
+                selectableKinds={["city", "area", "destination", "district", "village"]}
+                placeholder={t("wizard.details.locationPlaceholder")}
+                onSelect={(location) => onFlightChange({ ...flight, location })}
+              />
+            ) : (
+              <>
+                <label className="mb-1 block text-xs font-semibold text-muted">
+                  {t("wizard.details.location")}
+                </label>
+                <input
+                  type="text"
+                  value={flight.location}
+                  onChange={(e) =>
+                    onFlightChange({ ...flight, location: e.target.value })
+                  }
+                  placeholder={t("wizard.details.locationPlaceholder")}
+                  className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm text-ink"
+                />
+              </>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

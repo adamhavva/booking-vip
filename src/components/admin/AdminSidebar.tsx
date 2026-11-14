@@ -44,7 +44,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex h-full w-[240px] shrink-0 flex-col border-r border-[var(--admin-line)] bg-white">
+    <nav className="hidden h-full w-[240px] shrink-0 flex-col border-r border-[var(--admin-line)] bg-white md:flex">
       <div className="px-6 py-5">
         <Link href="/admin" className="block">
           <span className="text-[13px] font-semibold tracking-[-0.01em]">Booking VIP</span>

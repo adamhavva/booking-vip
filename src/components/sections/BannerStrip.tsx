@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Container from "@/components/ui/Container";
 import { copyText } from "@/lib/content";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useMountedLocale } from "@/lib/useMountedLocale";
 import type { DictKey } from "@/i18n";
 import type { CopyDTO } from "@/types";
 
@@ -38,7 +38,7 @@ export default function BannerStrip({
   imageUrl?: string | null;
   href?: string | null;
 }) {
-  const { t, lang } = useLocale();
+  const { t, lang } = useMountedLocale();
 
   const resolvedTitle = titleCopy ? copyText(titleCopy, lang) : titleKey ? t(titleKey) : title;
   const resolvedSubtitle = subtitleCopy

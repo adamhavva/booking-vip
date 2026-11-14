@@ -24,7 +24,15 @@ export type FieldKind =
   | "toggle"
   | "tags"
   | "multiselect"
-  | "datetime";
+  | "datetime"
+  | "keyvalue";
+
+/** One row of a free-form key/value list (Product.specs, ProductPackage.info). */
+export type KeyValueEntry = {
+  key: string;
+  name: string;
+  excluded?: boolean;
+};
 
 export type FieldSpec = {
   name: string;
@@ -38,6 +46,18 @@ export type FieldSpec = {
   visibleWhen?: { name: string; equals: string };
   /** Hide the "— Tidak ada —" placeholder of a select. */
   allowEmpty?: boolean;
+  /**
+   * Options that depend on another field's value — e.g. the products of the
+   * selected service line. Resolved by the form page, which sees all values.
+   */
+  optionsWhen?: {
+    name: string;
+    byValue: Record<string, { value: string; label: string }[]>;
+  };
+  /** Reset these fields to an empty list when this field changes. */
+  clearsOnChange?: string[];
+  /** keyvalue only: show the "excluded" checkbox column (package info). */
+  allowExcluded?: boolean;
 };
 
 export type FieldValues = Record<string, unknown>;
@@ -156,6 +176,18 @@ export default function FieldControl({
     );
   }
 
+  if (spec.kind === "keyvalue") {
+    const list = Array.isArray(value) ? (value as KeyValueEntry[]) : [];
+    return (
+      <KeyValueEditor
+        id={id}
+        values={list}
+        allowExcluded={spec.allowExcluded === true}
+        onChange={onChange}
+      />
+    );
+  }
+
   if (spec.kind === "multiselect") {
     const list = Array.isArray(value) ? (value as string[]) : [];
     return (
@@ -212,6 +244,83 @@ export function TagListEditor({
         }}
         className={`${adminClass.input} h-auto py-2`}
       />
+    </div>
+  );
+}
+
+/**
+ * Editor for a free-form key/value list — [{ key, name, excluded? }].
+ *
+ * `key` is the stable machine identifier ("luggage", "fuel", …), `name` the
+ * display text ("2 koper"). With `allowExcluded`, each row also carries the
+ * flag that marks a cost the customer pays to the vendor directly.
+ */
+export function KeyValueEditor({
+  id,
+  values,
+  allowExcluded,
+  onChange,
+}: {
+  id: string;
+  values: KeyValueEntry[];
+  allowExcluded: boolean;
+  onChange: (value: KeyValueEntry[]) => void;
+}) {
+  const update = (index: number, patch: Partial<KeyValueEntry>) => {
+    onChange(values.map((entry, i) => (i === index ? { ...entry, ...patch } : entry)));
+  };
+
+  return (
+    <div id={id} className="space-y-2">
+      {values.length === 0 ? (
+        <p className="text-[12px] text-[var(--admin-muted)]">Belum ada entri.</p>
+      ) : null}
+      {values.map((entry, index) => (
+        <div key={index} className="flex items-center gap-2">
+          <input
+            type="text"
+            value={entry.key}
+            placeholder="key (mis. luggage)"
+            aria-label={`Key ${index + 1}`}
+            onChange={(e) => update(index, { key: e.target.value })}
+            className={`${adminClass.input} w-36 shrink-0`}
+          />
+          <input
+            type="text"
+            value={entry.name}
+            placeholder="Tampilan (mis. 2 koper)"
+            aria-label={`Nama ${index + 1}`}
+            onChange={(e) => update(index, { name: e.target.value })}
+            className={adminClass.input}
+          />
+          {allowExcluded ? (
+            <label className="flex shrink-0 items-center gap-1.5 text-[12px] text-[var(--admin-muted)]">
+              <input
+                type="checkbox"
+                checked={entry.excluded === true}
+                onChange={(e) => update(index, { excluded: e.target.checked })}
+                className="h-4 w-4 rounded border-[var(--admin-line)]"
+              />
+              Excluded
+            </label>
+          ) : null}
+          <button
+            type="button"
+            aria-label={`Hapus entri ${index + 1}`}
+            onClick={() => onChange(values.filter((_, i) => i !== index))}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--admin-line)] text-[var(--admin-muted)] hover:bg-[var(--admin-hover)]"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...values, { key: "", name: "" }])}
+        className="inline-flex h-8 items-center rounded-lg border border-[var(--admin-line)] px-3 text-[12px] font-semibold text-[var(--admin-ink)] hover:bg-[var(--admin-hover)]"
+      >
+        + Tambah entri
+      </button>
     </div>
   );
 }

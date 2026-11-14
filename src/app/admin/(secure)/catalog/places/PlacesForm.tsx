@@ -6,7 +6,13 @@ import type { AdminPlaceRow } from "@/types/admin";
 import EntityFormPage from "@/components/admin/EntityFormPage";
 import type { FieldSpec, FieldValues } from "@/components/admin/fields";
 import { useAdminList } from "@/components/admin/useAdminList";
-import { buildPlaceTree, descendantPlaceIds, flattenPlaceTree } from "@/lib/places";
+import {
+  buildPlaceTree,
+  descendantPlaceIds,
+  flattenPlaceTree,
+  PLACE_KINDS,
+  placeKindLabel,
+} from "@/lib/places";
 
 const LIST_PATH = "/admin/catalog/places";
 
@@ -64,12 +70,22 @@ export default function PlacesForm({
         name: "kind",
         label: "Jenis",
         kind: "select",
-        options: [
-          { value: "airport", label: "Airport" },
-          { value: "city", label: "City" },
-          { value: "area", label: "Area (pick-up)" },
-          { value: "destination", label: "Destinasi wisata" },
-        ],
+        options: PLACE_KINDS.map((k) => ({
+          value: k,
+          label:
+            k === "area"
+              ? "Area (pick-up)"
+              : k === "destination"
+                ? "Destinasi wisata"
+                : placeKindLabel(k),
+        })),
+      },
+      {
+        name: "level",
+        label: "Level wilayah",
+        kind: "select",
+        options: PLACE_KINDS.map((k) => ({ value: k, label: placeKindLabel(k) })),
+        hint: "Region → Negara → Provinsi → Kota → Kecamatan → Desa/Kelurahan; kosong = ikut jenis",
       },
       { name: "iataCode", label: "Kode IATA", kind: "text", hint: "Kosongkan untuk kota" },
       { name: "country", label: "Negara", kind: "text" },
@@ -97,6 +113,7 @@ export default function PlacesForm({
       name: row?.name ?? "",
       city: row?.city ?? "",
       kind: row?.kind ?? "airport",
+      level: row?.level ?? row?.kind ?? "airport",
       iataCode: row?.iataCode ?? "",
       country: row?.country ?? "Indonesia",
       parentId: row?.parentId ?? "",
@@ -112,7 +129,7 @@ export default function PlacesForm({
       table="place"
       id={id}
       title={mode === "edit" ? "Edit Place" : "Tambah Place"}
-      subtitle="Place adalah airport atau kota yang dipakai produk."
+      subtitle="Place adalah wilayah (region → negara → provinsi → kota → kecamatan → desa) atau tempat (airport, area, destinasi) yang dipakai produk."
       listPath={LIST_PATH}
       listLabel="Place"
       fields={fields}

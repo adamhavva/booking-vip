@@ -78,7 +78,7 @@ async function TransportSearchStep() {
   await connection();
 
   const [places, types] = await Promise.all([
-    getPlaceOptions(["city", "area"]),
+    getPlaceOptions(["city", "area", "district", "village", "destination"]),
     getOptions("serviceType", "transport"),
   ]);
 

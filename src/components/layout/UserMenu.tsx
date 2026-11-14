@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { AccountOverviewDTO } from "@/app/actions/account";
 import { signOutUser } from "@/app/actions/user-auth";
 import { useAccountOverview } from "@/components/providers/AccountProvider";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 /**
  * The account control in the header.
@@ -19,6 +20,7 @@ import { useAccountOverview } from "@/components/providers/AccountProvider";
  */
 export default function UserMenu({ solid }: { solid: boolean }) {
   const { overview: account, loading } = useAccountOverview();
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -55,11 +57,11 @@ export default function UserMenu({ solid }: { solid: boolean }) {
     return (
       <div className="hidden items-center justify-center gap-3 text-sm lg:flex">
         <Link href="/login" className={linkClass}>
-          Masuk
+          {t("header.signIn")}
         </Link>
         <span className={solid ? "text-line" : "text-white/40"}>|</span>
         <Link href="/register" className={linkClass}>
-          Daftar
+          {t("userMenu.register")}
         </Link>
       </div>
     );
@@ -72,7 +74,7 @@ export default function UserMenu({ solid }: { solid: boolean }) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label="Menu akun"
+        aria-label={t("userMenu.accountMenu")}
         className={`flex h-9 w-9 items-center justify-center rounded-full text-[13px] font-bold transition-colors ${
           solid
             ? "bg-brand-soft text-brand hover:bg-brand hover:text-white"
@@ -97,7 +99,7 @@ export default function UserMenu({ solid }: { solid: boolean }) {
                 <Link
                   href="/account/profile"
                   onClick={() => setOpen(false)}
-                  aria-label="Ubah profil"
+                  aria-label={t("userMenu.editProfile")}
                   className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-slate-700 transition-opacity hover:opacity-90"
                 >
                   <PencilIcon />
@@ -105,10 +107,14 @@ export default function UserMenu({ solid }: { solid: boolean }) {
               </div>
 
               <p className="mt-2.5 text-[13px] text-white/90">
-                {account.level ? `Tier ${account.level.name}` : "Tanpa tier"}
+                {account.level
+                  ? t("userMenu.tier", { name: account.level.name })
+                  : t("userMenu.noTier")}
               </p>
               <p className="mt-1 text-[13px] font-semibold">
-                {account.points.toLocaleString("id-ID")} Poin
+                {t("userMenu.points", {
+                  n: account.points.toLocaleString("id-ID"),
+                })}
               </p>
             </div>
           </div>
@@ -123,7 +129,7 @@ export default function UserMenu({ solid }: { solid: boolean }) {
                 onClick={() => setOpen(false)}
                 className="block px-5 py-2.5 text-[14px] text-ink transition-colors hover:bg-canvas"
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
 
@@ -135,7 +141,7 @@ export default function UserMenu({ solid }: { solid: boolean }) {
               }}
               className="block w-full px-5 py-2.5 text-left text-[14px] text-ink transition-colors hover:bg-canvas"
             >
-              Keluar
+              {t("userMenu.signOut")}
             </button>
           </nav>
         </div>
@@ -145,13 +151,13 @@ export default function UserMenu({ solid }: { solid: boolean }) {
 }
 
 const MENU = [
-  { href: "/account/orders", label: "Pesanan Saya" },
-  { href: "/account/loyalty", label: "Poin & Level" },
-  { href: "/account/payments", label: "Metode Pembayaran" },
-  { href: "/account/reviews", label: "Review Saya" },
-  { href: "/account/help", label: "Bantuan" },
-  { href: "/account/settings", label: "Pengaturan" },
-];
+  { href: "/account/orders", labelKey: "userMenu.orders" },
+  { href: "/account/loyalty", labelKey: "userMenu.loyalty" },
+  { href: "/account/payments", labelKey: "userMenu.payments" },
+  { href: "/account/reviews", labelKey: "userMenu.reviews" },
+  { href: "/account/help", labelKey: "userMenu.help" },
+  { href: "/account/settings", labelKey: "userMenu.settings" },
+] as const;
 
 /** "Dandi Ramdani" → "DR"; falls back to the first letter of the address. */
 function initialsOf(account: AccountOverviewDTO): string {

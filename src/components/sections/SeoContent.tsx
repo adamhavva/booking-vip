@@ -1,18 +1,27 @@
+"use client";
+
 import Container from "@/components/ui/Container";
 import { seoBlocks as staticSeoBlocks } from "@/data/home";
+import { copyText } from "@/lib/content";
+import { useMountedLocale } from "@/lib/useMountedLocale";
 import type { SeoBlockDTO } from "@/types";
 
 /**
  * SEO body copy. DB-backed (`SeoBlock` table) when available, falls back to
- * the static blocks otherwise — rendered server-side (English) so it stays
- * crawlable.
+ * the static blocks otherwise. The DB copy is bilingual and resolved in the
+ * active language on the client; the static fallback stays English so the
+ * prerendered crawl block never changes.
  */
 export default function SeoContent({ blocks }: { blocks?: SeoBlockDTO[] }) {
+  const { t, lang } = useMountedLocale();
   const resolved =
     blocks && blocks.length > 0
       ? blocks.map((b) => ({
-          title: b.title.en,
-          sections: b.sections.map((s) => ({ h: s.heading.en, p: s.body.en })),
+          title: copyText(b.title, lang),
+          sections: b.sections.map((s) => ({
+            h: copyText(s.heading, lang),
+            p: copyText(s.body, lang),
+          })),
         }))
       : staticSeoBlocks;
 
@@ -57,7 +66,7 @@ export default function SeoContent({ blocks }: { blocks?: SeoBlockDTO[] }) {
               Split your booking into affordable monthly payments and travel
               now, pay later.{" "}
               <a href="#" className="font-semibold text-brand">
-                More
+                {t("common.more")}
               </a>
             </p>
           </div>
@@ -67,7 +76,7 @@ export default function SeoContent({ blocks }: { blocks?: SeoBlockDTO[] }) {
               We work with trusted airlines, hotels and travel providers to bring
               you reliable service everywhere you go.{" "}
               <a href="#" className="font-semibold text-brand">
-                More
+                {t("common.more")}
               </a>
             </p>
           </div>

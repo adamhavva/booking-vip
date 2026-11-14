@@ -10,6 +10,19 @@ export function copyText(copy: CopyDTO | null | undefined, lang: string): string
 }
 
 /**
+ * Pick the active-language variant of a plain string pair. The Indonesian
+ * variant is optional — English is used when it is missing, so static
+ * fallbacks (which only carry English) keep working.
+ */
+export function pickLang(
+  en: string,
+  id: string | null | undefined,
+  lang: string,
+): string {
+  return lang === "id" && id ? id : en;
+}
+
+/**
  * Read a locale-aware setting. Settings are stored as `{ en, id }` objects
  * (or plain arrays/values) — this picks the right language.
  */

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
  * New accounts always start as plain users; the admin role is only granted
  * through the admin area, never from this form.
  *
- * Like the login page this is a split-screen step without header/footer.
+ * Like the login page this is a centered step without header/footer.
  */
 export default async function RegisterPage() {
   return (

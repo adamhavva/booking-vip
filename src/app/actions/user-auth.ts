@@ -221,6 +221,12 @@ export async function registerUser(
  *
  * The client SDK opens the Google popup and hands over the freshly minted id
  * token; the token is verified here before a session cookie is issued.
+ *
+ * The `redirect("/")` below is a client-side navigation: the root layout —
+ * and with it the `AccountProvider` — stays mounted. The provider re-reads
+ * the overview whenever the pathname changes while it still holds no
+ * account, which is what swaps the header to the account menu without a
+ * page reload.
  */
 export async function signInUserWithGoogle(idToken: string): Promise<void> {
   if (!idToken) {

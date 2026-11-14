@@ -10,6 +10,8 @@ import Thumb from "@/components/ui/Thumb";
 import type { ProductDetailDTO } from "@/types";
 import { getProduct } from "@/app/actions/catalog";
 import BookingBox from "@/components/booking/BookingBox";
+import { pickLang } from "@/lib/content";
+import { SERVICE_SLUG_KEYS } from "@/lib/serviceLabels";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 function DirectionBadge({ direction }: { direction: string }) {
@@ -32,7 +34,7 @@ function LeadTimeLabel({ hours, days }: { hours: number; days: number }) {
 export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
   const params = useParams();
   const slug = params.slug as string;
-  const { t } = useLocale();
+  const { t, lang } = useLocale();
   const [product, setProduct] = useState<ProductDetailDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [infoTab, setInfoTab] = useState(0);
@@ -76,8 +78,28 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
     );
   }
 
+  // Bilingual copy — the Indonesian variant is picked on the client;
+  // English is used when it is absent (static fallbacks, missing ID columns).
+  const title = pickLang(product.title, product.titleId, lang);
+  const typeLabel = pickLang(product.typeLabel, product.typeLabelId, lang);
+  const placeLabel = pickLang(product.placeLabel, product.placeLabelId, lang);
+  const description = pickLang(product.description, product.descriptionId, lang);
+  const ribbon = product.ribbon
+    ? pickLang(product.ribbon, product.ribbonId, lang)
+    : undefined;
+  const requirements =
+    lang === "id" && product.requirementsId?.length
+      ? product.requirementsId
+      : product.requirements;
+  const included =
+    lang === "id" && product.includedId?.length ? product.includedId : product.included;
+  const notIncluded =
+    lang === "id" && product.notIncludedId?.length
+      ? product.notIncludedId
+      : product.notIncluded;
+
   const infoTabs = [t("product.included"), t("product.notIncluded")];
-  const infoLists = [product.included, product.notIncluded];
+  const infoLists = [included, notIncluded];
 
   return (
     <Container className="py-10">
@@ -85,11 +107,20 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
       <nav className="mb-6 flex items-center gap-2 text-sm text-muted">
         <Link href="/" className="hover:text-brand">{t("product.home")}</Link>
         <span>›</span>
-        <Link href={`/${lineSlug}`} className="capitalize hover:text-brand">
-          {lineSlug.replace("-", " ")}
+        <Link
+          href={`/${lineSlug}`}
+          className={
+            SERVICE_SLUG_KEYS[lineSlug]
+              ? "hover:text-brand"
+              : "capitalize hover:text-brand"
+          }
+        >
+          {SERVICE_SLUG_KEYS[lineSlug]
+            ? t(SERVICE_SLUG_KEYS[lineSlug])
+            : lineSlug.replace("-", " ")}
         </Link>
         <span>›</span>
-        <span className="text-ink">{product.title}</span>
+        <span className="text-ink">{title}</span>
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
@@ -98,28 +129,28 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
           {/* Title + badges */}
           <div className="mb-4">
             <h1 className="text-2xl font-extrabold text-ink md:text-3xl">
-              {product.title}
+              {title}
             </h1>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              {product.typeLabel && (
-                <Badge variant="soft">{product.typeLabel}</Badge>
+              {typeLabel && (
+                <Badge variant="soft">{typeLabel}</Badge>
               )}
-              {product.ribbon && (
-                <Badge variant="danger">{product.ribbon}</Badge>
+              {ribbon && (
+                <Badge variant="danger">{ribbon}</Badge>
               )}
             </div>
           </div>
 
           {/* Attribute row */}
           <div className="mb-6 flex flex-wrap items-center gap-4 text-sm text-muted">
-            {product.typeLabel && (
+            {typeLabel && (
               <span className="flex items-center gap-1">
-                ✈️ {product.typeLabel}
+                ✈️ {typeLabel}
               </span>
             )}
-            {product.placeLabel && (
+            {placeLabel && (
               <span className="flex items-center gap-1">
-                📍 {product.placeLabel}
+                📍 {placeLabel}
               </span>
             )}
             <span className="flex items-center gap-1">
@@ -134,19 +165,19 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
           <Thumb tone={product.tone} className="mb-6 h-64 w-full rounded-xl md:h-80" />
 
           {/* Description */}
-          {product.description && (
+          {description && (
             <div className="mb-6">
               <h2 className="mb-2 text-lg font-extrabold text-ink">{t("product.about")}</h2>
-              <p className="text-sm leading-relaxed text-muted">{product.description}</p>
+              <p className="text-sm leading-relaxed text-muted">{description}</p>
             </div>
           )}
 
           {/* Requirements */}
-          {product.requirements.length > 0 && (
+          {requirements.length > 0 && (
             <div className="mb-6">
               <h2 className="mb-2 text-lg font-extrabold text-ink">{t("product.requirements")}</h2>
               <ul className="space-y-1.5 text-sm text-muted">
-                {product.requirements.map((req, i) => (
+                {requirements.map((req, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <span className="text-brand">•</span>
                     <span>{req}</span>
@@ -157,7 +188,7 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
           )}
 
           {/* Included / Not Included tabs */}
-          {(product.included.length > 0 || product.notIncluded.length > 0) && (
+          {(included.length > 0 || notIncluded.length > 0) && (
             <div className="mb-6">
               <TabPills
                 items={infoTabs}
@@ -190,7 +221,7 @@ export default function ProductDetail({ lineSlug }: { lineSlug: string }) {
               <div className="flex flex-wrap gap-2">
                 {product.addOns.map((a) => (
                   <Badge key={a.slug} variant="light">
-                    {a.label}
+                    {pickLang(a.label, a.labelId, lang)}
                   </Badge>
                 ))}
               </div>

@@ -9,9 +9,11 @@ import type { PlaceNode } from "@/lib/places";
 /**
  * A place picker — a trigger that opens the searchable place hierarchy.
  *
- * The places are grouped by their parent (the city) and the child places (the
- * pick-up areas, the tourist destinations) are the selectable ones — unless
- * the parent itself is selectable too.
+ * The places cascade region → country → province → city → district →
+ * village, with the leaf spots (airports, pick-up areas, tourist
+ * destinations) below the node they belong to. Browsing drills one level at
+ * a time (breadcrumb to walk back); searching shows the whole grouped tree.
+ * A parent is selectable too when its kind is in `selectableKinds`.
  */
 export default function PlaceSelect({
   label,
@@ -67,7 +69,7 @@ export default function PlaceSelect({
                   autoFocus
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Cari kota atau area…"
+                  placeholder="Cari wilayah, kota, atau tempat…"
                   className="w-full rounded-xl border border-line bg-canvas py-2 pl-9 pr-3 text-sm text-ink outline-none focus:border-brand"
                 />
               </div>

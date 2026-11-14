@@ -2,15 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { getProduct } from "@/app/actions/catalog";
+import { getProduct, getPlaceOptions } from "@/app/actions/catalog";
 import { createBooking } from "@/app/actions/booking";
+import { parsePickedPoint } from "@/lib/picked-point";
+import type { PlaceNode } from "@/lib/places";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { ProductDetailDTO } from "@/types";
 import WizardStepper from "./WizardStepper";
 import BookingSummary from "./BookingSummary";
 import StepAddOns from "./StepAddOns";
 import StepDetails from "./StepDetails";
-import StepPayment from "./StepPayment";
+import StepPayment, { type AppliedPromo } from "./StepPayment";
 import StepResult from "./StepResult";
 
 type Step = "addons" | "details" | "payment" | "result";
@@ -42,6 +44,13 @@ export default function BookingWizard() {
   const slug = params.slug as string;
   const [product, setProduct] = useState<ProductDetailDTO | null>(null);
   const [loading, setLoading] = useState(true);
+  // The place hierarchy for the location field (city / area / destination,
+  // grouped under region → country → province). Empty until loaded — the
+  // details step then falls back to the plain text input.
+  const [places, setPlaces] = useState<PlaceNode[]>([]);
+  useEffect(() => {
+    getPlaceOptions(["city", "area", "destination", "district", "village"]).then(setPlaces);
+  }, []);
 
   // Read query params
   const date = searchParams.get("date") ?? "";
@@ -51,6 +60,12 @@ export default function BookingWizard() {
   const infantParam = parseInt(searchParams.get("infant") ?? "0", 10);
   const qtyParam = parseInt(searchParams.get("qty") ?? "1", 10);
   const packageId = searchParams.get("pkg") ?? undefined;
+  // The transport context — rental days and the picked points travel in the
+  // query string from the vehicle detail's sticky bar.
+  const daysParam = Math.max(1, parseInt(searchParams.get("days") ?? "1", 10) || 1);
+  const pickupPoint = parsePickedPoint(searchParams.get("pickup") ?? undefined);
+  const dropoffPoint = parsePickedPoint(searchParams.get("dropoff") ?? undefined);
+  const driverOptionParam = searchParams.get("driverOption") ?? undefined;
 
   const [adults, setAdults] = useState(adultParam);
   const [children, setChildren] = useState(childParam);
@@ -88,6 +103,10 @@ export default function BookingWizard() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [bookingCode, setBookingCode] = useState<string | null>(null);
 
+  // The validated promo/voucher — lifted here so the sticky summary and the
+  // result screen show the same discount the server will recompute.
+  const [appliedPromo, setAppliedPromo] = useState<AppliedPromo | null>(null);
+
   // Load product
   useEffect(() => {
     setLoading(true);
@@ -118,6 +137,9 @@ export default function BookingWizard() {
       subtotal += (selectedPackage.adultUsd ?? 0) * adults;
       subtotal += (selectedPackage.childUsd ?? 0) * children;
       subtotal += (selectedPackage.infantUsd ?? 0) * infants;
+    } else if (selectedPackage.unitKind === "per_day") {
+      // per_day: one rental day × the number of days
+      subtotal += (selectedPackage.unitUsd ?? 0) * daysParam;
     } else {
       // per_unit: multiply by quantity
       subtotal += (selectedPackage.unitUsd ?? 0) * qtyParam;
@@ -127,7 +149,7 @@ export default function BookingWizard() {
       return sum + (addOn?.unitUsd ?? 0) * a.qty;
     }, 0);
     return subtotal + addOnsTotal;
-  }, [product, selectedPackage, adults, children, infants, selectedAddOns, qtyParam]);
+  }, [product, selectedPackage, adults, children, infants, selectedAddOns, qtyParam, daysParam]);
 
   const addOnsWithLabels = useMemo(() => {
     return selectedAddOns.map((a) => {
@@ -170,6 +192,10 @@ export default function BookingWizard() {
       child: children,
       infant: infants,
       units: selectedPackage.unitKind === "per_unit" ? qtyParam : undefined,
+      days: selectedPackage.unitKind === "per_day" ? daysParam : undefined,
+      pickup: pickupPoint ?? undefined,
+      dropoff: dropoffPoint ?? undefined,
+      driverOption: driverOptionParam,
       addOns: selectedAddOns,
       contact,
       flight,
@@ -232,6 +258,7 @@ export default function BookingWizard() {
             <StepDetails
               date={date}
               time={time}
+              places={places}
               airportName={flight.airportName}
               adults={adults}
               children={children}
@@ -252,13 +279,15 @@ export default function BookingWizard() {
               isSubmitting={isSubmitting}
               error={submitError}
               subtotalUsdCents={Math.round(total * 100)}
+              appliedPromo={appliedPromo}
+              onPromoChange={setAppliedPromo}
             />
           )}
           {step === "result" && bookingCode && (
             <StepResult
               code={bookingCode}
               email={contact.email}
-              total={total}
+              total={Math.max(0, total - (appliedPromo?.discountUsdCents ?? 0) / 100)}
               lineSlug={product.lineSlug}
               productSlug={slug}
             />
@@ -274,9 +303,17 @@ export default function BookingWizard() {
               adults={adults}
               children={children}
               infants={infants}
-              units={selectedPackage?.unitKind === "per_unit" ? qtyParam : undefined}
+              units={
+                selectedPackage?.unitKind === "per_unit"
+                  ? qtyParam
+                  : selectedPackage?.unitKind === "per_day"
+                    ? daysParam
+                    : undefined
+              }
               packageLabel={selectedPackage?.label ?? ""}
               addOns={addOnsWithLabels}
+              discountUsdCents={appliedPromo?.discountUsdCents ?? 0}
+              promoCode={appliedPromo?.code ?? null}
             />
           </aside>
         )}

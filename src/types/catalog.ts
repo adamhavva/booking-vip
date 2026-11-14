@@ -15,11 +15,25 @@ export type ProductCardDTO = {
   rating?: number;
   reviews?: number;
   durationLabel?: string;
+  /**
+   * Indonesian variants, resolved on the client via `useLocale()`. Optional:
+   * English is used when absent, so static fallbacks keep working. Populated
+   * from the `*Id` columns added by the catalog_i18n migration.
+   */
+  titleId?: string | null;
+  subtitleId?: string | null;
+  unitId?: string | null;
+  ribbonId?: string | null;
+  serviceTypeNameId?: string | null;
+  placeNameId?: string | null;
+  durationLabelId?: string | null;
 };
 
 export type PackageDTO = {
   id: string;
   label: string;
+  /** Indonesian label — resolved on the client, EN when absent. */
+  labelId?: string | null;
   unitKind: string;
   adultUsd?: number;
   childUsd?: number;
@@ -32,6 +46,8 @@ export type PackageDTO = {
 export type AddOnDTO = {
   slug: string;
   label: string;
+  /** Indonesian label — resolved on the client, EN when absent. */
+  labelId?: string | null;
   unitUsd: number;
 };
 
@@ -53,6 +69,15 @@ export type ProductDetailDTO = {
   tone: string;
   ribbon?: string;
   fromUsd: number;
+  /** Indonesian variants — see the note on `ProductCardDTO`. */
+  titleId?: string | null;
+  typeLabelId?: string | null;
+  placeLabelId?: string | null;
+  descriptionId?: string | null;
+  ribbonId?: string | null;
+  includedId?: string[] | null;
+  notIncludedId?: string[] | null;
+  requirementsId?: string[] | null;
 };
 
 export type CatalogDTO = {

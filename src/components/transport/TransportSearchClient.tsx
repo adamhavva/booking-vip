@@ -2,20 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Container from "@/components/ui/Container";
+import { ChevronDown, MapPin } from "lucide-react";
 import DateTimePopover from "@/components/ui/DateTimePopover";
-import PlaceSelect from "@/components/ui/PlaceSelect";
-import LocationPicker, { type PickedPoint } from "@/components/transport/LocationPicker";
+import LocationModal from "@/components/transport/LocationModal";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { SearchIcon } from "@/components/icons";
-import { searchAddress } from "@/lib/geocode";
-import { stringifyPickedPoint } from "@/lib/picked-point";
+import { stringifyPickedPoint, type PickedPoint } from "@/lib/picked-point";
 import type { PlaceNode } from "@/lib/places";
-
-/** The driver options — the same two the marketplace offers. */
-const DRIVER_OPTIONS = [
-  { value: "with_driver", label: "Dengan supir" },
-  { value: "without_driver", label: "Tanpa supir" },
-] as const;
 
 export type TransportSearchClientProps = {
   /** The place hierarchy — the cities with their pick-up areas below them. */
@@ -49,20 +42,21 @@ function dayAfterTomorrow(): string {
 /**
  * The entry page of the transport service — "Sewa Mobil".
  *
- * The customer picks the pick-up and the drop-off (on the map or from the
- * place hierarchy), the pick-up and the return date, whether a driver is
- * included and which class of car they want. "Cari mobil" then takes them to
- * the fleet list with everything filled in.
+ * Clicking the pick-up or the drop-off field opens the map modal (city
+ * dropdown, clickable map, draggable pin, device location). "Cari mobil"
+ * then takes the customer to the results list with everything filled in.
  */
 export default function TransportSearchClient({
   places,
   vehicleTypes,
 }: TransportSearchClientProps) {
   const router = useRouter();
+  const { t } = useLocale();
 
   const [pickup, setPickup] = useState<PickedPoint | null>(null);
   const [dropoff, setDropoff] = useState<PickedPoint | null>(null);
-  const [activeField, setActiveField] = useState<"pickup" | "dropoff">("pickup");
+  /** Which field the map modal is editing — null keeps it closed. */
+  const [modalField, setModalField] = useState<"pickup" | "dropoff" | null>(null);
 
   const [pickupDate, setPickupDate] = useState(tomorrow);
   const [pickupTime, setPickupTime] = useState("09:00");
@@ -72,32 +66,10 @@ export default function TransportSearchClient({
   const [driverOption, setDriverOption] = useState<string>("with_driver");
   const [vehicleType, setVehicleType] = useState<string>("");
 
-  const [geocoding, setGeocoding] = useState(false);
-
   const days = useMemo(
     () => daysBetween(pickupDate, returnDate),
     [pickupDate, returnDate],
   );
-
-  /** Pick a place from the hierarchy and move the pin onto it. */
-  const choosePlace = async (label: string) => {
-    setGeocoding(true);
-    try {
-      const found = await searchAddress(label);
-      if (found.length === 0) return;
-      const point = { lat: found[0].lat, lng: found[0].lng, label: found[0].label };
-      if (activeField === "pickup") {
-        setPickup(point);
-        setActiveField("dropoff");
-      } else {
-        setDropoff(point);
-      }
-    } catch {
-      // The map is still there — the customer can click it instead.
-    } finally {
-      setGeocoding(false);
-    }
-  };
 
   const search = () => {
     const params = new URLSearchParams();
@@ -110,8 +82,6 @@ export default function TransportSearchClient({
     if (vehicleType) params.set("type", vehicleType);
     if (pickup) {
       params.set("from", pickup.label);
-      params.set("latitude", String(pickup.lat));
-      params.set("longitude", String(pickup.lng));
       params.set("pickup", stringifyPickedPoint(pickup));
     }
     if (dropoff) {
@@ -122,29 +92,27 @@ export default function TransportSearchClient({
     router.push(`/transport/armada?${params.toString()}`);
   };
 
+  const driverOptions = [
+    { value: "with_driver", label: t("transport.withDriver") },
+    { value: "without_driver", label: t("transport.withoutDriver") },
+  ];
+
   return (
     <div className="space-y-5">
       {/* The form */}
       <section className="rounded-2xl border border-line bg-white p-5 md:p-6">
         <div className="grid gap-4 lg:grid-cols-2">
-          {/* Pick-up */}
-          <PlaceSelect
-            label="Lokasi penjemputan"
-            places={places}
-            value={pickup?.label ?? ""}
-            selectableKinds={["city", "area"]}
-            placeholder="Pilih kota atau area penjemputan"
-            onSelect={choosePlace}
+          <PlaceField
+            label={t("transport.pickupLabel")}
+            placeholder={t("transport.pickupPlaceholder")}
+            point={pickup}
+            onOpen={() => setModalField("pickup")}
           />
-
-          {/* Drop-off */}
-          <PlaceSelect
-            label="Lokasi tujuan"
-            places={places}
-            value={dropoff?.label ?? ""}
-            selectableKinds={["city", "area"]}
-            placeholder="Pilih kota atau area tujuan"
-            onSelect={choosePlace}
+          <PlaceField
+            label={t("transport.dropoffLabel")}
+            placeholder={t("transport.dropoffPlaceholder")}
+            point={dropoff}
+            onOpen={() => setModalField("dropoff")}
           />
         </div>
 
@@ -152,7 +120,7 @@ export default function TransportSearchClient({
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div className="rounded-xl bg-canvas px-4 py-2.5">
             <DateTimePopover
-              label="Tanggal & jam penjemputan"
+              label={t("transport.pickupDateTime")}
               date={pickupDate}
               time={pickupTime}
               onDate={setPickupDate}
@@ -161,7 +129,7 @@ export default function TransportSearchClient({
           </div>
           <div className="rounded-xl bg-canvas px-4 py-2.5">
             <DateTimePopover
-              label="Tanggal & jam pengembalian"
+              label={t("transport.returnDateTime")}
               date={returnDate}
               time={returnTime}
               onDate={setReturnDate}
@@ -173,9 +141,11 @@ export default function TransportSearchClient({
         {/* Driver + class */}
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <div>
-            <p className="mb-2 text-[12px] font-medium text-ink">Opsi supir</p>
+            <p className="mb-2 text-[12px] font-medium text-ink">
+              {t("transport.driverOption")}
+            </p>
             <div className="flex flex-wrap gap-2">
-              {DRIVER_OPTIONS.map((option) => (
+              {driverOptions.map((option) => (
                 <button
                   key={option.value}
                   type="button"
@@ -193,7 +163,9 @@ export default function TransportSearchClient({
           </div>
 
           <div>
-            <p className="mb-2 text-[12px] font-medium text-ink">Tipe mobil</p>
+            <p className="mb-2 text-[12px] font-medium text-ink">
+              {t("transport.vehicleType")}
+            </p>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
@@ -204,7 +176,7 @@ export default function TransportSearchClient({
                     : "border-line bg-white text-muted hover:bg-canvas"
                 }`}
               >
-                Semua
+                {t("transport.allTypes")}
               </button>
               {vehicleTypes.map((type) => (
                 <button
@@ -227,10 +199,12 @@ export default function TransportSearchClient({
         {/* Summary + search */}
         <div className="mt-6 flex flex-col items-start justify-between gap-3 border-t border-line pt-5 sm:flex-row sm:items-center">
           <p className="text-[13px] text-muted">
-            {days} hari ·{" "}
-            {driverOption === "with_driver" ? "dengan supir" : "tanpa supir"}
+            {t("transport.daysSummary", { n: days })} ·{" "}
+            {driverOption === "with_driver"
+              ? t("transport.withDriver")
+              : t("transport.withoutDriver")}
             {vehicleType
-              ? ` · ${vehicleTypes.find((t) => t.slug === vehicleType)?.name ?? ""}`
+              ? ` · ${vehicleTypes.find((type) => type.slug === vehicleType)?.name ?? ""}`
               : ""}
           </p>
           <button
@@ -239,38 +213,54 @@ export default function TransportSearchClient({
             className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand px-8 text-[14px] font-semibold text-white transition-opacity hover:bg-brand-dark sm:w-auto"
           >
             <SearchIcon width={16} height={16} />
-            Cari mobil
+            {t("transport.searchCars")}
           </button>
         </div>
       </section>
 
-      {/* The map */}
-      <section className="rounded-2xl border border-line bg-white p-4 md:p-5">
-        <h2 className="text-[15px] font-bold tracking-[-0.01em] text-ink">
-          Tentukan titik pickup &amp; dropoff
-        </h2>
-        <p className="mt-1 text-[13px] text-muted">
-          Klik peta, geser pin, atau gunakan "Gunakan lokasi saya".
-        </p>
-        <div className="mt-4">
-          <LocationPicker
-            pickup={pickup}
-            dropoff={dropoff}
-            activeField={activeField}
-            onActiveFieldChange={setActiveField}
-            onChange={(field, point) => {
-              if (field === "pickup") {
-                setPickup(point);
-                if (point) setActiveField("dropoff");
-              } else {
-                setDropoff(point);
-              }
-            }}
-            heading=""
-            description=""
-          />
-        </div>
-      </section>
+      {/* The map modal — opened by either place field. */}
+      <LocationModal
+        field={modalField}
+        point={modalField === "pickup" ? pickup : dropoff}
+        places={places}
+        onClose={() => setModalField(null)}
+        onConfirm={(field, point) => {
+          if (field === "pickup") setPickup(point);
+          else setDropoff(point);
+        }}
+      />
+    </div>
+  );
+}
+
+/** One place field — a trigger that opens the map modal for that field. */
+function PlaceField({
+  label,
+  placeholder,
+  point,
+  onOpen,
+}: {
+  label: string;
+  placeholder: string;
+  point: PickedPoint | null;
+  onOpen: () => void;
+}) {
+  return (
+    <div>
+      <span className="mb-1.5 block text-[12px] font-medium text-ink">{label}</span>
+      <button
+        type="button"
+        onClick={onOpen}
+        className={`flex h-11 w-full items-center gap-2 rounded-xl border border-line bg-white px-3 text-left text-[13px] transition-colors hover:bg-canvas ${
+          point ? "text-ink" : "text-muted"
+        }`}
+      >
+        <MapPin width={16} height={16} className="shrink-0 text-brand" />
+        <span className="min-w-0 flex-1 truncate">
+          {point?.label ?? placeholder}
+        </span>
+        <ChevronDown width={16} height={16} className="shrink-0 text-muted" />
+      </button>
     </div>
   );
 }

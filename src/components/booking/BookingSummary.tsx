@@ -13,6 +13,9 @@ type Props = {
   units?: number; // for per_unit packages
   packageLabel: string;
   addOns: { slug: string; qty: number; label: string; unitUsd: number }[];
+  /** The validated promo/voucher discount (USD cents), shown before the total. */
+  discountUsdCents?: number;
+  promoCode?: string | null;
 };
 
 export default function BookingSummary({
@@ -25,6 +28,8 @@ export default function BookingSummary({
   units,
   packageLabel,
   addOns,
+  discountUsdCents = 0,
+  promoCode = null,
 }: Props) {
   const { formatMoney, t } = useLocale();
 
@@ -48,7 +53,11 @@ export default function BookingSummary({
 
   // Calculate add-ons
   const addOnsTotal = addOns.reduce((sum, a) => sum + a.unitUsd * a.qty, 0);
-  const total = subtotal + addOnsTotal;
+  const discountUsd = Math.min(discountUsdCents / 100, subtotal + addOnsTotal);
+  const total = Math.max(0, subtotal + addOnsTotal - discountUsd);
+  // The points this booking earns once paid — the same 1-point-per-dollar
+  // rule the server applies to the stored total.
+  const earnPreview = Math.floor(total);
 
   const dateValue = date ? new Date(date + "T00:00:00") : null;
   const formattedDate =
@@ -111,12 +120,28 @@ export default function BookingSummary({
         ))}
       </div>
 
+      {discountUsd > 0 ? (
+        <div className="mb-4 flex items-center justify-between rounded-xl bg-brand-soft px-3 py-2 text-sm">
+          <span className="min-w-0 truncate font-semibold text-brand-dark">
+            {t("loyalty.discount")}
+            {promoCode ? ` · ${promoCode}` : ""}
+          </span>
+          <span className="shrink-0 font-bold text-brand-dark">
+            −{formatMoney(discountUsd)}
+          </span>
+        </div>
+      ) : null}
+
       <div className="flex items-center justify-between border-t border-line pt-4">
         <span className="text-base font-bold text-ink">{t("wizard.summary.total")}</span>
         <span className="text-xl font-extrabold text-brand">
           {formatMoney(total)}
         </span>
       </div>
+
+      <p className="mt-3 text-center text-[12px] font-medium text-brand-dark">
+        {t("loyalty.earnPreview", { n: earnPreview.toLocaleString("id-ID") })}
+      </p>
     </div>
   );
 }

@@ -197,6 +197,8 @@ model ServiceType {
   lineId    String
   slug      String
   name      String
+  /// Indonesian name — null falls back to `name` (content_i18n convention).
+  nameId    String?
   sortOrder Int       @default(0)
   active    Boolean   @default(true)
   line      ServiceLine @relation(fields: [lineId], references: [id])
@@ -205,17 +207,32 @@ model ServiceType {
   @@unique([lineId, slug])
 }
 
-/// Airport or city reference (used by Products for geographic scope).
-/// Places form a hierarchy: a row may point at a parent row through
-/// `parentId` (a city parents the airports below it). The tree is generic —
-/// any place may parent any other place — and drives the grouped dropdowns.
+/// Generic place reference (used by Products for geographic scope).
+/// Places form a full parent → child hierarchy: a row may point at a parent
+/// row through `parentId`. The tree is generic — any place may parent any
+/// other place — and drives the grouped / cascading dropdowns.
+///
+/// `level` is the administrative depth of the row:
+///   region → country → province → city → district → village
+/// with leaf spots (`airport`, `area`, `destination`) hanging below the
+/// administrative node they belong to. `kind` is kept for backward
+/// compatibility and mirrors `level` for the administrative rows; the leaf
+/// kinds (airport / area / destination) are unchanged.
 model Airport {
   id          String    @id @default(uuid())
-  /// "airport" | "city"
+  /// "airport" | "city" | "area" | "destination" | "region" | "country" |
+  /// "province" | "district" | "village"
   kind        String    @default("airport")
+  /// Administrative level: "region" | "country" | "province" | "city" |
+  /// "district" | "village" | "airport" | "area" | "destination".
+  level       String    @default("city")
   iataCode    String?   @unique
   name        String
+  /// Indonesian place name — null falls back to `name`.
+  nameId      String?
   city        String
+  /// Indonesian city label — null falls back to `city`.
+  cityId      String?
   country     String    @default("Indonesia")
   imageUrl    String?
   imageCredit String?
@@ -229,6 +246,9 @@ model Airport {
   products    Product[]
   /// The tour products that use this place as their destination.
   destinations Product[] @relation("DestinationPlace")
+
+  @@index([level])
+  @@index([parentId])
 }
 
 /// A bookable product (VIP service, vehicle, tour package, eVOA plan).
@@ -241,7 +261,11 @@ model Product {
   serviceTypeId    String?
   airportId        String?
   title            String
+  /// Indonesian title — null falls back to `title` (content_i18n convention).
+  titleId          String?
   description      String    @default("")
+  /// Indonesian description — null falls back to `description`.
+  descriptionId    String?
   /// "arrival" | "departure" | "both"
   direction        String    @default("both")
   leadTimeHours    Int       @default(0)
@@ -260,17 +284,31 @@ model Product {
   destinationId    String?
   /// The day-by-day itinerary of a tour package.
   itinerary        Json      @default("[]")
+  /// Free-form key/value specs — [{ key, name }] (e.g. { key: "luggage",
+  /// name: "2 koper" }). Rendered as the vehicle spec grid; `key` is the
+  /// stable machine identifier, `name` the display text.
+  specs            Json      @default("[]")
   included         Json      @default("[]")
+  /// Indonesian included list — null falls back to `included`.
+  includedId       Json?
   notIncluded      Json      @default("[]")
+  /// Indonesian not-included list — null falls back to `notIncluded`.
+  notIncludedId    Json?
   requirements     Json      @default("[]")
+  /// Indonesian requirements list — null falls back to `requirements`.
+  requirementsId   Json?
   isAddOn          Boolean   @default(false)
   imageUrl         String?
   imageCredit      String?
   tone             String    @default("from-sky-400 to-blue-600")
   ribbon           String?
+  /// Indonesian ribbon — null falls back to `ribbon`.
+  ribbonId         String?
   rating           Float?
   reviews          Int?
   durationLabel    String?
+  /// Indonesian duration label — null falls back to `durationLabel`.
+  durationLabelId  String?
   fromPriceUsdCents Int?
   active           Boolean   @default(true)
   createdAt        DateTime  @default(now())
@@ -298,6 +336,8 @@ model ProductPackage {
   id              String    @id @default(uuid())
   productId       String
   label           String
+  /// Indonesian label — null falls back to `label` (content_i18n convention).
+  labelId         String?
   /// "per_pax" | "per_unit"
   unitKind        String    @default("per_pax")
   adultUsdCents   Int?
@@ -306,6 +346,17 @@ model ProductPackage {
   unitUsdCents    Int?
   durationHours   Int?
   extraHourUsdCents Int?
+  /// The strikethrough "from" price (USD cents) — shown when a promo cuts
+  /// the package price. Null means no promo.
+  fromUsdCents    Int?
+  /// Short package description shown on the selectable package card.
+  description     String?
+  /// Indonesian package description — null falls back to `description`.
+  descriptionId   String?
+  /// Free-form key/value info — [{ key, name, excluded? }]. Entries with
+  /// `excluded: true` are costs the customer pays to the vendor directly
+  /// (fuel, driver meals, …) and feed the pink excluded-costs banner.
+  info            Json      @default("[]")
   sortOrder       Int       @default(0)
   active          Boolean   @default(true)
   product         Product   @relation(fields: [productId], references: [id])

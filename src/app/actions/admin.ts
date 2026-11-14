@@ -2,7 +2,12 @@
 
 import { db } from "@/prisma/db";
 import { getAdminSession } from "@/lib/admin/session";
-import { descendantPlaceIds } from "@/lib/places";
+import {
+  descendantPlaceIds,
+  PLACE_KINDS,
+  type PlaceKind,
+  type PlaceLevel,
+} from "@/lib/places";
 import type {
   AdminAmenityRow,
   AdminOption,
@@ -140,7 +145,9 @@ export async function upsertServiceType(input: {
 // ---------------------------------------------------------------------------
 export async function upsertAirport(input: {
   id?: string;
-  kind?: "airport" | "city";
+  kind?: PlaceKind;
+  /** Administrative level — defaults to the kind. */
+  level?: PlaceLevel | null;
   iataCode?: string | null;
   name: string;
   city: string;
@@ -157,8 +164,12 @@ export async function upsertAirport(input: {
   assertNonEmptyString(input.city, "city");
 
   const kind = input.kind ?? "airport";
-  if (kind !== "airport" && kind !== "city") {
-    throw new Error("kind must be 'airport' or 'city'");
+  if (!(PLACE_KINDS as readonly string[]).includes(kind)) {
+    throw new Error(`kind must be one of: ${PLACE_KINDS.join(", ")}`);
+  }
+  const level = input.level ?? kind;
+  if (!(PLACE_KINDS as readonly string[]).includes(level)) {
+    throw new Error(`level must be one of: ${PLACE_KINDS.join(", ")}`);
   }
   const country = input.country ?? "Indonesia";
   assertNonEmptyString(country, "country");
@@ -212,6 +223,7 @@ export async function upsertAirport(input: {
       .where({ id: existing.id })
       .update({
         kind,
+        level,
         iataCode: input.iataCode ?? null,
         name: input.name,
         city: input.city,
@@ -225,6 +237,7 @@ export async function upsertAirport(input: {
     await db.orm.public.Airport.create({
       id: input.id ?? crypto.randomUUID(),
       kind,
+      level,
       iataCode: input.iataCode ?? null,
       name: input.name,
       city: input.city,
@@ -337,6 +350,8 @@ export async function upsertProduct(input: {
   reviews?: number | null;
   durationLabel?: string | null;
   fromPriceUsdCents?: number | null;
+  /** Free-form vehicle specs — [{ key, name }]. */
+  specs?: { key: string; name: string }[];
   active?: boolean;
 }): Promise<{ ok: true; id: string }> {
   await assertAdmin();
@@ -410,6 +425,7 @@ export async function upsertProduct(input: {
     reviews: input.reviews ?? null,
     durationLabel: input.durationLabel ?? null,
     fromPriceUsdCents: input.fromPriceUsdCents ?? null,
+    specs: (input.specs ?? []) as unknown as [],
     active,
   };
 
@@ -434,13 +450,19 @@ export async function upsertPackage(input: {
   id?: string;
   productId: string;
   label: string;
-  unitKind: "per_pax" | "per_unit";
+  unitKind: "per_pax" | "per_unit" | "per_day";
   adultUsdCents?: number | null;
   childUsdCents?: number | null;
   infantUsdCents?: number | null;
   unitUsdCents?: number | null;
   durationHours?: number | null;
   extraHourUsdCents?: number | null;
+  /** The strikethrough "from" price (USD cents) — null means no promo. */
+  fromUsdCents?: number | null;
+  /** Short package description for the selectable card. */
+  description?: string | null;
+  /** Free-form package info — [{ key, name, excluded? }]. */
+  info?: { key: string; name: string; excluded?: boolean }[];
   sortOrder?: number;
   active?: boolean;
 }): Promise<{ ok: true }> {
@@ -449,11 +471,12 @@ export async function upsertPackage(input: {
   assertNonEmptyString(input.label, "label");
 
   const unitKind = input.unitKind;
-  if (unitKind !== "per_pax" && unitKind !== "per_unit") {
-    throw new Error("unitKind must be 'per_pax' | 'per_unit'");
+  if (unitKind !== "per_pax" && unitKind !== "per_unit" && unitKind !== "per_day") {
+    throw new Error("unitKind must be 'per_pax' | 'per_unit' | 'per_day'");
   }
 
-  // unitKind consistency: per_pax needs adultUsdCents; per_unit needs unitUsdCents.
+  // unitKind consistency: per_pax needs adultUsdCents; per_unit / per_day
+  // need unitUsdCents.
   if (unitKind === "per_pax") {
     if (input.adultUsdCents != null) assertIntGte(input.adultUsdCents, "adultUsdCents");
     if (input.childUsdCents != null) assertIntGte(input.childUsdCents, "childUsdCents");
@@ -461,6 +484,8 @@ export async function upsertPackage(input: {
   } else {
     if (input.unitUsdCents != null) assertIntGte(input.unitUsdCents, "unitUsdCents");
   }
+
+  if (input.fromUsdCents != null) assertIntGte(input.fromUsdCents, "fromUsdCents");
 
   // duration consistency: durationHours goes with extraHourUsdCents.
   if (input.durationHours != null) {
@@ -504,9 +529,12 @@ export async function upsertPackage(input: {
     adultUsdCents: unitKind === "per_pax" ? (input.adultUsdCents ?? null) : null,
     childUsdCents: unitKind === "per_pax" ? (input.childUsdCents ?? null) : null,
     infantUsdCents: unitKind === "per_pax" ? (input.infantUsdCents ?? 0) : null,
-    unitUsdCents: unitKind === "per_unit" ? (input.unitUsdCents ?? null) : null,
+    unitUsdCents: unitKind === "per_pax" ? null : (input.unitUsdCents ?? null),
     durationHours: input.durationHours ?? null,
     extraHourUsdCents: input.durationHours != null ? (input.extraHourUsdCents ?? null) : null,
+    fromUsdCents: input.fromUsdCents ?? null,
+    description: input.description ?? null,
+    info: (input.info ?? []) as unknown as [],
     sortOrder,
     active,
   };
@@ -704,6 +732,7 @@ export async function listProducts(): Promise<AdminProductRow[]> {
       "reviews",
       "durationLabel",
       "fromPriceUsdCents",
+      "specs",
       "active",
     )
     .include("line", (l) => l.select("label"))
@@ -738,6 +767,7 @@ export async function listProducts(): Promise<AdminProductRow[]> {
     reviews: r.reviews,
     durationLabel: r.durationLabel,
     fromPriceUsdCents: r.fromPriceUsdCents,
+    specs: (r.specs as { key: string; name: string }[]) ?? [],
     active: r.active,
     packageCount: r.packages,
   }));
@@ -759,6 +789,9 @@ export async function listPackages(): Promise<AdminPackageRow[]> {
       "unitUsdCents",
       "durationHours",
       "extraHourUsdCents",
+      "fromUsdCents",
+      "description",
+      "info",
       "sortOrder",
       "active",
     )
@@ -778,6 +811,9 @@ export async function listPackages(): Promise<AdminPackageRow[]> {
     unitUsdCents: r.unitUsdCents,
     durationHours: r.durationHours,
     extraHourUsdCents: r.extraHourUsdCents,
+    fromUsdCents: r.fromUsdCents,
+    description: r.description,
+    info: (r.info as { key: string; name: string; excluded?: boolean }[]) ?? [],
     sortOrder: r.sortOrder,
     active: r.active,
   }));
@@ -835,6 +871,7 @@ export async function listPlaces(): Promise<AdminPlaceRow[]> {
     .select(
       "id",
       "kind",
+      "level",
       "iataCode",
       "name",
       "city",
@@ -853,6 +890,7 @@ export async function listPlaces(): Promise<AdminPlaceRow[]> {
   return rows.map((r) => ({
     id: r.id,
     kind: r.kind,
+    level: r.level,
     iataCode: r.iataCode,
     name: r.name,
     city: r.city,

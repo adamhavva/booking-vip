@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import { registerUser, type UserAuthState } from "@/app/actions/user-auth";
 import AuthField from "@/components/auth/AuthField";
+import FacebookButton from "@/components/auth/FacebookButton";
 import GoogleButton from "@/components/auth/GoogleButton";
 import TurnstileWidget from "@/components/auth/TurnstileWidget";
 
@@ -31,23 +32,19 @@ export default function RegisterForm() {
 
   return (
     <div>
-      <div className="mb-7">
-        <h1 className="text-[26px] font-extrabold tracking-[-0.02em] text-ink">
+      <div className="mb-6 text-center">
+        <h1 className="text-2xl font-bold tracking-tight text-ink">
           Buat akun kamu
         </h1>
-        <p className="mt-1.5 text-[14px] text-muted">
-          Gratis, cepat, dan hanya butuh satu menit.
+        <p className="mt-2 text-sm text-muted">
+          Sudah punya akun?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-ink underline underline-offset-4 transition-colors hover:text-brand"
+          >
+            Masuk
+          </Link>
         </p>
-      </div>
-
-      <GoogleButton label="Daftar dengan Google" />
-
-      <div className="my-6 flex items-center gap-3">
-        <span className="h-px flex-1 bg-line" />
-        <span className="text-[12px] uppercase tracking-[0.08em] text-muted">
-          atau lanjut dengan email
-        </span>
-        <span className="h-px flex-1 bg-line" />
       </div>
 
       <form action={formAction} className="flex flex-col gap-4">
@@ -90,11 +87,11 @@ export default function RegisterForm() {
             name="terms"
             value="1"
             required
-            className="mt-0.5 h-4 w-4 shrink-0 rounded border-line accent-[#0064d2]"
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-line accent-ink"
           />
           <span>
-            Saya menyetujui Syarat & Ketentuan serta Kebijakan Privasi Booking
-            VIP.
+            Saya menyetujui Syarat &amp; Ketentuan serta Kebijakan Privasi
+            Booking VIP.
           </span>
         </div>
 
@@ -113,26 +110,26 @@ export default function RegisterForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-ink text-sm font-semibold text-white transition-colors hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {pending ? "Membuat akun…" : "Daftar"}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-[13px] text-muted">
-        Sudah punya akun?{" "}
-        <Link href="/login" className="font-semibold text-brand hover:underline">
-          Masuk
-        </Link>
-      </p>
+      <div className="my-6 flex items-center gap-3">
+        <span className="h-px flex-1 bg-line" />
+        <span className="text-xs text-muted">Atau</span>
+        <span className="h-px flex-1 bg-line" />
+      </div>
 
-      <p className="mt-2 text-center text-[13px] text-muted">
-        <Link
-          href="/admin/login"
-          className="font-semibold text-ink hover:underline"
-        >
-          Masuk ke area admin
-        </Link>
+      <div className="grid grid-cols-2 gap-3">
+        <GoogleButton label="Google" className="w-full" />
+        <FacebookButton className="w-full" />
+      </div>
+
+      <p className="mt-6 text-center text-xs leading-relaxed text-muted">
+        Dengan melanjutkan, kamu menyetujui Syarat &amp; Ketentuan dan
+        Kebijakan Privasi Booking VIP.
       </p>
     </div>
   );

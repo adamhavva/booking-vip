@@ -5,11 +5,15 @@ import Link from "next/link";
 import Container from "@/components/ui/Container";
 import TabPills from "@/components/ui/TabPills";
 import { serviceNav } from "@/data/services";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useMountedLocale } from "@/lib/useMountedLocale";
+import { pickLang } from "@/lib/content";
+import { tabKey } from "@/lib/serviceLabels";
 import type { DictKey } from "@/i18n";
 
 export type SeoLink = {
   label: string;
+  /** Indonesian label (DB `SeoLink.labelId`) — English is used when absent. */
+  labelId?: string | null;
   service: string;
   tags?: string[];
 };
@@ -29,10 +33,14 @@ export default function SeoLinkGrid({
   links: SeoLink[];
   titleKey?: DictKey;
 }) {
-  const { t } = useLocale();
+  const { t, lang } = useMountedLocale();
   const [active, setActive] = useState(0);
 
   const resolvedTitle = titleKey ? t(titleKey) : title;
+  const resolvedTabs = tabs.map((tab) => {
+    const key = tabKey(tab);
+    return key ? t(key) : tab;
+  });
 
   return (
     <Container as="section" className="py-8">
@@ -41,7 +49,7 @@ export default function SeoLinkGrid({
       </h2>
 
       <TabPills
-        items={tabs}
+        items={resolvedTabs}
         active={active}
         onChange={setActive}
         variant="filled"
@@ -55,7 +63,7 @@ export default function SeoLinkGrid({
             href={serviceRoutes[l.service] ?? "#"}
             className="text-sm text-muted hover:text-brand hover:underline"
           >
-            {l.label}
+            {pickLang(l.label, l.labelId, lang)}
           </Link>
         ))}
       </div>

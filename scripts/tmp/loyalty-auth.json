@@ -1,0 +1,42 @@
+{
+  "cookies": [
+    {
+      "name": "user_session",
+      "value": "eyJhbGciOiJSUzI1NiIsImtpZCI6Im45NlJoQSJ9.eyJpc3MiOiJodHRwczovL3Nlc3Npb24uZmlyZWJhc2UuZ29vZ2xlLmNvbS92aXAtYm9vay02Y2ZlMiIsIm5hbWUiOiJMb3lhbHR5IFRlc3RlciIsImF1ZCI6InZpcC1ib29rLTZjZmUyIiwiYXV0aF90aW1lIjoxNzk0NjUyNzE0LCJ1c2VyX2lkIjoiWlR5c1pPWVBVSVo4NkdmMjQzS0pVS1A3MWt4MiIsInN1YiI6IlpUeXNaT1lQVUlaODZHZjI0M0tKVUtQNzFreDIiLCJpYXQiOjE3OTQ2NTI3MTUsImV4cCI6MTc5NTg2MjMxNSwiZW1haWwiOiJidi5sb3lhbHR5LnY4d3NreUBleGFtcGxlLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJidi5sb3lhbHR5LnY4d3NreUBleGFtcGxlLmNvbSJdfSwic2lnbl9pbl9wcm92aWRlciI6InBhc3N3b3JkIn19.rQDr_knneMUxJ9EWKEHdA-f7NWyRvds8F1E5W2yzbOVU1fFv8uZqdxBqc5RAHzvFefU6XErszRGNHN29Dy7P77YqetqbdEhhmsOVk83rMfcUsNU104UQcCzD-pDhWBDvG399SXZYqjF673g_HKZ4hND2uj6dUoY3Mz06Fd_iWLqgJn8jzn9AB-rrQi7-TLsb_IttpfvV-tY7Vf73cxlNo8ff-Lstq3v8sG08Zk3WbZ2DNZd-M5fJ7mGPaB2Jxly9P6y_d7gn2gtUf9iyU-vnXo9ROY0DCDqwGJyzO5VD5ARR0q3S3jjrNCgiiLOGxsozneDqDK3ARt2xt9M5L2OgkA",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1795862315.469634,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "booking-vip:fx",
+          "value": "{\"date\":\"2026-11-13\",\"rates\":{\"IDR\":18245}}"
+        },
+        {
+          "name": "booking-vip:last-booking",
+          "value": "{\"code\":\"BV-V7KFF6\",\"email\":\"bv.loyalty.v8wsky@example.com\"}"
+        },
+        {
+          "name": "booking-vip:locale",
+          "value": "\"id\""
+        }
+      ]
+    },
+    {
+      "origin": "https://challenges.cloudflare.com",
+      "localStorage": [
+        {
+          "name": "cf.turnstile.u",
+          "value": "CrMsn1U28xFtnIxuuWb13LIKfZ9aqGrLev_gU65882zD5WeRmB9PnPbT5_JTw7AklWfeyjsIAu5cbO1phzjhP2rVRjnDkZ3gDdMupik41Q"
+        }
+      ]
+    }
+  ]
+}

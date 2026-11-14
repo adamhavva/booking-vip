@@ -28,6 +28,8 @@ export type AdminProductRow = {
   reviews: number | null;
   durationLabel: string | null;
   fromPriceUsdCents: number | null;
+  /** Free-form vehicle specs — [{ key, name }]. */
+  specs: { key: string; name: string }[];
   active: boolean;
   packageCount: number;
 };
@@ -44,6 +46,11 @@ export type AdminPackageRow = {
   unitUsdCents: number | null;
   durationHours: number | null;
   extraHourUsdCents: number | null;
+  /** The strikethrough "from" price (USD cents) — null means no promo. */
+  fromUsdCents: number | null;
+  description: string | null;
+  /** Free-form package info — [{ key, name, excluded? }]. */
+  info: { key: string; name: string; excluded?: boolean }[];
   sortOrder: number;
   active: boolean;
 };
@@ -72,6 +79,8 @@ export type AdminPriceTierRow = {
 export type AdminPlaceRow = {
   id: string;
   kind: string;
+  /** Administrative level (region / country / province / city / district / village, or a leaf kind). */
+  level: string;
   iataCode: string | null;
   name: string;
   city: string;

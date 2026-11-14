@@ -75,6 +75,7 @@ export async function checkPromo(
   code: string,
   subtotalUsdCents: number,
   now: Date = new Date(),
+  userId?: string | null,
 ): Promise<PromoCheck> {
   const promo = await findPromo(code);
 
@@ -83,6 +84,18 @@ export async function checkPromo(
   }
   if (!promo.active) {
     return { ok: false, error: "Kode promo sudah tidak aktif." };
+  }
+
+  // Reward vouchers (issued by the loyalty program) belong to one account.
+  // The owner's Firebase UID is encoded in the voucher id — a voucher can
+  // only be applied by the account that redeemed it, while signed in.
+  if (promo.id.startsWith("rwd:")) {
+    if (!userId || !promo.id.startsWith(`rwd:${userId}:`)) {
+      return {
+        ok: false,
+        error: "Voucher ini terikat ke akun lain. Masuk dengan akun pemilik voucher untuk memakainya.",
+      };
+    }
   }
 
   const windows = await db.orm.public.PromoCode

@@ -232,6 +232,13 @@
                   "kind": "scalar"
                 }
               },
+              "cityId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "country": {
                 "nullable": false,
                 "type": {
@@ -274,8 +281,22 @@
                   "kind": "scalar"
                 }
               },
+              "level": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "name": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nameId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -367,6 +388,9 @@
                 "city": {
                   "column": "city"
                 },
+                "cityId": {
+                  "column": "cityId"
+                },
                 "country": {
                   "column": "country"
                 },
@@ -385,8 +409,14 @@
                 "kind": {
                   "column": "kind"
                 },
+                "level": {
+                  "column": "level"
+                },
                 "name": {
                   "column": "name"
+                },
+                "nameId": {
+                  "column": "nameId"
                 },
                 "parentId": {
                   "column": "parentId"
@@ -2834,6 +2864,13 @@
                   "kind": "scalar"
                 }
               },
+              "descriptionId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "destinationId": {
                 "nullable": true,
                 "type": {
@@ -2856,6 +2893,13 @@
                 }
               },
               "durationLabel": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "durationLabelId": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -2892,6 +2936,13 @@
               },
               "included": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
+              "includedId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/jsonb@1",
                   "kind": "scalar"
@@ -2939,6 +2990,13 @@
                   "kind": "scalar"
                 }
               },
+              "notIncludedId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
               "pickupPolicy": {
                 "nullable": true,
                 "type": {
@@ -2960,6 +3018,13 @@
                   "kind": "scalar"
                 }
               },
+              "requirementsId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
               "reviews": {
                 "nullable": true,
                 "type": {
@@ -2968,6 +3033,13 @@
                 }
               },
               "ribbon": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "ribbonId": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -2995,8 +3067,22 @@
                   "kind": "scalar"
                 }
               },
+              "specs": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
               "title": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "titleId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -3204,6 +3290,9 @@
                 "description": {
                   "column": "description"
                 },
+                "descriptionId": {
+                  "column": "descriptionId"
+                },
                 "destinationId": {
                   "column": "destinationId"
                 },
@@ -3215,6 +3304,9 @@
                 },
                 "durationLabel": {
                   "column": "durationLabel"
+                },
+                "durationLabelId": {
+                  "column": "durationLabelId"
                 },
                 "fromPriceUsdCents": {
                   "column": "fromPriceUsdCents"
@@ -3230,6 +3322,9 @@
                 },
                 "included": {
                   "column": "included"
+                },
+                "includedId": {
+                  "column": "includedId"
                 },
                 "isAddOn": {
                   "column": "isAddOn"
@@ -3249,6 +3344,9 @@
                 "notIncluded": {
                   "column": "notIncluded"
                 },
+                "notIncludedId": {
+                  "column": "notIncludedId"
+                },
                 "pickupPolicy": {
                   "column": "pickupPolicy"
                 },
@@ -3258,11 +3356,17 @@
                 "requirements": {
                   "column": "requirements"
                 },
+                "requirementsId": {
+                  "column": "requirementsId"
+                },
                 "reviews": {
                   "column": "reviews"
                 },
                 "ribbon": {
                   "column": "ribbon"
+                },
+                "ribbonId": {
+                  "column": "ribbonId"
                 },
                 "seats": {
                   "column": "seats"
@@ -3273,8 +3377,14 @@
                 "slug": {
                   "column": "slug"
                 },
+                "specs": {
+                  "column": "specs"
+                },
                 "title": {
                   "column": "title"
+                },
+                "titleId": {
+                  "column": "titleId"
                 },
                 "tone": {
                   "column": "tone"
@@ -3474,6 +3584,20 @@
                   "kind": "scalar"
                 }
               },
+              "description": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "descriptionId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "durationHours": {
                 "nullable": true,
                 "type": {
@@ -3482,6 +3606,13 @@
                 }
               },
               "extraHourUsdCents": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "fromUsdCents": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/int4@1",
@@ -3502,8 +3633,22 @@
                   "kind": "scalar"
                 }
               },
+              "info": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
               "label": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "labelId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -3582,11 +3727,20 @@
                 "childUsdCents": {
                   "column": "childUsdCents"
                 },
+                "description": {
+                  "column": "description"
+                },
+                "descriptionId": {
+                  "column": "descriptionId"
+                },
                 "durationHours": {
                   "column": "durationHours"
                 },
                 "extraHourUsdCents": {
                   "column": "extraHourUsdCents"
+                },
+                "fromUsdCents": {
+                  "column": "fromUsdCents"
                 },
                 "id": {
                   "column": "id"
@@ -3594,8 +3748,14 @@
                 "infantUsdCents": {
                   "column": "infantUsdCents"
                 },
+                "info": {
+                  "column": "info"
+                },
                 "label": {
                   "column": "label"
+                },
+                "labelId": {
+                  "column": "labelId"
                 },
                 "productId": {
                   "column": "productId"
@@ -5010,6 +5170,13 @@
                   "kind": "scalar"
                 }
               },
+              "nameId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "slug": {
                 "nullable": false,
                 "type": {
@@ -5071,6 +5238,9 @@
                 },
                 "name": {
                   "column": "name"
+                },
+                "nameId": {
+                  "column": "nameId"
                 },
                 "slug": {
                   "column": "slug"
@@ -5670,6 +5840,11 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
+                "cityId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "country": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -5708,10 +5883,24 @@
                   },
                   "nullable": false
                 },
+                "level": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "city"
+                  },
+                  "nullable": false
+                },
                 "name": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "nameId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 },
                 "parentId": {
                   "codecId": "pg/text@1",
@@ -5730,6 +5919,9 @@
               },
               "foreignKeys": [
                 {
+                  "index": {
+                    "name": "Airport_parentId_idx"
+                  },
                   "onDelete": "setNull",
                   "onUpdate": "cascade",
                   "source": {
@@ -5755,6 +5947,20 @@
                   ],
                   "name": "Airport_iataCode_key",
                   "unique": true
+                },
+                {
+                  "columns": [
+                    "level"
+                  ],
+                  "name": "Airport_level_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "parentId"
+                  ],
+                  "name": "Airport_parentId_idx",
+                  "unique": false
                 }
               ],
               "primaryKey": {
@@ -7528,6 +7734,11 @@
                   },
                   "nullable": false
                 },
+                "descriptionId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "destinationId": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -7552,6 +7763,11 @@
                   "nullable": false
                 },
                 "durationLabel": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "durationLabelId": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
@@ -7584,6 +7800,11 @@
                     "value": []
                   },
                   "nullable": false
+                },
+                "includedId": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
+                  "nullable": true
                 },
                 "isAddOn": {
                   "codecId": "pg/bool@1",
@@ -7635,6 +7856,11 @@
                   },
                   "nullable": false
                 },
+                "notIncludedId": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
+                  "nullable": true
+                },
                 "pickupPolicy": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -7654,12 +7880,22 @@
                   },
                   "nullable": false
                 },
+                "requirementsId": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
+                  "nullable": true
+                },
                 "reviews": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": true
                 },
                 "ribbon": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "ribbonId": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
@@ -7679,10 +7915,24 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
+                "specs": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "nullable": false
+                },
                 "title": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "titleId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 },
                 "tone": {
                   "codecId": "pg/text@1",
@@ -7994,12 +8244,27 @@
                   "dataType": "pg/int4",
                   "nullable": true
                 },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "descriptionId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "durationHours": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": true
                 },
                 "extraHourUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
+                },
+                "fromUsdCents": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": true
@@ -8018,10 +8283,24 @@
                   },
                   "nullable": true
                 },
+                "info": {
+                  "codecId": "pg/jsonb@1",
+                  "dataType": "pg/jsonb",
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "nullable": false
+                },
                 "label": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "labelId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 },
                 "productId": {
                   "codecId": "pg/text@1",
@@ -9154,6 +9433,11 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
+                "nameId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "slug": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -9557,7 +9841,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "a994be472f24e8e39383f65e3653ef9f569fff573e5397f56bd09e6e8aa29f78"
+    "storageHash": "61a63442ed422021f8abb61982e8ecd591a7ed97e53a012d0e9a85966a82267d"
   },
   "execution": {
     "executionHash": "f2e4202e9184c02e0cd5f82f954a1a2e7c68894bc5acbd833deab456a39b91b7",

@@ -6,7 +6,8 @@ import Container from "@/components/ui/Container";
 import { getRecentSearches, type StoredSearch } from "@/app/actions/search";
 import { serviceSearchFields } from "@/data/services";
 import { loadRecent } from "@/lib/searchDraft";
-import { formatDateLabel } from "@/lib/format";
+import { formatDateLabel, localeFor } from "@/lib/format";
+import { SERVICE_LABEL_KEYS } from "@/lib/serviceLabels";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 type Entry = {
@@ -32,7 +33,12 @@ function searchHref(service: string, href: string, values: Record<string, string
   return `${href}?${params.toString()}`;
 }
 
-function summarize(service: string, values: Record<string, string>) {
+function summarize(
+  service: string,
+  values: Record<string, string>,
+  locale: string,
+  fallbackLabel: string,
+) {
   const fields = serviceSearchFields[service] ?? [];
   const parts = fields
     .map((f) => {
@@ -40,16 +46,16 @@ function summarize(service: string, values: Record<string, string>) {
         const date = values[f.key];
         const time = values[`${f.key}Time`];
         if (!date && !time) return "";
-        return [formatDateLabel(date), time].filter(Boolean).join(" ");
+        return [formatDateLabel(date, locale), time].filter(Boolean).join(" ");
       }
       const value = values[f.key];
       if (!value) return "";
-      if (f.kind === "date") return formatDateLabel(value);
+      if (f.kind === "date") return formatDateLabel(value, locale);
       return value;
     })
     .filter(Boolean)
     .slice(0, 3);
-  return parts.length > 0 ? parts.join(" · ") : service;
+  return parts.length > 0 ? parts.join(" · ") : fallbackLabel;
 }
 
 /**
@@ -58,7 +64,7 @@ function summarize(service: string, values: Record<string, string>) {
  * unreachable).
  */
 export default function RecentSearches() {
-  const { t } = useLocale();
+  const { t, lang } = useLocale();
   const [entries, setEntries] = useState<Entry[]>([]);
 
   useEffect(() => {
@@ -101,21 +107,25 @@ export default function RecentSearches() {
         {t("recentSearches.title")}
       </h2>
       <ul className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-        {entries.map((e) => (
-          <li key={e.key} className="shrink-0">
-            <Link
-              href={searchHref(e.service, e.href, e.values)}
-              className="flex w-[240px] flex-col rounded-xl border border-line bg-white p-3 transition-shadow hover:shadow-md"
-            >
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-brand">
-                {e.service}
-              </span>
-              <span className="mt-1 line-clamp-2 text-xs text-muted">
-                {summarize(e.service, e.values)}
-              </span>
-            </Link>
-          </li>
-        ))}
+        {entries.map((e) => {
+          const serviceKey = SERVICE_LABEL_KEYS[e.service];
+          const serviceLabel = serviceKey ? t(serviceKey) : e.service;
+          return (
+            <li key={e.key} className="shrink-0">
+              <Link
+                href={searchHref(e.service, e.href, e.values)}
+                className="flex w-[240px] flex-col rounded-xl border border-line bg-white p-3 transition-shadow hover:shadow-md"
+              >
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-brand">
+                  {serviceLabel}
+                </span>
+                <span className="mt-1 line-clamp-2 text-xs text-muted">
+                  {summarize(e.service, e.values, localeFor(lang), serviceLabel)}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </Container>
   );

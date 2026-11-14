@@ -18,7 +18,7 @@ export const metadata: Metadata = {
  * and the server rejects it, pointing them to the admin area instead.
  *
  * The page deliberately renders without the site header/footer — it is a
- * focused split-screen step.
+ * focused, centered step.
  */
 export default function LoginPage({
   searchParams,

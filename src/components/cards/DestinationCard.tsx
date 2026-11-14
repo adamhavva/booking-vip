@@ -2,15 +2,15 @@
 
 import CardImage from "@/components/ui/CardImage";
 import { copyText } from "@/lib/content";
-import { useLocale } from "@/components/providers/LocaleProvider";
+import { useMountedLocale } from "@/lib/useMountedLocale";
 import type { DestinationDTO } from "@/types";
 
 /** A destination tile — DB-backed (`Destination` table), bilingual. */
 export default function DestinationCard({ dest }: { dest: DestinationDTO }) {
-  const { lang } = useLocale();
+  const { lang } = useMountedLocale();
 
   return (
-    <div className="relative h-56 w-[200px] shrink-0 snap-start overflow-hidden rounded-xl">
+    <div className="relative h-56 w-[200px] shrink-0 snap-start overflow-hidden rounded-xl border border-line shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <CardImage
         src={dest.imageUrl}
         tone={dest.tone}

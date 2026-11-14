@@ -12,6 +12,7 @@ const TITLES: [string, string][] = [
   ["/admin/catalog/places", "Place"],
   ["/admin/catalog/service-lines", "Service Line"],
   ["/admin/catalog/amenities", "Amenity"],
+  ["/admin/catalog/discount-campaigns", "Diskon Akumulasi"],
 ];
 
 /**
@@ -45,11 +46,11 @@ export default function AdminTopbar({ email }: { email: string }) {
   const title = titleFor(pathname);
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-[var(--admin-line)] bg-white px-8">
-      <h1 className="text-[15px] font-semibold tracking-[-0.01em]">{title}</h1>
+    <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-[var(--admin-line)] bg-white px-4 sm:px-8">
+      <h1 className="truncate text-[15px] font-semibold tracking-[-0.01em]">{title}</h1>
 
-      <div className="flex items-center gap-4">
-        <span className="max-w-[220px] truncate text-[12px] text-[var(--admin-muted)]">{email}</span>
+      <div className="flex shrink-0 items-center gap-4">
+        <span className="hidden max-w-[220px] truncate text-[12px] text-[var(--admin-muted)] sm:inline">{email}</span>
         <form action={signOutAdmin}>
           <button
             type="submit"

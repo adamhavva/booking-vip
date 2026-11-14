@@ -38,15 +38,22 @@ export default function LocaleMenu({
     setOpen(false);
   }, [pathname]);
 
-  // Close on outside click.
+  // Close on outside click or Escape — the same behaviour as Popover.
   useEffect(() => {
     if (!open) return;
     const onClick = (e: MouseEvent) => {
       if (!ref.current) return;
       if (!ref.current.contains(e.target as Node)) setOpen(false);
     };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [open]);
 
   const solid = variant === "solid";

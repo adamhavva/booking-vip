@@ -540,11 +540,78 @@ export const settingValues: Record<string, unknown> = {
 };
 
 /**
- * Settings written by the admin UI — the seed never creates or deletes them.
+ * The loyalty rewards catalog — operator-defined key/value data.
+ *
+ * `kind` decides how the voucher discounts a booking:
+ *   - "percent" → `value` is a percentage (0-100) off the subtotal,
+ *   - "amount"  → `value` is a flat cut in integer USD cents,
+ *   - "free"    → full cover capped at `value` (integer USD cents).
+ *
+ * `pointsCost` is the points price, `expiresDays` the voucher validity.
+ * The seed only creates the key when it is missing — operator edits survive
+ * re-seeding (the key is admin-managed, see below).
  */
-const adminManagedSettingKeys = ["home.popup"];
+const loyaltyRewardsDefault = [
+  {
+    key: "diskon-10",
+    name: "Diskon 10% pemesanan berikutnya",
+    pointsCost: 500,
+    kind: "percent",
+    value: 10,
+    expiresDays: 30,
+    description: "Berlaku untuk semua layanan, satu kali pakai.",
+  },
+  {
+    key: "potongan-5",
+    name: "Potongan $5",
+    pointsCost: 400,
+    kind: "amount",
+    value: 500,
+    expiresDays: 30,
+    description: "Potongan langsung $5 dari total pesanan.",
+  },
+  {
+    key: "potongan-15",
+    name: "Potongan $15",
+    pointsCost: 1000,
+    kind: "amount",
+    value: 1500,
+    expiresDays: 60,
+    description: "Potongan $15 untuk pesanan apa pun, berlaku 60 hari.",
+  },
+  {
+    key: "gratis-addon",
+    name: "Gratis add-on hingga $25",
+    pointsCost: 1500,
+    kind: "free",
+    value: 2500,
+    expiresDays: 30,
+    description: "Menutup penuh biaya add-on (atau total pesanan) sampai $25.",
+  },
+];
+
+/**
+ * Settings written by the admin UI — the seed never overwrites or deletes
+ * them. `loyalty.rewards` is created with defaults when missing, then left
+ * to the operator.
+ */
+const adminManagedSettingKeys = ["home.popup", "loyalty.rewards", "promo.campaigns"];
 
 export async function seedSettings(counts: SeedCounts) {
+  // The rewards catalog: seed the defaults once, never overwrite an
+  // operator's edits afterwards.
+  const rewardsExisting = await db.orm.public.Setting
+    .select("key")
+    .where({ key: "loyalty.rewards" })
+    .first();
+  if (!rewardsExisting) {
+    await db.orm.public.Setting.create({
+      key: "loyalty.rewards",
+      value: loyaltyRewardsDefault as never,
+    });
+    bump(counts, "Setting", true);
+  }
+
   for (const [key, value] of Object.entries(settingValues)) {
     const existing = await db.orm.public.Setting.select("key").where({ key }).first();
     if (existing) {

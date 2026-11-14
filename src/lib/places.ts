@@ -13,20 +13,77 @@
 /**
  * The kinds of place a row can have.
  *
- * - `airport` — a_bandara, usually a child of a `city`;
- * - `city` — a city or region, the parent of the places below it;
+ * Administrative levels (parent → child):
+ * - `region` — e.g. "Asia Tenggara";
+ * - `country` — e.g. "Indonesia";
+ * - `province` — e.g. "Bali", "DKI Jakarta";
+ * - `city` — a kota / kabupaten;
+ * - `district` — a kecamatan;
+ * - `village` — a desa / kelurahan.
+ *
+ * Leaf spots hang below the administrative node they belong to:
+ * - `airport` — a bandara, usually a child of a `city`;
  * - `area` — a pick-up area inside a city (transport);
- * - `destination` — a tourist destination inside a city (tour packages).
+ * - `destination` — a tourist destination (tour packages).
  */
-export type PlaceKind = "airport" | "city" | "area" | "destination";
+export type PlaceKind =
+  | "region"
+  | "country"
+  | "province"
+  | "city"
+  | "district"
+  | "village"
+  | "airport"
+  | "area"
+  | "destination";
+
+/**
+ * The administrative level of a place — mirrors `kind` (the `level` column
+ * on the place table). Kept as its own type so callers can talk about the
+ * hierarchy depth without caring about the legacy kind vocabulary.
+ */
+export type PlaceLevel = PlaceKind;
+
+/** The administrative chain, top → bottom. Leaf spots are not part of it. */
+export const PLACE_LEVELS = [
+  "region",
+  "country",
+  "province",
+  "city",
+  "district",
+  "village",
+] as const satisfies readonly PlaceLevel[];
+
+/** Every kind an operator may pick in the admin place form. */
+export const PLACE_KINDS = [
+  ...PLACE_LEVELS,
+  "airport",
+  "area",
+  "destination",
+] as const satisfies readonly PlaceKind[];
+
+/** Is this kind one of the six administrative levels? */
+export function isPlaceLevel(kind: string): kind is (typeof PLACE_LEVELS)[number] {
+  return (PLACE_LEVELS as readonly string[]).includes(kind);
+}
 
 /** The human label of a place kind. */
 export function placeKindLabel(kind: string): string {
   switch (kind) {
-    case "airport":
-      return "Airport";
+    case "region":
+      return "Region";
+    case "country":
+      return "Negara";
+    case "province":
+      return "Provinsi";
     case "city":
       return "Kota";
+    case "district":
+      return "Kecamatan";
+    case "village":
+      return "Desa/Kelurahan";
+    case "airport":
+      return "Airport";
     case "area":
       return "Area";
     case "destination":
@@ -40,6 +97,8 @@ export function placeKindLabel(kind: string): string {
 export type PlaceRow = {
   id: string;
   kind: string;
+  /** Administrative level — optional so older payloads keep working. */
+  level?: string | null;
   iataCode: string | null;
   name: string;
   city: string;
@@ -56,6 +115,8 @@ export type PlaceNode = {
   /** Value submitted by the form (same as the label, for compatibility). */
   value: string;
   kind: string;
+  /** Administrative level (falls back to the kind). */
+  level: string;
   children: PlaceNode[];
 };
 
@@ -112,6 +173,7 @@ export function buildPlaceTree(rows: PlaceRow[]): PlaceNode[] {
       label: placeLabel(row),
       value: placeLabel(row),
       kind: row.kind,
+      level: row.level ?? row.kind,
       children: [],
     });
   }
@@ -242,4 +304,22 @@ export function placeMatches(node: PlaceNode, query: string): boolean {
 /** Does the tree still hold a selectable option after filtering? */
 export function hasPlaceMatch(nodes: PlaceNode[], query: string): boolean {
   return nodes.some((node) => placeMatches(node, query));
+}
+
+/**
+ * The chain of nodes from a root down to the node holding `value`
+ * (inclusive). Returns an empty array when no node matches — used by the
+ * cascading dropdown to open at the level of the current selection.
+ */
+export function findPlacePath(
+  nodes: PlaceNode[],
+  value: string,
+): PlaceNode[] {
+  if (!value) return [];
+  for (const node of nodes) {
+    if (node.value === value) return [node];
+    const below = findPlacePath(node.children, value);
+    if (below.length > 0) return [node, ...below];
+  }
+  return [];
 }
